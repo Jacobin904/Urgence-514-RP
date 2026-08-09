@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Candidature Staff — Urgence 514 RP</title>
+<meta name="description" content="Postule pour rejoindre l'équipe de modération d'Urgence 514 RP.">
+<link rel="icon" href="https://cdn.discordapp.com/icons/1475659636819493089/8a80480870b623a2afc4d2d5cc14bfbf.webp?size=1024">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+:root{
+  --navy-950:#050D1F; --navy-900:#060F24; --navy-800:#0A1B3D; --navy-700:#0E2A5C;
+  --blue:#0B4EB0; --blue-dark:#083A85; --blue-light:#E8F2FF;
+  --ink:#0B1B33; --text:#2D3748; --muted:#5A6B8C; --border:#E4EDF9;
+  --white:#FFFFFF; --gray-50:#F8FAFC; --gray-100:#F1F5F9;
+  --radius:12px; --radius-sm:8px;
+  --shadow:0 4px 12px rgba(6,15,36,.06);
+  --shadow-lg:0 12px 32px rgba(6,15,36,.1);
+  --danger:#D32F2F; --warning:#F59E0B; --success:#059669;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:var(--gray-50);color:var(--text);line-height:1.65;-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%}
+a{text-decoration:none;color:var(--blue);transition:color .2s}
+a:hover{color:var(--blue-dark)}
+.wrap{max-width:800px;margin:0 auto;padding:0 24px}
+h1,h2,h3{letter-spacing:-.02em;line-height:1.2;color:var(--ink)}
+button{font-family:'Inter',sans-serif}
+
+header{background:var(--white);border-bottom:1px solid var(--border);padding:20px 0}
+.nav{display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:12px;font-weight:700;font-size:1rem;color:var(--ink)}
+.logo img{width:40px;height:40px;border-radius:50%}
+.btn{display:inline-flex;align-items:center;gap:10px;border:none;cursor:pointer;font-weight:600;font-size:.9rem;border-radius:var(--radius-sm);padding:12px 24px;transition:all .2s}
+.btn-blue{background:var(--blue);color:#fff}
+.btn-blue:hover{background:var(--blue-dark);box-shadow:0 4px 12px rgba(11,78,176,.25)}
+.btn-outline{background:transparent;color:var(--muted);box-shadow:inset 0 0 0 1.5px var(--border)}
+.btn-outline:hover{color:var(--ink);background:var(--gray-50)}
+
+main{padding:48px 0 80px}
+.hero{text-align:center;margin-bottom:48px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:var(--blue-light);color:var(--blue);border-radius:999px;padding:6px 14px;font-size:.8rem;font-weight:700;margin-bottom:20px}
+.hero h1{font-size:clamp(1.8rem,4vw,2.6rem);font-weight:800;margin-bottom:16px}
+.hero p{font-size:1.05rem;color:var(--muted);max-width:640px;margin:0 auto}
+
+.card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:36px;margin-bottom:24px;box-shadow:var(--shadow)}
+.card h2{font-size:1.3rem;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:12px}
+.card h2 i{color:var(--blue)}
+
+.req-list{list-style:none;display:flex;flex-direction:column;gap:14px}
+.req-list li{display:flex;gap:14px;align-items:flex-start;font-size:.95rem;padding:14px;background:var(--gray-50);border-radius:var(--radius-sm);border:1px solid var(--border)}
+.req-list li i{margin-top:2px;font-size:.9rem;flex-shrink:0}
+.req-list li.check i{color:var(--success)}
+.req-list li.warn i{color:var(--warning)}
+
+.form-group{margin-bottom:24px}
+.form-group label{display:block;font-weight:600;font-size:.92rem;margin-bottom:8px;color:var(--ink)}
+.form-group label small{color:var(--muted);font-weight:500;margin-left:6px}
+.form-group input,.form-group textarea,.form-group select{width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:'Inter',sans-serif;font-size:.95rem;background:var(--white);transition:border-color .2s,box-shadow .2s}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(11,78,176,.12)}
+.form-group textarea{resize:vertical;min-height:120px}
+.form-group small{display:block;margin-top:6px;color:var(--muted);font-size:.85rem}
+
+.discord-verify{background:linear-gradient(135deg,#5865F2 0%,#4752C4 100%);color:#fff;border-radius:var(--radius);padding:32px;margin-bottom:24px;text-align:center}
+.discord-verify h3{color:#fff;font-size:1.2rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:10px}
+.discord-verify p{color:rgba(255,255,255,.9);margin-bottom:20px;font-size:.95rem}
+.discord-verify .btn{background:#fff;color:#5865F2;font-weight:700}
+.discord-verify .btn:hover{background:rgba(255,255,255,.95)}
+
+.submit-btn{width:100%;padding:16px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius-sm);font-weight:700;font-size:1rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:10px}
+.submit-btn:hover{background:var(--blue-dark);box-shadow:0 4px 12px rgba(11,78,176,.25)}
+.submit-btn:disabled{background:var(--muted);cursor:not-allowed}
+
+.alert{padding:16px 20px;border-radius:var(--radius-sm);margin-bottom:24px;display:flex;align-items:center;gap:12px;font-size:.92rem;font-weight:600}
+.alert.info{background:var(--blue-light);color:var(--blue);border:1px solid rgba(11,78,176,.2)}
+.alert.warning{background:#FEF3C7;color:#92400E;border:1px solid rgba(245,158,11,.2)}
+.alert i{font-size:1.1rem}
+
+footer{background:var(--navy-950);color:rgba(255,255,255,.7);padding:40px 0 24px;text-align:center}
+footer p{font-size:.88rem}
+footer a{color:rgba(255,255,255,.95);font-weight:600}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a href="../" class="logo">
+      <img src="https://cdn.discordapp.com/icons/1475659636819493089/8a80480870b623a2afc4d2d5cc14bfbf.webp?size=1024" alt="Logo">
+      Urgence 514 RP
+    </a>
+    <a href="../" class="btn btn-outline"><i class="fa-solid fa-arrow-left"></i> Retour</a>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="hero">
+      <span class="hero-badge"><i class="fa-solid fa-user-shield"></i> Recrutement Staff</span>
+      <h1>Rejoins l'équipe de modération</h1>
+      <p>Contribue à maintenir la qualité et le respect de la communauté Urgence 514 RP.</p>
+    </div>
+
+    <div class="card">
+      <h2><i class="fa-solid fa-circle-info"></i> Conditions requises</h2>
+      <ul class="req-list">
+        <li class="check"><i class="fa-solid fa-circle-check"></i><span>Être sur PC (ordinateur)</span></li>
+        <li class="check"><i class="fa-solid fa-circle-check"></i><span>Avoir 14 ans et plus</span></li>
+        <li class="check"><i class="fa-solid fa-circle-check"></i><span>Être présent sur le serveur depuis plus de 7 jours</span></li>
+        <li class="check"><i class="fa-solid fa-circle-check"></i><span>Avoir moins de 10 sanctions disciplinaires</span></li>
+        <li class="warn"><i class="fa-solid fa-triangle-exclamation"></i><span>Demander des nouvelles de ta candidature entraîne un refus automatique</span></li>
+      </ul>
+    </div>
+
+    <form id="staffForm" class="card">
+      <h2><i class="fa-brands fa-discord"></i> Vérification Discord</h2>
+      <div class="discord-verify">
+        <h3><i class="fa-brands fa-discord"></i> Connecte-toi avec Discord</h3>
+        <p>Pour postuler, tu dois vérifier ton compte Discord. Cela nous permet de valider ton ancienneté et ton nombre de sanctions.</p>
+        <button type="button" class="btn" onclick="window.location.href='/auth/discord'">
+          <i class="fa-brands fa-discord"></i> Se connecter avec Discord
+        </button>
+      </div>
+      <div id="discordStatus" class="alert info" style="display:none">
+        <i class="fa-solid fa-circle-check"></i>
+        <span>Connecté en tant que <b id="discordUser"></b></span>
+      </div>
+
+      <div class="form-group">
+        <label>Nom Discord <small>(automatique après connexion)</small></label>
+        <input type="text" id="discordName" readonly placeholder="Connecte-toi d'abord">
+      </div>
+
+      <div class="form-group">
+        <label>Âge <small>(14 ans minimum)</small></label>
+        <input type="number" id="age" min="14" max="99" required>
+      </div>
+
+      <div class="form-group">
+        <label>Fuseau horaire</label>
+        <select id="timezone" required>
+          <option value="">Sélectionne ton fuseau horaire</option>
+          <option value="EST">EST (Heure de l'Est)</option>
+          <option value="AST">AST (Heure de l'Atlantique)</option>
+          <option value="CST">CST (Heure du Centre)</option>
+          <option value="MST">MST (Heure des Rocheuses)</option>
+          <option value="PST">PST (Heure du Pacifique)</option>
+          <option value="Other">Autre</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Disponibilités hebdomadaires <small>(heures approximatives)</small></label>
+        <textarea id="availability" placeholder="Ex: Lundi au vendredi de 18h à 22h, week-end de 14h à 23h" required></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Pourquoi veux-tu devenir staff ?</label>
+        <textarea id="motivation" placeholder="Explique tes motivations et ce que tu peux apporter à l'équipe" required></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Expérience en modération <small>(optionnel)</small></label>
+        <textarea id="experience" placeholder="As-tu déjà été staff sur un autre serveur Discord ?"></textarea>
+      </div>
+
+      <button type="submit" class="submit-btn">
+        <i class="fa-solid fa-paper-plane"></i> Envoyer ma candidature
+      </button>
+    </form>
+
+    <div class="card" style="background:var(--gray-50)">
+      <h2><i class="fa-solid fa-lightbulb"></i> Conseils</h2>
+      <p style="color:var(--muted);font-size:.92rem;line-height:1.7">
+        Prends le temps de bien remplir chaque champ. Les candidatures incomplètes ou peu sérieuses seront refusées. 
+        Sois honnête dans tes réponses et n'hésite pas à détailler tes motivations. Bonne chance !
+      </p>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <p>© 2026 Urgence 514 RP — <a href="../">Retour au site</a></p>
+</footer>
+
+<script>
+const urlParams = new URLSearchParams(window.location.search);
+const discordData = urlParams.get('discord');
+if(discordData){
+  try{
+    const data = JSON.parse(decodeURIComponent(discordData));
+    document.getElementById('discordStatus').style.display = 'flex';
+    document.getElementById('discordUser').textContent = data.username;
+    document.getElementById('discordName').value = data.username + '#' + data.discriminator;
+    document.getElementById('staffForm').dataset.discordId = data.id;
+    document.getElementById('staffForm').dataset.discordUsername = data.username;
+  }catch(e){}
+}
+
+document.getElementById('staffForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  const discordId = this.dataset.discordId;
+  if(!discordId){
+    alert('Tu dois te connecter avec Discord avant de soumettre ta candidature.');
+    return;
+  }
+
+  const submitBtn = this.querySelector('.submit-btn');
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Envoi en cours...';
+
+  const formData = {
+    discordId: discordId,
+    discordUsername: this.dataset.discordUsername,
+    age: document.getElementById('age').value,
+    timezone: document.getElementById('timezone').value,
+    availability: document.getElementById('availability').value,
+    motivation: document.getElementById('motivation').value,
+    experience: document.getElementById('experience').value,
+    submittedAt: new Date().toISOString()
+  };
+
+  try{
+    const response = await fetch('/api/applications', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(formData)
+    });
+
+    if(response.ok){
+      alert('Candidature envoyée avec succès ! Tu recevras une notification sur Discord lorsque ta candidature sera traitée.');
+      window.location.href = '../';
+    }else{
+      throw new Error('Erreur lors de l\'envoi');
+    }
+  }catch(error){
+    alert('Erreur lors de l\'envoi. Réessaie plus tard.');
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Envoyer ma candidature';
+  }
+});
+</script>
+</body>
+</html>
