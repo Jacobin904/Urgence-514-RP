@@ -20,6 +20,22 @@ const GITHUB_REPO = process.env.GITHUB_REPO || 'jacobin904/Urgence-514-RP';
 const GITHUB_BRANCH = process.env.GITHUB_BRANCH || 'main';
 const SITE = 'https://jacobin904.github.io/Urgence-514-RP';
 
+const QUESTIONS = [
+  {id:'q1', label:'1. Découverte du serveur'},
+  {id:'q2', label:'2. Ancienneté et interactions'},
+  {id:'q3', label:'3. Plateforme'},
+  {id:'q4', label:'4. Insultes en vocale'},
+  {id:'q5', label:'5. Réponse à un ticket'},
+  {id:'q6', label:'6. Requests ER:LC'},
+  {id:'q7', label:'7. Réunions staff'},
+  {id:'q8', label:'8. 1h de modération/semaine'},
+  {id:'q9', label:'9. Expérience Melonly/ER:LC'},
+  {id:'q10', label:'10. RDM — procédure et sanction'},
+  {id:'q11', label:'11. Manque de respect staff'},
+  {id:'q12', label:'12. Cinq commandes'},
+  {id:'q13', label:'13. Combat logging'}
+];
+
 // CORS (autorise seulement ton site GitHub Pages)
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', 'https://jacobin904.github.io');
@@ -43,15 +59,10 @@ async function githubRead(){
     sha: d.sha
   };
 }
-
 async function loadApplications(){
-  if (GITHUB_TOKEN){
-    const {list} = await githubRead();
-    return list;
-  }
+  if (GITHUB_TOKEN){ const {list} = await githubRead(); return list; }
   try{ return JSON.parse(await fs.readFile(DATA_FILE, 'utf8')); }catch{ return []; }
 }
-
 async function saveApplications(list){
   if (GITHUB_TOKEN){
     const {sha} = await githubRead();
@@ -63,11 +74,7 @@ async function saveApplications(list){
     if (sha) body.sha = sha;
     const r = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/applications.json`, {
       method: 'PUT',
-      headers: {
-        Authorization: `token ${GITHUB_TOKEN}`,
-        'User-Agent': 'urgence-514-backend',
-        'Content-Type': 'application/json'
-      },
+      headers: {Authorization: `token ${GITHUB_TOKEN}`, 'User-Agent': 'urgence-514-backend', 'Content-Type': 'application/json'},
       body: JSON.stringify(body)
     });
     if (!r.ok) throw new Error('GitHub save failed: ' + r.status);
@@ -146,11 +153,8 @@ app.get('/auth/discord/callback', async (req, res) => {
     const hasRole = !!(member && member.roles && member.roles.includes(REQUIRED_ROLE_ID));
 
     const token = signToken({
-      id: user.id,
-      username: user.username,
-      avatar: user.avatar || null,
-      hasRole,
-      accessToken: tok.access_token,
+      id: user.id, username: user.username, avatar: user.avatar || null,
+      hasRole, accessToken: tok.access_token,
       exp: Date.now() + 7 * 24 * 60 * 60 * 1000
     });
 
@@ -181,18 +185,28 @@ app.post('/api/applications', async (req, res) => {
   if (!user) return res.status(401).json({error: 'Connexion Discord requise'});
   const apps = await loadApplications();
   apps.push({
+    ...req.body,
     discordId: user.id,
     discordUsername: user.username,
     avatarHash: user.avatar,
-    age: req.body.age,
-    timezone: req.body.timezone,
-    availability: req.body.availability,
-    motivation: req.body.motivation,
-    experience: req.body.experience || '',
     status: 'pending',
     submittedAt: new Date().toISOString()
   });
   await saveApplications(apps);
+
+  if (WEBHOOK_URL){
+    await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({embeds: [{
+        title: '📨 Nouvelle candidature staff',
+        color: 5793266,
+        description: `<@${user.id}> (${user.username}) vient de soumettre une candidature.`,
+        fields: [{name: 'Plateforme', value: String(req.body.q3 || '-'), inline: true}],
+        timestamp: new Date().toISOString()
+      }]})
+    });
+  }
   res.json({success: true});
 });
 
@@ -223,20 +237,22 @@ app.post('/api/applications/:discordId/:action', requireAdmin, async (req, res) 
   app.reviewedBy = req.user.username;
   await saveApplications(apps);
 
+  const fields = [
+    {name: 'Candidat', value: `<@${app.discordId}> (${app.discordUsername})`, inline: true},
+    {name: 'Plateforme', value: String(app.q3 || '-'), inline: true},
+    {name: 'Décision', value: action === 'approve' ? 'Approuvée' : 'Refusée', inline: true}
+  ];
+  QUESTIONS.forEach(q => {
+    fields.push({name: q.label, value: String(app[q.id] || '-').substring(0, 300)});
+  });
+
   const embed = {
     title: action === 'approve' ? '✅ Candidature approuvée' : '❌ Candidature refusée',
     color: action === 'approve' ? 3066993 : 15158332,
-    fields: [
-      {name: 'Candidat', value: `<@${app.discordId}> (${app.discordUsername})`, inline: true},
-      {name: 'Âge', value: `${app.age} ans`, inline: true},
-      {name: 'Fuseau horaire', value: app.timezone, inline: true},
-      {name: 'Disponibilités', value: app.availability || 'Non spécifié'},
-      {name: 'Motivations', value: (app.motivation || '').substring(0, 1024)}
-    ],
+    fields,
     footer: {text: `Traité par ${req.user.username}`},
     timestamp: new Date().toISOString()
   };
-  if (app.experience) embed.fields.push({name: 'Expérience', value: app.experience.substring(0, 1024)});
 
   if (WEBHOOK_URL){
     await fetch(WEBHOOK_URL, {
