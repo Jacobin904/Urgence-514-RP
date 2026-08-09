@@ -20,29 +20,12 @@ const GITHUB_REPO = process.env.GITHUB_REPO || 'jacobin904/Urgence-514-RP';
 const GITHUB_BRANCH = process.env.GITHUB_BRANCH || 'main';
 const SITE = 'https://jacobin904.github.io/Urgence-514-RP';
 
-// ===== SUPER ADMINS (accès admin garanti, peu importe les rôles) =====
+// ===== SUPER ADMINS (accès garanti, peu importe les rôles) =====
 const SUPER_ADMINS = [
   '1281784488854159421'  // Jacobin Babouain (@jacobin904)
-  // Ajouter d'autres IDs ici au besoin
 ];
 
-const QUESTIONS = [
-  {id:'q1', label:'1. Découverte du serveur'},
-  {id:'q2', label:'2. Ancienneté et interactions'},
-  {id:'q3', label:'3. Plateforme'},
-  {id:'q4', label:'4. Insultes en vocale'},
-  {id:'q5', label:'5. Réponse à un ticket'},
-  {id:'q6', label:'6. Requests ER:LC'},
-  {id:'q7', label:'7. Réunions staff'},
-  {id:'q8', label:'8. 1h de modération/semaine'},
-  {id:'q9', label:'9. Expérience Melonly/ER:LC'},
-  {id:'q10', label:'10. RDM — procédure et sanction'},
-  {id:'q11', label:'11. Manque de respect staff'},
-  {id:'q12', label:'12. Cinq commandes'},
-  {id:'q13', label:'13. Combat logging'}
-];
-
-// CORS (autorise seulement le site GitHub Pages)
+// CORS
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', 'https://jacobin904.github.io');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -51,7 +34,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// ===== STOCKAGE GITHUB (même repo, branche backend) =====
+// ===== STOCKAGE GITHUB =====
 const DATA_FILE = path.join(__dirname, 'applications.json');
 
 async function githubRead(){
@@ -119,11 +102,7 @@ async function getMember(accessToken){
   if (!r.ok) return null;
   return r.json();
 }
-
-function isSuperAdmin(userId){
-  return SUPER_ADMINS.includes(userId);
-}
-
+function isSuperAdmin(userId){ return SUPER_ADMINS.includes(userId); }
 async function hasAdminAccess(accessToken, userId){
   if (isSuperAdmin(userId)) return true;
   const member = await getMember(accessToken);
@@ -177,7 +156,7 @@ app.get('/auth/discord/callback', async (req, res) => {
 
     if (state === 'admin'){
       if (!hasRole){
-        return res.send('<html><body style="font-family:sans-serif;background:#050D1F;color:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh"><div style="text-align:center;background:#0A1B3D;padding:40px;border-radius:12px"><h1>Accès refusé</h1><p>Tu n\'as pas le rôle requis.</p><a style="color:#7CC0FF" href="' + SITE + '">Retour au site</a></div></body></html>');
+        return res.send('<html><body style="font-family:sans-serif;background:#0A1628;color:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh"><div style="text-align:center;background:#0F1F38;padding:40px;border-radius:16px;border:1px solid rgba(255,255,255,.1)"><h1>Accès refusé</h1><p>Tu n\'as pas le rôle requis.</p><a style="color:#6EA8FF" href="' + SITE + '">Retour au site</a></div></body></html>');
       }
       return res.redirect(`${SITE}/Admin/?token=${token}`);
     }
@@ -210,6 +189,7 @@ app.post('/api/applications', async (req, res) => {
   });
   await saveApplications(apps);
 
+  // Notification privée : seulement la personne, jamais les réponses
   if (WEBHOOK_URL){
     await fetch(WEBHOOK_URL, {
       method: 'POST',
@@ -218,7 +198,7 @@ app.post('/api/applications', async (req, res) => {
         title: '📨 Nouvelle candidature staff',
         color: 5793266,
         description: `<@${user.id}> (${user.username}) vient de soumettre une candidature.`,
-        fields: [{name: 'Plateforme', value: String(req.body.q3 || '-'), inline: true}],
+        footer: {text: 'Réponses consultables uniquement dans le panel admin'},
         timestamp: new Date().toISOString()
       }]})
     });
@@ -230,9 +210,7 @@ async function requireAdmin(req, res, next){
   const user = getUserFromReq(req);
   if (!user) return res.status(401).json({error: 'Non autorisé'});
   const authorized = await hasAdminAccess(user.accessToken, user.id);
-  if (!authorized){
-    return res.status(403).json({error: 'Rôle requis manquant'});
-  }
+  if (!authorized) return res.status(403).json({error: 'Rôle requis manquant'});
   req.user = user;
   next();
 }
@@ -253,28 +231,22 @@ app.post('/api/applications/:discordId/:action', requireAdmin, async (req, res) 
   app.reviewedBy = req.user.username;
   await saveApplications(apps);
 
-  const fields = [
-    {name: 'Candidat', value: `<@${app.discordId}> (${app.discordUsername})`, inline: true},
-    {name: 'Plateforme', value: String(app.q3 || '-'), inline: true},
-    {name: 'Décision', value: action === 'approve' ? 'Approuvée' : 'Refusée', inline: true}
-  ];
-  QUESTIONS.forEach(q => {
-    fields.push({name: q.label, value: String(app[q.id] || '-').substring(0, 300)});
-  });
-
-  const embed = {
-    title: action === 'approve' ? '✅ Candidature approuvée' : '❌ Candidature refusée',
-    color: action === 'approve' ? 3066993 : 15158332,
-    fields,
-    footer: {text: `Traité par ${req.user.username}`},
-    timestamp: new Date().toISOString()
-  };
-
+  // Webhook PRIVÉ : seulement la personne + le résultat (jamais les réponses)
   if (WEBHOOK_URL){
     await fetch(WEBHOOK_URL, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({embeds: [embed]})
+      body: JSON.stringify({embeds: [{
+        title: action === 'approve' ? '✅ Candidature approuvée' : '❌ Candidature refusée',
+        color: action === 'approve' ? 3066993 : 15158332,
+        description: `**Candidat :** <@${app.discordId}> (${app.discordUsername})`,
+        fields: [
+          {name: 'Décision', value: action === 'approve' ? 'Approuvée' : 'Refusée', inline: true},
+          {name: 'Traité par', value: req.user.username, inline: true}
+        ],
+        footer: {text: 'Les réponses détaillées restent privées au panel admin'},
+        timestamp: new Date().toISOString()
+      }]})
     });
   }
   res.json({success: true});
