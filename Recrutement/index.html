@@ -4,28 +4,25 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Candidature Staff — Urgence 514 RP</title>
-<meta name="description" content="Postule pour rejoindre l'équipe de modération d'Urgence 514 RP.">
 <link rel="icon" href="https://cdn.discordapp.com/icons/1475659636819493089/8a80480870b623a2afc4d2d5cc14bfbf.webp?size=1024">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 :root{
-  --navy-950:#050D1F; --navy-900:#060F24; --navy-800:#0A1B3D; --navy-700:#0E2A5C;
+  --navy-950:#050D1F; --navy-800:#0A1B3D;
   --blue:#0B4EB0; --blue-dark:#083A85; --blue-light:#E8F2FF;
   --ink:#0B1B33; --text:#2D3748; --muted:#5A6B8C; --border:#E4EDF9;
   --white:#FFFFFF; --gray-50:#F8FAFC; --gray-100:#F1F5F9;
   --radius:12px; --radius-sm:8px;
-  --shadow:0 4px 12px rgba(6,15,36,.06);
-  --shadow-lg:0 12px 32px rgba(6,15,36,.1);
-  --danger:#D32F2F; --warning:#F59E0B; --success:#059669;
+  --shadow:0 4px 12px rgba(6,15,36,.06); --shadow-lg:0 12px 32px rgba(6,15,36,.1);
+  --success:#059669; --warning:#F59E0B;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Inter',sans-serif;background:var(--gray-50);color:var(--text);line-height:1.65;-webkit-font-smoothing:antialiased}
 img{display:block;max-width:100%}
-a{text-decoration:none;color:var(--blue);transition:color .2s}
-a:hover{color:var(--blue-dark)}
+a{text-decoration:none;color:var(--blue)}
 .wrap{max-width:800px;margin:0 auto;padding:0 24px}
-h1,h2,h3{letter-spacing:-.02em;line-height:1.2;color:var(--ink)}
+h1,h2,h3{letter-spacing:-.02em;line-height:1.25;color:var(--ink)}
 button{font-family:'Inter',sans-serif}
 
 header{background:var(--white);border-bottom:1px solid var(--border);padding:20px 0}
@@ -34,50 +31,54 @@ header{background:var(--white);border-bottom:1px solid var(--border);padding:20p
 .logo img{width:40px;height:40px;border-radius:50%}
 .btn{display:inline-flex;align-items:center;gap:10px;border:none;cursor:pointer;font-weight:600;font-size:.9rem;border-radius:var(--radius-sm);padding:12px 24px;transition:all .2s}
 .btn-blue{background:var(--blue);color:#fff}
-.btn-blue:hover{background:var(--blue-dark);box-shadow:0 4px 12px rgba(11,78,176,.25)}
+.btn-blue:hover{background:var(--blue-dark)}
 .btn-outline{background:transparent;color:var(--muted);box-shadow:inset 0 0 0 1.5px var(--border)}
 .btn-outline:hover{color:var(--ink);background:var(--gray-50)}
 
 main{padding:48px 0 80px}
 .hero{text-align:center;margin-bottom:48px}
 .hero-badge{display:inline-flex;align-items:center;gap:8px;background:var(--blue-light);color:var(--blue);border-radius:999px;padding:6px 14px;font-size:.8rem;font-weight:700;margin-bottom:20px}
-.hero h1{font-size:clamp(1.8rem,4vw,2.6rem);font-weight:800;margin-bottom:16px}
-.hero p{font-size:1.05rem;color:var(--muted);max-width:640px;margin:0 auto}
+.hero h1{font-size:clamp(1.7rem,4vw,2.4rem);font-weight:800;margin-bottom:16px}
+.hero p{font-size:.98rem;color:var(--muted);max-width:680px;margin:0 auto}
 
-.card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:36px;margin-bottom:24px;box-shadow:var(--shadow)}
-.card h2{font-size:1.3rem;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:12px}
+.card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:32px;margin-bottom:24px;box-shadow:var(--shadow)}
+.card h2{font-size:1.2rem;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:12px}
 .card h2 i{color:var(--blue)}
 
-.req-list{list-style:none;display:flex;flex-direction:column;gap:14px}
+.req-list{list-style:none;display:flex;flex-direction:column;gap:12px}
 .req-list li{display:flex;gap:14px;align-items:flex-start;font-size:.95rem;padding:14px;background:var(--gray-50);border-radius:var(--radius-sm);border:1px solid var(--border)}
 .req-list li i{margin-top:2px;font-size:.9rem;flex-shrink:0}
 .req-list li.check i{color:var(--success)}
 .req-list li.warn i{color:var(--warning)}
 
-.form-group{margin-bottom:24px}
-.form-group label{display:block;font-weight:600;font-size:.92rem;margin-bottom:8px;color:var(--ink)}
-.form-group label small{color:var(--muted);font-weight:500;margin-left:6px}
-.form-group input,.form-group textarea,.form-group select{width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:'Inter',sans-serif;font-size:.95rem;background:var(--white);transition:border-color .2s,box-shadow .2s}
-.form-group input:focus,.form-group textarea:focus,.form-group select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(11,78,176,.12)}
-.form-group textarea{resize:vertical;min-height:120px}
-.form-group small{display:block;margin-top:6px;color:var(--muted);font-size:.85rem}
-
-.discord-verify{background:linear-gradient(135deg,#5865F2 0%,#4752C4 100%);color:#fff;border-radius:var(--radius);padding:32px;margin-bottom:24px;text-align:center}
-.discord-verify h3{color:#fff;font-size:1.2rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:10px}
-.discord-verify p{color:rgba(255,255,255,.9);margin-bottom:20px;font-size:.95rem}
+.discord-verify{background:linear-gradient(135deg,#5865F2 0%,#4752C4 100%);color:#fff;border-radius:var(--radius);padding:28px;margin-bottom:24px;text-align:center}
+.discord-verify h3{color:#fff;font-size:1.1rem;font-weight:700;margin-bottom:10px}
+.discord-verify p{color:rgba(255,255,255,.9);margin-bottom:18px;font-size:.92rem}
 .discord-verify .btn{background:#fff;color:#5865F2;font-weight:700}
-.discord-verify .btn:hover{background:rgba(255,255,255,.95)}
+
+.alert{padding:14px 18px;border-radius:var(--radius-sm);margin-bottom:20px;display:flex;align-items:center;gap:12px;font-size:.9rem;font-weight:600}
+.alert.info{background:var(--blue-light);color:var(--blue);border:1px solid rgba(11,78,176,.2)}
+
+.form-group{margin-bottom:22px}
+.form-group label{display:block;font-weight:600;font-size:.95rem;margin-bottom:6px;color:var(--ink)}
+.form-group .help{display:block;color:var(--muted);font-size:.85rem;margin-bottom:8px}
+.form-group input,.form-group textarea,.form-group select{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:'Inter',sans-serif;font-size:.93rem;background:var(--white);transition:border-color .2s,box-shadow .2s}
+.form-group textarea{resize:vertical;min-height:90px}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(11,78,176,.12)}
+
+.section-title{display:flex;align-items:center;gap:12px;font-size:1.05rem;font-weight:800;color:var(--blue);margin:32px 0 20px;padding-bottom:10px;border-bottom:2px solid var(--blue-light)}
+.section-title:first-of-type{margin-top:0}
 
 .submit-btn{width:100%;padding:16px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius-sm);font-weight:700;font-size:1rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:10px}
-.submit-btn:hover{background:var(--blue-dark);box-shadow:0 4px 12px rgba(11,78,176,.25)}
+.submit-btn:hover{background:var(--blue-dark)}
 .submit-btn:disabled{background:var(--muted);cursor:not-allowed}
 
-.alert{padding:16px 20px;border-radius:var(--radius-sm);margin-bottom:24px;display:flex;align-items:center;gap:12px;font-size:.92rem;font-weight:600}
-.alert.info{background:var(--blue-light);color:var(--blue);border:1px solid rgba(11,78,176,.2)}
-.alert.warning{background:#FEF3C7;color:#92400E;border:1px solid rgba(245,158,11,.2)}
-.alert i{font-size:1.1rem}
+.success-card{text-align:center;padding:60px 32px}
+.success-card i{font-size:3.5rem;color:var(--success);margin-bottom:20px}
+.success-card h2{justify-content:center;margin-bottom:12px}
+.success-card p{color:var(--muted);margin-bottom:28px}
 
-footer{background:var(--navy-950);color:rgba(255,255,255,.7);padding:40px 0 24px;text-align:center}
+footer{background:var(--navy-950);color:rgba(255,255,255,.7);padding:36px 0 24px;text-align:center}
 footer p{font-size:.88rem}
 footer a{color:rgba(255,255,255,.95);font-weight:600}
 </style>
@@ -98,71 +99,127 @@ footer a{color:rgba(255,255,255,.95);font-weight:600}
   <div class="wrap">
     <div class="hero">
       <span class="hero-badge"><i class="fa-solid fa-user-shield"></i> Recrutement Staff</span>
-      <h1>Rejoins l'équipe de modération</h1>
-      <p>Contribue à maintenir la qualité et le respect de la communauté Urgence 514 RP.</p>
+      <h1>Candidature au Poste de Membre de la Modération</h1>
+      <p>Cette candidature vise à évaluer votre sérieux, votre comportement, votre capacité d'analyse et votre aptitude à représenter Urgence 514 RP en tant que membre du personnel. Les questions suivantes portent sur votre expérience, votre compréhension des règles, votre attitude en situation de modération et votre disponibilité. Veuillez répondre de manière complète, claire et honnête afin de permettre une évaluation juste de votre profil.</p>
     </div>
 
     <div class="card">
-      <h2><i class="fa-solid fa-circle-info"></i> Conditions requises</h2>
+      <h2><i class="fa-solid fa-circle-info"></i> Pour être accepté vous devez</h2>
       <ul class="req-list">
-        <li class="check"><i class="fa-solid fa-circle-check"></i><span>Être sur PC (ordinateur)</span></li>
+        <li class="check"><i class="fa-solid fa-circle-check"></i><span>Être sur PC (Ordinateur)</span></li>
         <li class="check"><i class="fa-solid fa-circle-check"></i><span>Avoir 14 ans et plus</span></li>
         <li class="check"><i class="fa-solid fa-circle-check"></i><span>Être présent sur le serveur depuis plus de 7 jours</span></li>
-        <li class="check"><i class="fa-solid fa-circle-check"></i><span>Avoir moins de 10 sanctions disciplinaires</span></li>
         <li class="warn"><i class="fa-solid fa-triangle-exclamation"></i><span>Demander des nouvelles de ta candidature entraîne un refus automatique</span></li>
       </ul>
     </div>
 
-    <form id="staffForm" class="card">
+    <div class="card">
       <h2><i class="fa-brands fa-discord"></i> Vérification Discord</h2>
       <div class="discord-verify">
         <h3><i class="fa-brands fa-discord"></i> Connecte-toi avec Discord</h3>
-        <p>Pour postuler, tu dois vérifier ton compte Discord. Cela nous permet de valider ton ancienneté et ton nombre de sanctions.</p>
-        <button type="button" class="btn" onclick="window.location.href='/auth/discord'">
-          <i class="fa-brands fa-discord"></i> Se connecter avec Discord
-        </button>
+        <p>Tu dois vérifier ton compte Discord avant de pouvoir envoyer ta candidature.</p>
+        <button type="button" class="btn" id="discordLoginBtn"><i class="fa-brands fa-discord"></i> Se connecter avec Discord</button>
       </div>
       <div id="discordStatus" class="alert info" style="display:none">
         <i class="fa-solid fa-circle-check"></i>
         <span>Connecté en tant que <b id="discordUser"></b></span>
       </div>
+    </div>
+
+    <form id="staffForm" class="card">
+
+      <div class="section-title"><i class="fa-solid fa-user"></i> Section 1 — Informations générales</div>
 
       <div class="form-group">
-        <label>Nom Discord <small>(automatique après connexion)</small></label>
-        <input type="text" id="discordName" readonly placeholder="Connecte-toi d'abord">
+        <label>1. Comment vous nous avez découvert ?</label>
+        <span class="help">Expliquez comment vous avez entendu parler du serveur et ce qui vous a motivé à le rejoindre.</span>
+        <textarea id="q1" rows="4" required placeholder="Votre réponse..."></textarea>
       </div>
-
       <div class="form-group">
-        <label>Âge <small>(14 ans minimum)</small></label>
-        <input type="number" id="age" min="14" max="99" required>
+        <label>2. Depuis quand êtes-vous sur le serveur et avez-vous déjà rencontré les membres ?</label>
+        <span class="help">Indiquez depuis combien de temps vous êtes présent et si vous avez déjà interagi avec la communauté.</span>
+        <input type="text" id="q2" required placeholder="Votre réponse...">
       </div>
-
       <div class="form-group">
-        <label>Fuseau horaire</label>
-        <select id="timezone" required>
-          <option value="">Sélectionne ton fuseau horaire</option>
-          <option value="EST">EST (Heure de l'Est)</option>
-          <option value="AST">AST (Heure de l'Atlantique)</option>
-          <option value="CST">CST (Heure du Centre)</option>
-          <option value="MST">MST (Heure des Rocheuses)</option>
-          <option value="PST">PST (Heure du Pacifique)</option>
-          <option value="Other">Autre</option>
+        <label>3. Sur quelle plateforme jouez vous ?</label>
+        <span class="help">Indiquez sur quelle plateforme jouez vous sur ER:LC.</span>
+        <select id="q3" required>
+          <option value="">Sélectionne ta plateforme</option>
+          <option>Mobile (Téléphone)</option>
+          <option>Console (Xbox, PlayStation etc.)</option>
+          <option>PC (Ordinateur)</option>
         </select>
       </div>
 
-      <div class="form-group">
-        <label>Disponibilités hebdomadaires <small>(heures approximatives)</small></label>
-        <textarea id="availability" placeholder="Ex: Lundi au vendredi de 18h à 22h, week-end de 14h à 23h" required></textarea>
-      </div>
+      <div class="section-title"><i class="fa-brands fa-discord"></i> Section 2 — Modération Discord</div>
 
       <div class="form-group">
-        <label>Pourquoi veux-tu devenir staff ?</label>
-        <textarea id="motivation" placeholder="Explique tes motivations et ce que tu peux apporter à l'équipe" required></textarea>
+        <label>4. Que faites-vous si vous êtes témoin d'une ou plusieurs insultes dans une vocale ?</label>
+        <span class="help">Décrivez la procédure que vous appliquez, les étapes d'intervention et les sanctions possibles.</span>
+        <textarea id="q4" rows="3" required placeholder="Votre réponse..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>5. Si un membre ouvre un ticket, comment lui répondez-vous ?</label>
+        <span class="help">Rédigez un message d'accueil professionnel, clair et respectueux pour un ticket d'assistance.</span>
+        <textarea id="q5" rows="3" required placeholder="Votre réponse..."></textarea>
       </div>
 
+      <div class="section-title"><i class="fa-solid fa-clock"></i> Section 3 — Présence et activité</div>
+
       <div class="form-group">
-        <label>Expérience en modération <small>(optionnel)</small></label>
-        <textarea id="experience" placeholder="As-tu déjà été staff sur un autre serveur Discord ?"></textarea>
+        <label>6. Pouvez-vous être présent en modération lors des requests sur ER:LC ?</label>
+        <span class="help">Indiquez si vous êtes disponible pour intervenir en jeu lors des demandes de modération.</span>
+        <select id="q6" required>
+          <option value="">Sélectionne une réponse</option>
+          <option>Oui.</option>
+          <option>Non.</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>7. Pensez-vous pouvoir être présent lors des réunions staff (vendredi ou fin de semaine) ?</label>
+        <span class="help">Indiquez si vous êtes en mesure de participer aux réunions obligatoires du personnel.</span>
+        <select id="q7" required>
+          <option value="">Sélectionne une réponse</option>
+          <option>Oui.</option>
+          <option>Non.</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>8. Pensez vous pouvoir faire une heure de modération en jeu par semaine.</label>
+        <span class="help">Indiquez si vous êtes capable de modérer une heure par semaine sur ER:LC.</span>
+        <select id="q8" required>
+          <option value="">Sélectionne une réponse</option>
+          <option>Oui.</option>
+          <option>Non.</option>
+        </select>
+      </div>
+
+      <div class="section-title"><i class="fa-solid fa-shield-halved"></i> Section 4 — Modération ER:LC</div>
+
+      <div class="form-group">
+        <label>9. Avez-vous de l'expérience en modération Melonly / ER:LC ?</label>
+        <span class="help">Décrivez brièvement votre expérience, vos responsabilités et vos compétences.</span>
+        <textarea id="q9" rows="3" required placeholder="Votre réponse..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>10. Que faites-vous si un joueur tue un autre joueur sans raison et quelle sanction appliquez-vous ?</label>
+        <span class="help">Expliquez votre procédure d'intervention, votre analyse de la situation et la sanction appropriée.</span>
+        <textarea id="q10" rows="4" required placeholder="Votre réponse..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>11. Que faites-vous si un joueur vous manque de respect lors d'une intervention staff ?</label>
+        <span class="help">Décrivez votre réaction professionnelle, votre gestion de la situation et la sanction adaptée.</span>
+        <textarea id="q11" rows="4" required placeholder="Votre réponse..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>12. Connaissez-vous les commandes en jeu ? Si oui, citez-en cinq.</label>
+        <span class="help">Indiquez cinq commandes que vous maîtrisez dans Melonly ou ER:LC.</span>
+        <input type="text" id="q12" required placeholder="Ex : /kick, /ban, /mute...">
+      </div>
+      <div class="form-group">
+        <label>13. Quelle sanction appliquez-vous si un joueur se respawn ou quitte pour éviter une sanction ?</label>
+        <span class="help">Expliquez la procédure à suivre et la sanction appropriée pour un cas de contournement de sanction (combat logging).</span>
+        <textarea id="q13" rows="3" required placeholder="Votre réponse..."></textarea>
       </div>
 
       <button type="submit" class="submit-btn">
@@ -170,12 +227,11 @@ footer a{color:rgba(255,255,255,.95);font-weight:600}
       </button>
     </form>
 
-    <div class="card" style="background:var(--gray-50)">
-      <h2><i class="fa-solid fa-lightbulb"></i> Conseils</h2>
-      <p style="color:var(--muted);font-size:.92rem;line-height:1.7">
-        Prends le temps de bien remplir chaque champ. Les candidatures incomplètes ou peu sérieuses seront refusées. 
-        Sois honnête dans tes réponses et n'hésite pas à détailler tes motivations. Bonne chance !
-      </p>
+    <div id="successCard" class="card success-card" style="display:none">
+      <i class="fa-solid fa-circle-check"></i>
+      <h2>Candidature envoyée</h2>
+      <p>Votre candidature a bien été envoyée. Merci de vous impliquer au sein d'Urgence 514 RP.</p>
+      <a href="../" class="btn btn-blue"><i class="fa-solid fa-house"></i> Retour au site</a>
     </div>
   </div>
 </main>
@@ -185,56 +241,61 @@ footer a{color:rgba(255,255,255,.95);font-weight:600}
 </footer>
 
 <script>
-const urlParams = new URLSearchParams(window.location.search);
-const discordData = urlParams.get('discord');
-if(discordData){
+const API_URL = 'https://TON-URL.onrender.com'; // ⚠️ REMPLACE PAR TON URL RENDER
+
+function decodeToken(token){
   try{
-    const data = JSON.parse(decodeURIComponent(discordData));
-    document.getElementById('discordStatus').style.display = 'flex';
-    document.getElementById('discordUser').textContent = data.username;
-    document.getElementById('discordName').value = data.username + '#' + data.discriminator;
-    document.getElementById('staffForm').dataset.discordId = data.id;
-    document.getElementById('staffForm').dataset.discordUsername = data.username;
-  }catch(e){}
+    let b64 = token.split('.')[0].replace(/-/g,'+').replace(/_/g,'/');
+    while(b64.length % 4) b64 += '=';
+    const json = new TextDecoder().decode(Uint8Array.from(atob(b64), c => c.charCodeAt(0)));
+    return JSON.parse(json);
+  }catch(e){ return null; }
 }
+
+let token = localStorage.getItem('u514_token');
+const urlToken = new URLSearchParams(window.location.search).get('token');
+if(urlToken){
+  token = urlToken;
+  localStorage.setItem('u514_token', token);
+  history.replaceState(null, '', window.location.pathname);
+}
+if(token){
+  const user = decodeToken(token);
+  if(user){
+    document.getElementById('discordStatus').style.display = 'flex';
+    document.getElementById('discordUser').textContent = user.username;
+  }
+}
+
+document.getElementById('discordLoginBtn').addEventListener('click', () => {
+  window.location.href = API_URL + '/auth/discord';
+});
 
 document.getElementById('staffForm').addEventListener('submit', async function(e){
   e.preventDefault();
-  const discordId = this.dataset.discordId;
-  if(!discordId){
-    alert('Tu dois te connecter avec Discord avant de soumettre ta candidature.');
-    return;
-  }
+  if(!token){ alert('Tu dois te connecter avec Discord avant de soumettre ta candidature.'); return; }
 
   const submitBtn = this.querySelector('.submit-btn');
   submitBtn.disabled = true;
   submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Envoi en cours...';
 
-  const formData = {
-    discordId: discordId,
-    discordUsername: this.dataset.discordUsername,
-    age: document.getElementById('age').value,
-    timezone: document.getElementById('timezone').value,
-    availability: document.getElementById('availability').value,
-    motivation: document.getElementById('motivation').value,
-    experience: document.getElementById('experience').value,
-    submittedAt: new Date().toISOString()
-  };
+  const data = {};
+  for(let i = 1; i <= 13; i++){
+    data['q' + i] = document.getElementById('q' + i).value.trim();
+  }
 
   try{
-    const response = await fetch('/api/applications', {
+    const response = await fetch(API_URL + '/api/applications', {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(formData)
+      headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token},
+      body: JSON.stringify(data)
     });
-
     if(response.ok){
-      alert('Candidature envoyée avec succès ! Tu recevras une notification sur Discord lorsque ta candidature sera traitée.');
-      window.location.href = '../';
-    }else{
-      throw new Error('Erreur lors de l\'envoi');
-    }
-  }catch(error){
+      document.getElementById('staffForm').style.display = 'none';
+      document.getElementById('successCard').style.display = 'block';
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    }else{ throw new Error(); }
+  }catch(err){
     alert('Erreur lors de l\'envoi. Réessaie plus tard.');
     submitBtn.disabled = false;
     submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Envoyer ma candidature';
