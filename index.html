@@ -3,372 +3,384 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Urgence 514 RP — La plus grosse franchise RP du Québec</title>
-<meta name="description" content="Urgence 514 RP : serveur roleplay Roblox 100% québécois. SPVM, SQ, SIM, U-Santé et plus. Depuis 2026. Code Roblox : URGRP.">
+<title>Urgence 514 RP — Le roleplay montréalais sur Roblox</title>
+<meta name="description" content="Urgence 514 RP : serveur roleplay Roblox 100% québécois basé sur l'île de Montréal. SPVM, SQ, SIM, U-Santé, CRQ, GRC. Depuis 2026. Code Roblox : URGRP.">
 <meta property="og:title" content="Urgence 514 RP — Roleplay Québécois">
-<meta property="og:description" content="Police, pompiers, paramédics, civils : choisis ton uniforme, la ville t'attend. Code : URGRP">
+<meta property="og:description" content="Une métropole. Des centaines d'histoires. La tienne commence maintenant. Code : URGRP">
 <meta property="og:image" content="https://cdn.discordapp.com/icons/1475659636819493089/8a80480870b623a2afc4d2d5cc14bfbf.webp?size=1024">
-<meta name="theme-color" content="#0A459C">
+<meta name="theme-color" content="#0A1B3D">
 <link rel="icon" href="https://cdn.discordapp.com/icons/1475659636819493089/8a80480870b623a2afc4d2d5cc14bfbf.webp?size=1024">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;700&family=Courier+Prime:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 :root{
-  --ink:#0b1b33; --blue:#0a459c; --blue2:#1273d3; --bluedark:#072b57;
-  --yellow:#ffc72c; --red:#e4002b; --paper:#f4f6fb; --white:#fff;
+  --navy-950:#050D1F; --navy-900:#060F24; --navy-800:#0A1B3D; --navy-700:#0E2A5C; --navy-600:#123C8C;
+  --blue:#1273D3; --blue-dark:#0B5AA8; --blue-deep:#0B4EB0; --sky:#7CC0FF; --ice:#E8F2FF; --ice-2:#F4F9FF;
+  --ink:#0B1B33; --muted:#5A6B8C; --muted-light:#9DB4D8; --white:#FFFFFF;
+  --red:#D32F2F;
+  --radius:16px;
+  --shadow:0 8px 24px rgba(6,15,36,.08);
+  --shadow-lg:0 16px 48px rgba(6,15,36,.14);
 }
 *{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth;scroll-padding-top:110px}
-body{font-family:'Space Grotesk',sans-serif;background:var(--paper);color:var(--ink);line-height:1.6;overflow-x:hidden}
-::selection{background:var(--yellow);color:var(--ink)}
-img{max-width:100%;display:block}
-a{color:inherit}
-.wrap{max-width:1200px;margin:0 auto;padding:0 24px}
-h1,h2,h3,.anton{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.5px;text-transform:uppercase}
+html{scroll-behavior:smooth;scroll-padding-top:90px}
+body{font-family:'Inter',sans-serif;background:var(--white);color:var(--ink);line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+::selection{background:var(--blue);color:#fff}
+img{display:block;max-width:100%}
+a{text-decoration:none;color:inherit}
+.wrap{max-width:1160px;margin:0 auto;padding:0 24px}
+h1,h2,h3{letter-spacing:-.03em;line-height:1.1}
 
-/* ---------- TOPBAR ---------- */
-.topbar{background:var(--red);color:#fff;text-align:center;padding:10px 16px;font-weight:700;font-size:.95rem;border-bottom:3px solid var(--ink)}
-.topbar a{color:var(--yellow)}
-
-/* ---------- HEADER ---------- */
-header{position:sticky;top:0;z-index:100;background:var(--white);border-bottom:3px solid var(--ink);transition:box-shadow .3s}
-header.scrolled{box-shadow:0 6px 0 rgba(11,27,51,.15)}
-.nav{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:14px 0}
-.logo{display:flex;align-items:center;gap:12px;text-decoration:none}
-.logo img{width:52px;height:52px;border-radius:50%;border:3px solid var(--ink);box-shadow:3px 3px 0 var(--ink)}
-.logo b{font-family:'Anton';font-size:1.35rem;letter-spacing:1px}
-.logo b span{color:var(--red)}
-.nav-links{display:flex;gap:22px;list-style:none;align-items:center}
-.nav-links a{text-decoration:none;font-weight:700;font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;position:relative}
-.nav-links a:not(.btn)::after{content:'';position:absolute;left:0;bottom:-4px;width:0;height:4px;background:var(--yellow);transition:width .25s}
-.nav-links a:not(.btn):hover::after{width:100%}
-.burger{display:none;background:var(--yellow);border:3px solid var(--ink);border-radius:12px;box-shadow:4px 4px 0 var(--ink);font-size:1.3rem;padding:6px 12px;cursor:pointer}
-
-/* ---------- BOUTONS / STICKERS ---------- */
-.btn{display:inline-flex;align-items:center;gap:10px;padding:14px 26px;border:3px solid var(--ink);border-radius:14px;font-weight:700;font-size:1rem;text-decoration:none;box-shadow:5px 5px 0 var(--ink);transition:transform .15s,box-shadow .15s;cursor:pointer;background:#fff;color:var(--ink);font-family:'Space Grotesk'}
-.btn:hover{transform:translate(-2px,-2px);box-shadow:8px 8px 0 var(--ink)}
-.btn:active{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink)}
-.btn-red{background:var(--red);color:#fff}
-.btn-yellow{background:var(--yellow)}
+/* ============ NAV ============ */
+header{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(6,15,36,.85);backdrop-filter:blur(14px);border-bottom:1px solid rgba(124,192,255,.12)}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:20px;height:72px}
+.logo{display:flex;align-items:center;gap:12px;color:#fff;font-weight:800;font-size:1.05rem;letter-spacing:-.02em}
+.logo img{width:42px;height:42px;border-radius:50%}
+.logo span{color:var(--sky)}
+.nav-links{display:flex;gap:28px;list-style:none}
+.nav-links a{color:var(--muted-light);font-weight:600;font-size:.92rem;transition:color .2s}
+.nav-links a:hover{color:#fff}
+.nav-cta{display:flex;gap:12px;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:10px;border:none;cursor:pointer;font-family:'Inter',sans-serif;font-weight:700;font-size:.95rem;border-radius:999px;padding:13px 26px;transition:transform .15s,box-shadow .2s,background .2s,color .2s}
+.btn:active{transform:scale(.97)}
 .btn-blue{background:var(--blue);color:#fff}
-.btn-sm{padding:9px 18px;font-size:.85rem;border-radius:12px;box-shadow:4px 4px 0 var(--ink)}
-.sticker{display:inline-flex;align-items:center;gap:8px;padding:8px 18px;border:3px solid var(--ink);border-radius:999px;font-weight:700;font-size:.85rem;box-shadow:4px 4px 0 var(--ink);background:#fff;text-transform:uppercase;letter-spacing:.5px}
-.sticker.red{background:var(--red);color:#fff;transform:rotate(-2deg)}
-.sticker.yellow{background:var(--yellow);transform:rotate(1.5deg)}
-.sticker.blue{background:var(--blue);color:#fff;transform:rotate(-1deg)}
+.btn-blue:hover{background:var(--blue-dark);box-shadow:0 8px 24px rgba(18,115,211,.4)}
+.btn-white{background:#fff;color:var(--ink)}
+.btn-white:hover{box-shadow:0 8px 24px rgba(255,255,255,.2)}
+.btn-ghost{background:transparent;color:#fff}
+.btn-ghost:hover{text-decoration:underline}
+.btn-outline{background:transparent;color:var(--blue);box-shadow:inset 0 0 0 2px var(--blue)}
+.btn-outline:hover{background:var(--ice)}
+.btn-sm{padding:9px 18px;font-size:.85rem}
+.btn-lg{padding:16px 34px;font-size:1.05rem}
+.burger{display:none;background:none;border:none;color:#fff;font-size:1.4rem;cursor:pointer}
 
-/* ---------- HERO ---------- */
-.hero{padding:70px 0 90px;background:
-  radial-gradient(circle at 12% 20%, rgba(255,199,44,.25) 0 12%, transparent 13%),
-  radial-gradient(circle at 88% 75%, rgba(18,115,211,.15) 0 14%, transparent 15%),
-  var(--paper)}
-.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:50px;align-items:center}
-.hero h1{font-size:clamp(3rem,7.5vw,6rem);line-height:1;margin:22px 0 18px}
-.hero h1 .hl{background:var(--yellow);display:inline-block;padding:.02em .12em;box-shadow:6px 6px 0 var(--ink);transform:rotate(-1.5deg)}
-.hero h1 .rp{color:var(--red)}
-.hero p.lead{font-size:1.2rem;max-width:560px;margin-bottom:30px;font-weight:500}
-.hero p.lead b{background:var(--yellow);padding:0 4px}
-.cta-row{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:22px}
-.hero-note{font-size:.9rem;font-weight:700;opacity:.75}
+/* ============ HERO ============ */
+.hero{background:radial-gradient(1000px 500px at 85% -10%,rgba(18,115,211,.35),transparent 60%),radial-gradient(800px 400px at -10% 110%,rgba(11,78,176,.3),transparent 60%),var(--navy-900);color:#fff;padding:170px 0 90px}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
+.pill{display:inline-flex;align-items:center;gap:8px;background:rgba(124,192,255,.12);border:1px solid rgba(124,192,255,.3);color:var(--sky);border-radius:999px;padding:7px 16px;font-size:.82rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.hero h1{font-size:clamp(2.6rem,5.4vw,4.3rem);font-weight:900;margin:22px 0 20px}
+.hero h1 em{font-style:normal;color:var(--sky)}
+.hero p{font-size:1.15rem;color:var(--muted-light);max-width:540px;margin-bottom:34px}
+.hero p b{color:#fff}
+.hero-btns{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:44px}
 .hero-visual{position:relative}
-.hero-visual .frame{border:3px solid var(--ink);border-radius:22px;overflow:hidden;box-shadow:12px 12px 0 var(--ink);transform:rotate(2deg);background:#000}
+.hero-visual .card-img{border-radius:24px;overflow:hidden;border:1px solid rgba(124,192,255,.25);box-shadow:0 24px 80px rgba(3,8,20,.6)}
 .hero-visual img{width:100%;aspect-ratio:16/9;object-fit:cover}
-.burst{position:absolute;top:-38px;right:-14px;width:120px;height:120px;background:var(--red);color:#fff;border:3px solid var(--ink);border-radius:50%;display:flex;align-items:center;justify-content:center;text-align:center;font-family:'Anton';font-size:1.05rem;line-height:1.1;transform:rotate(10deg);box-shadow:5px 5px 0 var(--ink);z-index:2}
-.float-stk{position:absolute;border:3px solid var(--ink);border-radius:999px;padding:8px 16px;font-weight:700;font-size:.85rem;box-shadow:4px 4px 0 var(--ink);z-index:2}
-.fs1{bottom:-18px;left:-12px;background:var(--yellow);transform:rotate(-3deg)}
-.fs2{top:38%;left:-30px;background:#fff;transform:rotate(-90deg)}
+.hero-chip{position:absolute;bottom:-18px;left:24px;background:#fff;color:var(--ink);border-radius:14px;padding:12px 20px;font-weight:800;font-size:.9rem;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow-lg)}
+.hero-chip i{color:var(--blue)}
+.stats{display:flex;gap:0;flex-wrap:wrap;border-top:1px solid rgba(124,192,255,.15);padding-top:34px}
+.stat{flex:1;min-width:140px;padding:0 24px;border-left:1px solid rgba(124,192,255,.15)}
+.stat:first-child{border-left:none;padding-left:0}
+.stat b{display:block;font-size:1.7rem;font-weight:900;color:#fff;letter-spacing:-.02em}
+.stat span{font-size:.85rem;color:var(--muted-light);font-weight:600}
 
-/* ---------- MARQUEE ---------- */
-.marquee{background:var(--yellow);border-top:3px solid var(--ink);border-bottom:3px solid var(--ink);overflow:hidden}
-.marquee-track{display:flex;width:max-content;animation:marq 24s linear infinite}
-.marquee-track span{font-family:'Anton';font-size:1.5rem;padding:14px 0;white-space:nowrap;letter-spacing:1px}
-@keyframes marq{to{transform:translateX(-50%)}}
+/* ============ SECTIONS ============ */
+section{padding:100px 0}
+.sec-tag{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:7px 16px;font-size:.8rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;margin-bottom:18px}
+.sec-tag.blue{background:var(--ice);color:var(--blue)}
+.sec-tag.white{background:rgba(124,192,255,.12);color:var(--sky);border:1px solid rgba(124,192,255,.3)}
+.sec-title{font-size:clamp(2rem,4vw,3rem);font-weight:900;margin-bottom:14px}
+.sec-sub{font-size:1.1rem;color:var(--muted);max-width:640px}
+.dark .sec-sub{color:var(--muted-light)}
 
-/* ---------- SECTIONS ---------- */
-section{padding:90px 0}
-.sec-head{margin-bottom:55px}
-.sec-head .sticker{margin-bottom:16px}
-.sec-head h2{font-size:clamp(2.2rem,5vw,3.6rem);line-height:1.05}
-.sec-head h2 mark{background:var(--yellow);padding:0 .12em;box-shadow:4px 4px 0 var(--ink);display:inline-block;transform:rotate(-1deg)}
-.sec-head p{font-size:1.1rem;max-width:640px;margin-top:14px;font-weight:500}
+/* ============ DÉPARTEMENTS ============ */
+#departements{background:var(--ice-2)}
+.dpt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:56px}
+.dpt{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:30px;display:flex;flex-direction:column;gap:14px;border:1px solid #E4EDF9;transition:transform .2s,box-shadow .2s}
+.dpt:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+.dpt-top{display:flex;align-items:center;gap:14px}
+.dpt-logo{width:58px;height:58px;border-radius:50%;object-fit:cover;border:1px solid #E4EDF9}
+.dpt-badge{width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:#fff;background:linear-gradient(135deg,var(--blue) 0%,var(--blue-deep) 100%);flex-shrink:0}
+.dpt-badge.red{background:linear-gradient(135deg,#E4544A,#B71C1C)}
+.dpt-badge.navy{background:linear-gradient(135deg,var(--navy-600),var(--navy-800))}
+.dpt h3{font-size:1.15rem;font-weight:800}
+.dpt small{color:var(--muted);font-weight:600;font-size:.8rem;text-transform:uppercase;letter-spacing:.05em}
+.dpt p{font-size:.94rem;color:var(--muted);flex:1}
+.dpt .chips{display:flex;flex-wrap:wrap;gap:8px}
+.dpt .chips i{font-style:normal;background:var(--ice);color:var(--blue);font-weight:700;font-size:.75rem;border-radius:999px;padding:4px 12px}
+.dpt a.more{display:inline-flex;align-items:center;gap:8px;color:var(--blue);font-weight:700;font-size:.92rem}
+.dpt a.more:hover{text-decoration:underline}
 
-/* ---------- MENU (départements) ---------- */
-#menu{background:#fff;border-bottom:3px solid var(--ink)}
-.menu-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:30px}
-.dpt{background:var(--paper);border:3px solid var(--ink);border-radius:20px;box-shadow:8px 8px 0 var(--ink);padding:28px;display:flex;flex-direction:column;gap:14px;transition:transform .2s,box-shadow .2s;position:relative}
-.dpt:hover{transform:translate(-3px,-3px);box-shadow:12px 12px 0 var(--ink)}
-.dpt .num{position:absolute;top:18px;right:20px;font-family:'Anton';font-size:.95rem;background:var(--ink);color:var(--yellow);padding:4px 10px;border-radius:8px}
-.dpt .emo{width:70px;height:70px;font-size:2.1rem;display:flex;align-items:center;justify-content:center;border:3px solid var(--ink);border-radius:18px;box-shadow:4px 4px 0 var(--ink)}
-.dpt h3{font-size:1.5rem}
-.dpt p{font-size:.95rem;flex:1}
-.chips{display:flex;flex-wrap:wrap;gap:8px}
-.chips i{font-style:normal;font-size:.75rem;font-weight:700;border:2px solid var(--ink);border-radius:999px;padding:3px 10px;background:#fff}
-.e-blue{background:var(--blue2)}.e-red{background:var(--red)}.e-yellow{background:var(--yellow)}.e-green{background:#0f9d58;color:#fff}.e-white{background:#fff}.e-maple{background:#d8062b;color:#fff}
+/* ============ RÈGLES ============ */
+#reglements{background:var(--navy-900);color:#fff}
+.rules-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:56px}
+.embed{background:var(--navy-800);border:1px solid rgba(124,192,255,.14);border-left:5px solid var(--blue);border-radius:12px;padding:30px}
+.embed.redline{border-left-color:var(--red)}
+.embed h3{display:flex;align-items:center;gap:12px;font-size:1.2rem;font-weight:800;margin-bottom:20px}
+.embed h3 i{color:var(--sky)}
+.embed ul{list-style:none;display:flex;flex-direction:column;gap:13px}
+.embed li{display:flex;gap:12px;font-size:.93rem;color:#CFE0F7}
+.embed li i{color:var(--sky);margin-top:4px;font-size:.85rem;flex-shrink:0}
+.embed li b{color:#fff}
+.embed li i.bad{color:#FF8A80}
 
-/* ---------- STATS ---------- */
-.stats{background:var(--blue);border-top:3px solid var(--ink);border-bottom:3px solid var(--ink);color:#fff;padding:50px 0}
-.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;text-align:center}
-.stats b{font-family:'Anton';font-size:3rem;color:var(--yellow);display:block;line-height:1}
-.stats span{font-weight:700;text-transform:uppercase;letter-spacing:1px;font-size:.85rem}
+/* ============ LANGAGE RP (chat) ============ */
+#langage{background:#fff}
+.chat{margin-top:56px;background:var(--navy-800);border-radius:20px;overflow:hidden;box-shadow:var(--shadow-lg);border:1px solid rgba(124,192,255,.15)}
+.chat-head{display:flex;align-items:center;gap:10px;background:var(--navy-700);padding:16px 24px;color:#fff;font-weight:700}
+.chat-head i{color:var(--muted-light)}
+.chat-body{padding:28px 24px;display:flex;flex-direction:column;gap:22px;max-height:560px;overflow-y:auto}
+.msg{display:flex;gap:16px}
+.msg img{width:44px;height:44px;border-radius:50%;flex-shrink:0}
+.msg-head{display:flex;align-items:baseline;gap:10px;margin-bottom:3px}
+.msg-head b{color:var(--sky);font-size:.98rem}
+.msg-head .app{background:var(--blue);color:#fff;font-size:.65rem;font-weight:800;border-radius:5px;padding:2px 6px;letter-spacing:.05em}
+.msg-head time{color:var(--muted-light);font-size:.75rem}
+.msg p{color:#E4EDF9;font-size:.95rem}
+.msg p .say{color:#fff;font-weight:700}
+.msg p .eq{color:var(--sky);font-weight:800}
 
-/* ---------- PROMOS ---------- */
-.promo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
-.promo{border:3px solid var(--ink);border-radius:20px;background:#fff;box-shadow:7px 7px 0 var(--ink);padding:26px;text-align:center;transition:transform .2s}
-.promo:hover{transform:rotate(-1.5deg) translateY(-4px)}
-.promo .big{font-size:2.6rem}
-.promo h3{font-size:1.15rem;margin:10px 0 6px}
-.promo p{font-size:.9rem}
-.deal{margin-top:34px;border:3px dashed var(--ink);border-radius:22px;background:var(--yellow);box-shadow:9px 9px 0 var(--ink);padding:30px;display:flex;align-items:center;justify-content:space-between;gap:26px;flex-wrap:wrap}
-.deal h3{font-size:1.7rem}
-.deal p{font-weight:600}
+/* ============ RECRUTEMENT ============ */
+#recrutement{background:linear-gradient(135deg,var(--blue-deep) 0%,var(--blue) 60%,#2E8BE8 100%);color:#fff}
+.rec-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center}
+.rec-list{list-style:none;margin:28px 0 34px;display:flex;flex-direction:column;gap:14px}
+.rec-list li{display:flex;gap:14px;align-items:flex-start;font-weight:600;font-size:1.02rem}
+.rec-list li i{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);border-radius:8px;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:.75rem;margin-top:2px;flex-shrink:0}
+.rec-list li.warn i{background:rgba(255,214,64,.2);border-color:rgba(255,214,64,.5);color:#FFD640}
+.rec-card{background:#fff;color:var(--ink);border-radius:20px;padding:36px;box-shadow:0 24px 64px rgba(3,8,20,.35)}
+.rec-card h3{font-size:1.3rem;font-weight:900;margin-bottom:8px;display:flex;gap:12px;align-items:center}
+.rec-card h3 i{color:var(--blue)}
+.rec-card p{color:var(--muted);font-size:.95rem;margin-bottom:20px}
+.roles{display:flex;flex-direction:column;gap:12px;margin-bottom:24px}
+.role-line{display:flex;align-items:center;gap:14px;background:var(--ice-2);border:1px solid #E4EDF9;border-radius:12px;padding:12px 16px;font-weight:600;font-size:.92rem}
+.role-line i{width:36px;height:36px;border-radius:10px;background:var(--ice);color:var(--blue);display:flex;align-items:center;justify-content:center}
+.role-line small{display:block;color:var(--muted);font-weight:500}
 
-/* ---------- RÈGLES ---------- */
-#regles{background:var(--bluedark);color:#fff;border-top:3px solid var(--ink)}
-#regles .sec-head h2 mark{background:var(--red);color:#fff}
-.rules-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:36px;align-items:start}
-.receipt{background:#fff;color:var(--ink);font-family:'Courier Prime',monospace;border:3px solid var(--ink);border-radius:6px;box-shadow:10px 10px 0 var(--yellow);padding:30px 26px;transform:rotate(-1deg)}
-.receipt h3{text-align:center;font-size:1.4rem;border-bottom:3px dashed var(--ink);padding-bottom:12px;margin-bottom:14px}
-.receipt .rline{display:flex;justify-content:space-between;gap:12px;font-weight:700;font-size:.92rem;padding:5px 0;border-bottom:1px dotted #bbb}
-.receipt .rline b{color:var(--red);white-space:nowrap}
-.receipt .total{margin-top:14px;text-align:center;font-weight:700}
-.barcode{height:44px;margin-top:14px;background:repeating-linear-gradient(90deg,var(--ink) 0 3px,transparent 3px 6px,var(--ink) 6px 8px,transparent 8px 12px,var(--ink) 12px 13px,transparent 13px 17px)}
-.board{background:#041c3a;border:3px solid var(--ink);border-radius:20px;box-shadow:10px 10px 0 var(--red);padding:32px}
-.board h3{color:var(--yellow);font-size:1.5rem;text-align:center;border-bottom:3px solid var(--yellow);padding-bottom:12px;margin-bottom:18px}
-.bline{display:flex;align-items:baseline;gap:10px;padding:7px 0;font-size:.95rem}
-.bline b{color:var(--yellow);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
-.bline .dots{flex:1;border-bottom:3px dotted rgba(255,255,255,.3)}
-.bline span{color:#dbe7ff;text-align:right}
+/* ============ ÉQUIPE ============ */
+#equipe{background:var(--ice-2)}
+.team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:56px}
+.member{background:#fff;border:1px solid #E4EDF9;border-radius:var(--radius);box-shadow:var(--shadow);padding:36px 28px;text-align:center}
+.member img{width:96px;height:96px;border-radius:50%;margin:0 auto 18px;border:3px solid var(--ice)}
+.member h3{font-size:1.1rem;font-weight:800;margin-bottom:10px;word-break:break-word}
+.member .tag{display:inline-block;border-radius:999px;padding:5px 14px;font-size:.78rem;font-weight:800;margin-bottom:12px}
+.tag.fond{background:var(--blue);color:#fff}
+.tag.adj{background:var(--navy-700);color:#fff}
+.tag.dev{background:var(--ice);color:var(--blue)}
+.member small{color:var(--muted);font-weight:600}
 
-/* ---------- LANGAGE RP ---------- */
-.lang-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
-.word{border:3px solid var(--ink);border-radius:16px;background:#fff;box-shadow:6px 6px 0 var(--ink);padding:18px 22px;display:flex;align-items:center;gap:16px;transition:transform .2s}
-.word:hover{transform:translateX(6px)}
-.word .say{font-family:'Anton';font-size:1.15rem;background:var(--yellow);border:2px solid var(--ink);border-radius:10px;padding:6px 12px;white-space:nowrap;box-shadow:3px 3px 0 var(--ink)}
-.word .mean{font-weight:600;font-size:.95rem}
-.word .mean small{display:block;font-weight:400;opacity:.7}
-
-/* ---------- RECRUTEMENT ---------- */
-#recrutement{background:var(--yellow);border-top:3px solid var(--ink);border-bottom:3px solid var(--ink)}
-.recruit-card{border:3px solid var(--ink);border-radius:26px;background:var(--red);color:#fff;box-shadow:12px 12px 0 var(--ink);padding:46px;display:grid;grid-template-columns:1.2fr .8fr;gap:40px;align-items:center}
-.recruit-card h2{font-size:clamp(2rem,4.5vw,3.2rem);margin-bottom:18px}
-.recruit-card ul{list-style:none;margin-bottom:26px}
-.recruit-card li{font-weight:700;font-size:1.05rem;padding:7px 0;display:flex;gap:12px;align-items:flex-start}
-.recruit-card li::before{content:'✔';background:#fff;color:var(--red);border:2px solid var(--ink);border-radius:8px;padding:0 7px;font-size:.85rem}
-.recruit-card li.warn::before{content:'⚠';background:var(--yellow)}
-.recruit-side{background:#fff;color:var(--ink);border:3px solid var(--ink);border-radius:20px;padding:28px;text-align:center;box-shadow:7px 7px 0 var(--ink);transform:rotate(2deg)}
-.recruit-side .anton{font-size:1.4rem;margin-bottom:8px}
-
-/* ---------- ÉQUIPE ---------- */
-.team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:30px}
-.member{border:3px solid var(--ink);border-radius:22px;background:#fff;box-shadow:8px 8px 0 var(--ink);padding:32px;text-align:center;transition:transform .2s}
-.member:hover{transform:translateY(-6px) rotate(-1deg)}
-.member img{width:110px;height:110px;border-radius:50%;border:3px solid var(--ink);box-shadow:5px 5px 0 var(--yellow);margin:0 auto 16px;object-fit:cover}
-.member h3{font-size:1.2rem;margin-bottom:8px;word-break:break-word}
-.member .role{display:inline-block;background:var(--blue);color:#fff;border:2px solid var(--ink);border-radius:999px;padding:4px 14px;font-size:.8rem;font-weight:700;margin-bottom:12px}
-.member .role.fond{background:var(--red)} .member .role.dev{background:var(--yellow);color:var(--ink)}
-.member small{opacity:.7;font-weight:600}
-
-/* ---------- FAQ ---------- */
-.faq-box{max-width:820px;margin:0 auto}
-.faq-item{border:3px solid var(--ink);border-radius:16px;background:#fff;box-shadow:6px 6px 0 var(--ink);margin-bottom:18px;overflow:hidden}
-.faq-q{width:100%;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 24px;font-weight:700;font-size:1.05rem;cursor:pointer;background:#fff;border:none;text-align:left;font-family:'Space Grotesk'}
-.faq-q .ic{font-family:'Anton';background:var(--yellow);border:2px solid var(--ink);border-radius:10px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;transition:transform .3s;flex-shrink:0}
-.faq-item.open .ic{transform:rotate(45deg);background:var(--red);color:#fff}
-.faq-a{max-height:0;overflow:hidden;transition:max-height .4s ease;padding:0 24px}
-.faq-item.open .faq-a{max-height:300px;padding:0 24px 22px}
-.faq-a p{font-size:.98rem}
+/* ============ FAQ ============ */
+#faq{background:#fff}
+.faq-box{max-width:800px;margin:56px auto 0}
+.faq-item{border:1px solid #E4EDF9;border-radius:14px;background:#fff;box-shadow:var(--shadow);margin-bottom:14px;overflow:hidden}
+.faq-q{width:100%;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 24px;font-family:'Inter',sans-serif;font-weight:700;font-size:1rem;color:var(--ink);background:none;border:none;cursor:pointer;text-align:left}
+.faq-q i{color:var(--blue);transition:transform .25s}
+.faq-item.open .faq-q i{transform:rotate(180deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.faq-a p{padding:0 24px 22px;color:var(--muted);font-size:.95rem}
 .faq-a a{color:var(--blue);font-weight:700}
+.faq-item.open .faq-a{max-height:260px}
 
-/* ---------- CTA FINAL ---------- */
-.cta-final{background:var(--red);color:#fff;border-top:3px solid var(--ink);text-align:center;padding:100px 0}
-.cta-final h2{font-size:clamp(2.6rem,6vw,4.6rem);margin-bottom:16px}
-.cta-final h2 span{color:var(--yellow)}
-.cta-final p{font-size:1.2rem;font-weight:600;margin-bottom:36px}
-.cta-final .btn{box-shadow:6px 6px 0 var(--ink)}
+/* ============ CTA FINAL ============ */
+.cta{background:radial-gradient(800px 400px at 50% 120%,rgba(18,115,211,.4),transparent 70%),var(--navy-900);color:#fff;text-align:center;padding:120px 0}
+.cta h2{font-size:clamp(2.4rem,5vw,3.8rem);font-weight:900;margin-bottom:16px}
+.cta h2 em{font-style:normal;color:var(--sky)}
+.cta p{color:var(--muted-light);font-size:1.15rem;max-width:560px;margin:0 auto 40px}
+.cta-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
 
-/* ---------- FOOTER ---------- */
-footer{background:var(--bluedark);color:#cfe0ff;padding:70px 0 30px;border-top:3px solid var(--ink)}
-.foot-grid{display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr;gap:40px;margin-bottom:50px}
-.foot-grid h4{font-family:'Anton';color:var(--yellow);font-size:1.1rem;margin-bottom:18px;letter-spacing:1px}
+/* ============ FOOTER ============ */
+footer{background:var(--navy-950);color:var(--muted-light);padding:70px 0 36px}
+.foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;margin-bottom:56px}
+.foot-grid h4{color:#fff;font-size:.85rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px}
 .foot-grid ul{list-style:none}
-.foot-grid li{margin-bottom:10px}
-.foot-grid a{color:#cfe0ff;text-decoration:none;font-weight:600;font-size:.92rem}
-.foot-grid a:hover{color:var(--yellow)}
-.foot-logo{display:flex;align-items:center;gap:12px;margin-bottom:16px}
-.foot-logo img{width:56px;height:56px;border-radius:50%;border:3px solid var(--yellow)}
-.foot-logo b{font-family:'Anton';font-size:1.3rem;color:#fff}
-.copy{text-align:center;border-top:2px dashed rgba(255,255,255,.25);padding-top:24px;font-size:.88rem;font-weight:600}
-.copy span{color:var(--yellow)}
+.foot-grid li{margin-bottom:11px}
+.foot-grid a{font-size:.92rem;font-weight:600;transition:color .2s}
+.foot-grid a:hover{color:var(--sky)}
+.foot-logo{display:flex;align-items:center;gap:12px;color:#fff;font-weight:800;margin-bottom:16px}
+.foot-logo img{width:48px;height:48px;border-radius:50%}
+.foot-grid p{font-size:.9rem;max-width:300px}
+.socials{display:flex;gap:12px;margin-top:20px}
+.socials a{width:42px;height:42px;border-radius:50%;background:var(--navy-800);border:1px solid rgba(124,192,255,.15);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.05rem;transition:background .2s,transform .2s}
+.socials a:hover{background:var(--blue);transform:translateY(-3px)}
+.copy{border-top:1px solid rgba(124,192,255,.12);padding-top:26px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:.85rem;font-weight:600}
+.copy b{color:var(--sky)}
 
-/* ---------- ANIM ---------- */
-.rv{opacity:0;transform:translateY(34px);transition:opacity .7s,transform .7s}
-.rv.on{opacity:1;transform:none}
-
-/* ---------- RESPONSIVE ---------- */
+/* ============ RESPONSIVE ============ */
 @media(max-width:1000px){
-  .menu-grid,.promo-grid{grid-template-columns:repeat(2,1fr)}
-  .team-grid{grid-template-columns:repeat(2,1fr)}
-  .hero-grid{grid-template-columns:1fr}
-  .rules-grid,.recruit-card{grid-template-columns:1fr}
-  .stats-grid{grid-template-columns:repeat(2,1fr)}
-  .foot-grid{grid-template-columns:1fr 1fr}
-  .nav-links{display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border-bottom:3px solid var(--ink);flex-direction:column;padding:20px;gap:16px}
+  .nav-links{display:none;position:absolute;top:72px;left:0;right:0;background:var(--navy-900);flex-direction:column;padding:24px;gap:18px;border-bottom:1px solid rgba(124,192,255,.15)}
   .nav-links.open{display:flex}
   .burger{display:block}
-  .fs2{display:none}
+  .nav-cta .btn-ghost{display:none}
+  .hero-grid,.rec-grid,.rules-grid{grid-template-columns:1fr}
+  .dpt-grid,.team-grid{grid-template-columns:repeat(2,1fr)}
+  .foot-grid{grid-template-columns:1fr 1fr}
+  .stat{border-left:none;padding:0 0 18px 0}
 }
 @media(max-width:640px){
-  .menu-grid,.promo-grid,.team-grid,.lang-grid{grid-template-columns:1fr}
-  .burst{width:96px;height:96px;top:-26px;right:-6px;font-size:.9rem}
-  .foot-grid{grid-template-columns:1fr}
+  .dpt-grid,.team-grid,.foot-grid{grid-template-columns:1fr}
+  .hero{padding-top:130px}
 }
 </style>
 </head>
 <body>
 
-<div class="topbar">🚨 RECRUTEMENT STAFF OUVERT — ON A BESOIN DE TOI ! <a href="https://melonly.xyz/forms/7450697881423450112" target="_blank" rel="noopener">Postule ici ⭐</a></div>
-
-<header id="header">
+<!-- ============ NAV ============ -->
+<header>
   <div class="wrap nav">
     <a class="logo" href="#top">
       <img src="https://cdn.discordapp.com/icons/1475659636819493089/8a80480870b623a2afc4d2d5cc14bfbf.webp?size=1024" alt="Logo Urgence 514 RP">
-      <b>URGENCE <span>514</span> RP</b>
+      Urgence <span>514</span> RP
     </a>
     <ul class="nav-links" id="navLinks">
-      <li><a href="#menu">Le Menu</a></li>
-      <li><a href="#promos">Promos</a></li>
-      <li><a href="#regles">Règles</a></li>
+      <li><a href="#departements">Départements</a></li>
+      <li><a href="#reglements">Règlements</a></li>
       <li><a href="#langage">Langage RP</a></li>
+      <li><a href="#recrutement">Recrutement</a></li>
       <li><a href="#equipe">Équipe</a></li>
       <li><a href="#faq">FAQ</a></li>
-      <li><a class="btn btn-red btn-sm" href="https://discord.gg/ENgnZ629k6" target="_blank" rel="noopener">🎮 Rejoindre</a></li>
     </ul>
-    <button class="burger" id="burger" aria-label="Menu">☰</button>
+    <div class="nav-cta">
+      <a class="btn btn-ghost btn-sm" href="#top" onclick="copyCode(this);return false;"><i class="fa-solid fa-copy"></i> Code : URGRP</a>
+      <a class="btn btn-blue btn-sm" href="https://discord.gg/ENgnZ629k6" target="_blank" rel="noopener"><i class="fa-brands fa-discord"></i> Ouvrir Discord</a>
+      <button class="burger" id="burger" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>
+    </div>
   </div>
 </header>
 
 <!-- ============ HERO ============ -->
 <section class="hero" id="top">
-  <div class="wrap hero-grid">
-    <div>
-      <div style="display:flex;gap:12px;flex-wrap:wrap">
-        <span class="sticker red">⭐ Depuis 2026</span>
-        <span class="sticker blue">⚜️ 100% Québécois</span>
-      </div>
-      <h1>URGENCE <span class="hl">514</span> <span class="rp">RP</span></h1>
-      <p class="lead">La plus grosse franchise roleplay du Québec, servie chaude sur Roblox. Police, pompiers, paramédics, civils : <b>choisis ton uniforme</b>, la ville de Montréal t'attend.</p>
-      <div class="cta-row">
-        <a class="btn btn-red" href="https://discord.gg/ENgnZ629k6" target="_blank" rel="noopener">💬 Rejoins le Discord</a>
-        <button class="btn btn-yellow" id="copyBtn" onclick="copyCode(this)">📋 CODE : URGRP</button>
-      </div>
-      <p class="hero-note">✅ Gratuit sur Roblox &nbsp;•&nbsp; ✅ Formation offerte &nbsp;•&nbsp; ✅ Staff présent &nbsp;•&nbsp; ✅ .gg/514RP</p>
-    </div>
-    <div class="hero-visual">
-      <div class="burst">CODE<br>URGRP</div>
-      <div class="frame">
-        <img src="https://cdn.discordapp.com/banners/1475659636819493089/2dc3c27d34a282832fa6624802d65c17.webp?size=1024" alt="Bannière Urgence 514 RP — police, ambulance, Montréal">
-      </div>
-      <span class="float-stk fs1">⚜️ .GG/514RP</span>
-      <span class="float-stk fs2">🚨 911</span>
-    </div>
-  </div>
-</section>
-
-<!-- ============ MARQUEE ============ -->
-<div class="marquee"><div class="marquee-track">
-  <span>URGENCE 514 RP ⚜️ SPVM ⚜️ SÛRETÉ DU QUÉBEC ⚜️ CRQ ⚜️ GRC ⚜️ SIM ⚜️ U-SANTÉ ⚜️ DEPUIS 2026 ⚜️ CODE : URGRP ⚜️&nbsp;</span>
-  <span>URGENCE 514 RP ⚜️ SPVM ⚜️ SÛRETÉ DU QUÉBEC ⚜️ CRQ ⚜️ GRC ⚜️ SIM ️ U-SANTÉ ⚜️ DEPUIS 2026 ⚜️ CODE : URGRP ⚜️&nbsp;</span>
-</div></div>
-
-<!-- ============ MENU ============ -->
-<section id="menu">
   <div class="wrap">
-    <div class="sec-head rv">
-      <span class="sticker yellow">🍟 Le Menu</span>
-      <h2>CHOISIS TA <mark>CARRIÈRE</mark></h2>
-      <p>Chaque département est un univers complet : candidature, formation, grades et histoires à écrire. À ton tour de puncher.</p>
-    </div>
-    <div class="menu-grid">
-      <div class="dpt rv"><span class="num">Nº 19-4</span><div class="emo e-blue">🚔</div><h3>SPVM</h3><p>Service de police de la Ville de Montréal. Patrouille, enquêtes, GTI : servir et protéger Montréal, c'est ta job.</p><div class="chips"><i>Cadet</i><i>Agent</i><i>Enquêteur</i><i>GTI</i></div><a class="btn btn-blue btn-sm" href="https://melonly.xyz/forms/7438335389661663232" target="_blank" rel="noopener">Postuler →</a></div>
-      <div class="dpt rv"><span class="num">Nº 11-08</span><div class="emo e-yellow">👮‍♂️</div><h3>Sûreté du Québec</h3><p>Cadet (prévention à Montréal) → formation max 30 min → Agent probatoire. Un département sérieux pour protéger ta ville.</p><div class="chips"><i>Cadet</i><i>Agent probatoire</i><i>Formation 30 min</i></div><a class="btn btn-blue btn-sm" href="https://discord.gg/ByVMrB8kpj" target="_blank" rel="noopener">Postuler →</a></div>
-      <div class="dpt rv"><span class="num">Nº 21-86</span><div class="emo e-white">🚑</div><h3>U-Santé</h3><p>Urgence Santé : paramédics de soins primaires passionnés. Aider les autres, travailler en équipe, sauver des vies.</p><div class="chips"><i>Paramédic</i><i>Soins primaires</i><i>Travail d'équipe</i></div><a class="btn btn-blue btn-sm" href="https://discord.gg/bFmcNf7Nk4" target="_blank" rel="noopener">Postuler →</a></div>
-      <div class="dpt rv"><span class="num">Nº 514-01</span><div class="emo e-red">🚒</div><h3>SIM</h3><p>Service d'incendie de Montréal. Incendies, désincarcération, urgences médicales : toujours prêts à intervenir.</p><div class="chips"><i>Pompier</i><i>Désincarcération</i><i>Secours</i></div><a class="btn btn-blue btn-sm" href="https://discord.gg/ENgnZ629k6" target="_blank" rel="noopener">Via Discord →</a></div>
-      <div class="dpt rv"><span class="num">Nº 514-02</span><div class="emo e-green">🚗</div><h3>CRQ</h3><p>Contrôle routier Québec : la sécurité des routes et autoroutes de la métropole, patrouille et interventions.</p><div class="chips"><i>Patrouille routière</i><i>Sécurité</i></div><a class="btn btn-blue btn-sm" href="https://discord.gg/ENgnZ629k6" target="_blank" rel="noopener">Via Discord →</a></div>
-      <div class="dpt rv"><span class="num">Nº 514-03</span><div class="emo e-maple">🍁</div><h3>GRC</h3><p>Gendarmerie royale du Canada : l'élite fédérale au cœur du roleplay montréalais. Maintiens l'ordre, partout.</p><div class="chips"><i>Fédéral</i><i>Élite</i></div><a class="btn btn-blue btn-sm" href="https://discord.gg/ENgnZ629k6" target="_blank" rel="noopener">Via Discord →</a></div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ STATS ============ -->
-<div class="stats"><div class="wrap stats-grid">
-  <div class="rv"><b>2026</b><span>Année de fondation</span></div>
-  <div class="rv"><b>6+</b><span>Départements</span></div>
-  <div class="rv"><b>14</b><span>Règles d'or RP</span></div>
-  <div class="rv"><b>100%</b><span>Québécois</span></div>
-</div></div>
-
-<!-- ============ PROMOS ============ -->
-<section id="promos">
-  <div class="wrap">
-    <div class="sec-head rv">
-      <span class="sticker red">🎁 Promos du moment</span>
-      <h2>LES <mark>NOTIFICATIONS</mark>, C'EST GRATIS</h2>
-      <p>Dans le salon 🔔 notifications, choisis tes rôles et ne manque jamais rien de la vie du 514.</p>
-    </div>
-    <div class="promo-grid">
-      <div class="promo rv"><div class="big">👀</div><h3>Spoiler</h3><p>Vois tout avant tout le monde : les coulisses du 514.</p></div>
-      <div class="promo rv"><div class="big">⭐</div><h3>Nouveautés</h3><p>Les nouveaux systèmes servis chauds, direct dans tes notifs.</p></div>
-      <div class="promo rv"><div class="big">🎊</div><h3>Évènements / Giveaway</h3><p>Concours, giveaways et évènements : sois toujours inscrit.</p></div>
-      <div class="promo rv"><div class="big">🔴</div><h3>Live</h3><p>Alerte dès qu'on diffuse en direct. Pas de FOMO ici.</p></div>
-    </div>
-    <div class="deal rv">
+    <div class="hero-grid">
       <div>
-        <h3>🔥 Spéciale du jour : recrutement STAFF ouvert !</h3>
-        <p>PC • 14 ans et + • 7 jours sur le serveur • moins de 10 sanctions. On a besoin de toi pour garder la ville propre.</p>
+        <span class="pill"><i class="fa-solid fa-location-dot"></i> Montréal, Québec — Depuis 2026</span>
+        <h1>Une métropole.<br>Des centaines d'histoires.<br><em>La tienne commence ici.</em></h1>
+        <p>Urgence 514 RP est un serveur roleplay Roblox immersif basé sur l'île de Montréal. Police, pompiers, paramédics, civils : <b>trouve ta place dans la ville</b>.</p>
+        <div class="hero-btns">
+          <a class="btn btn-blue btn-lg" href="https://discord.gg/ENgnZ629k6" target="_blank" rel="noopener"><i class="fa-brands fa-discord"></i> Rejoindre le Discord</a>
+          <button class="btn btn-white btn-lg" onclick="copyCode(this)"><i class="fa-solid fa-gamepad"></i> Copier le code URGRP</button>
+        </div>
       </div>
-      <a class="btn btn-red" href="https://melonly.xyz/forms/7450697881423450112" target="_blank" rel="noopener">⭐ Je postule</a>
+      <div class="hero-visual">
+        <div class="card-img">
+          <img src="https://cdn.discordapp.com/banners/1475659636819493089/2dc3c27d34a282832fa6624802d65c17.webp?size=1024" alt="Patrouille SPVM et ambulance Urgence Santé à Montréal">
+        </div>
+        <div class="hero-chip"><i class="fa-solid fa-tower-broadcast"></i> Sessions actives — staff présent</div>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><b>2026</b><span>Année de fondation</span></div>
+      <div class="stat"><b>6+</b><span>Départements whitelisted</span></div>
+      <div class="stat"><b>~200</b><span>Citoyens dans la communauté</span></div>
+      <div class="stat"><b>100%</b><span>Québécois, fier de l'être</span></div>
     </div>
   </div>
 </section>
 
-<!-- ============ RÈGLES ============ -->
-<section id="regles">
+<!-- ============ DÉPARTEMENTS ============ -->
+<section id="departements">
   <div class="wrap">
-    <div class="sec-head rv">
-      <span class="sticker yellow">🧾 Les règles de la maison</span>
-      <h2>COMMANDE <mark style="color:#fff">RESPONSABLE</mark></h2>
-      <p>Deux menus, zéro surprise : côté Discord et côté Roblox, voici ce qui garde le RP délicieux.</p>
+    <span class="sec-tag blue"><i class="fa-solid fa-briefcase"></i> Les départements</span>
+    <h2 class="sec-title">Choisis ton uniforme.</h2>
+    <p class="sec-sub">Chaque département possède son propre serveur, sa formation et sa hiérarchie. Candidate, forme-toi, et fais carrière dans la métropole.</p>
+    <div class="dpt-grid">
+
+      <div class="dpt">
+        <div class="dpt-top">
+          <img class="dpt-logo" src="https://cdn.discordapp.com/icons/1485322661855756492/3d7ce4a190e235a9acd11636317c3468.png?size=256" alt="Logo SPVM">
+          <div><h3>SPVM</h3><small>Police de Montréal</small></div>
+        </div>
+        <p>Service de police de la Ville de Montréal. Patrouille, enquêtes et unités spécialisées. Servir et protéger, ça s'apprend : formation offerte aux recrues.</p>
+        <div class="chips"><i>Cadet</i><i>Agent</i><i>Enquêteur</i><i>GTI</i></div>
+        <a class="more" href="https://melonly.xyz/forms/7438335389661663232" target="_blank" rel="noopener">Déposer ma candidature <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+
+      <div class="dpt">
+        <div class="dpt-top">
+          <img class="dpt-logo" src="https://cdn.discordapp.com/icons/1484371696369795215/3e61749d12270db33fb59adab37c3ae9.png?size=256" alt="Logo Sûreté du Québec">
+          <div><h3>Sûreté du Québec</h3><small>Police provinciale</small></div>
+        </div>
+        <p>Candidature à l'écrit, poste de cadet en prévention à Montréal, formation de 30 minutes maximum, puis agent probatoire. Un parcours sérieux et encadré.</p>
+        <div class="chips"><i>Cadet</i><i>Agent probatoire</i><i>Formation 30 min</i></div>
+        <a class="more" href="https://discord.gg/ByVMrB8kpj" target="_blank" rel="noopener">Rejoindre le serveur SQ <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+
+      <div class="dpt">
+        <div class="dpt-top">
+          <img class="dpt-logo" src="https://cdn.discordapp.com/icons/1484798810520686663/98470e616acbcbdc153dc0c9c4030c6d.png?size=256" alt="Logo Urgence Santé">
+          <div><h3>Urgence Santé</h3><small>Services paramédicaux</small></div>
+        </div>
+        <p>Paramédics de soins primaires passionnés. Si tu aimes aider les autres et travailler en équipe, c'est ta place. Interventions médicales immersives.</p>
+        <div class="chips"><i>Paramédic</i><i>Soins primaires</i></div>
+        <a class="more" href="https://discord.gg/bFmcNf7Nk4" target="_blank" rel="noopener">Rejoindre Urgence Santé <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+
+      <div class="dpt">
+        <div class="dpt-top">
+          <div class="dpt-badge red"><i class="fa-solid fa-fire-extinguisher"></i></div>
+          <div><h3>SIM</h3><small>Service d'incendie de Montréal</small></div>
+        </div>
+        <p>Incendies, désincarcération, assistance aux citoyens : chaque seconde compte. Ta sécurité, leur priorité. Toujours prêts à intervenir.</p>
+        <div class="chips"><i>Pompier</i><i>Désincarcération</i><i>Secours</i></div>
+        <a class="more" href="https://discord.gg/ENgnZ629k6" target="_blank" rel="noopener">Recrutement via Discord <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+
+      <div class="dpt">
+        <div class="dpt-top">
+          <div class="dpt-badge"><i class="fa-solid fa-road"></i></div>
+          <div><h3>CRQ</h3><small>Contrôle routier Québec</small></div>
+        </div>
+        <p>La sécurité des routes et autoroutes de la métropole. Patrouille routière, interventions et assistance aux citoyens de la ville.</p>
+        <div class="chips"><i>Patrouille routière</i><i>Sécurité</i></div>
+        <a class="more" href="https://discord.gg/ENgnZ629k6" target="_blank" rel="noopener">Recrutement via Discord <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+
+      <div class="dpt">
+        <div class="dpt-top">
+          <div class="dpt-badge navy"><i class="fa-solid fa-crown"></i></div>
+          <div><h3>GRC</h3><small>Gendarmerie royale du Canada</small></div>
+        </div>
+        <p>L'élite fédérale au cœur du roleplay montréalais. Maintiens l'ordre, enquête sur les crimes majeurs et incarne l'autorité à l'échelle du pays.</p>
+        <div class="chips"><i>Fédéral</i><i>Enquêtes majeures</i></div>
+        <a class="more" href="https://discord.gg/ENgnZ629k6" target="_blank" rel="noopener">Recrutement via Discord <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+
     </div>
+  </div>
+</section>
+
+<!-- ============ RÈGLEMENTS ============ -->
+<section id="reglements" class="dark">
+  <div class="wrap">
+    <span class="sec-tag white"><i class="fa-solid fa-scale-balanced"></i> Les règlements</span>
+    <h2 class="sec-title">Un RP encadré, une ville respectueuse.</h2>
+    <p class="sec-sub">Deux règlements simples : côté Discord et côté Roblox. Le non-respect entraîne des sanctions, pour que l'immersion reste parfaite pour tout le monde.</p>
     <div class="rules-grid">
-      <div class="receipt rv">
-        <h3> REÇU — CÔTÉ DISCORD</h3>
-        <div class="rline"><span>RESPECT (insultes, harcèlement, discrimination)</span><b>OBLIGATOIRE</b></div>
-        <div class="rline"><span>SPAM & messages inutiles</span><b>0</b></div>
-        <div class="rline"><span>Contenu inapproprié</span><b>TOLÉRANCE ZÉRO</b></div>
-        <div class="rline"><span>Pub (MP ou serveur)</span><b>= BAN</b></div>
-        <div class="rline"><span>Multi-comptes (giveaways/avantages)</span><b>INTERDIT</b></div>
-        <div class="rline"><span>Pseudo offensant / choquant</span><b>INTERDIT</b></div>
-        <div class="rline"><span>Raid / comportement suspect</span><b>= BAN</b></div>
-        <div class="rline"><span>Salons</span><b>RESPECTER LEUR FONCTION</b></div>
-        <div class="total">TOTAL : du respect, pis du fun. Merci, à bientôt !</div>
-        <div class="barcode"></div>
+
+      <div class="embed">
+        <h3><i class="fa-brands fa-discord"></i> Règlement Discord</h3>
+        <ul>
+          <li><i class="fa-solid fa-heart"></i><span><b>Respect obligatoire.</b> Pas d'insultes, de harcèlement ou de discrimination.</span></li>
+          <li><i class="fa-solid fa-ban"></i><span><b>Pas de spam</b> ni de messages inutiles ou identiques.</span></li>
+          <li><i class="fa-solid fa-shield-halved"></i><span><b>Contenu inapproprié interdit,</b> tolérance zéro.</span></li>
+          <li><i class="fa-solid fa-bullhorn"></i><span><b>Aucune publicité</b> en MP ou sur le serveur. Sanction : ban.</span></li>
+          <li><i class="fa-solid fa-user-secret"></i><span><b>Pas de multi-comptes</b> pour les giveaways ou avantages.</span></li>
+          <li><i class="fa-solid fa-user-shield"></i><span><b>Les modérateurs</b> font respecter le règlement et le respect.</span></li>
+          <li><i class="fa-solid fa-triangle-exclamation"></i><span><b>Tout comportement suspect</b> (raid) entraîne un bannissement.</span></li>
+          <li><i class="fa-solid fa-hashtag"></i><span><b>Chaque salon a sa fonction,</b> respecte-la.</span></li>
+          <li><i class="fa-solid fa-signature"></i><span><b>Pas de pseudo offensant</b> ou choquant lisible.</span></li>
+        </ul>
       </div>
-      <div class="board rv">
-        <h3>🍔 TABLEAU — CÔTÉ ROBLOX</h3>
-        <div class="bline"><b>RDM / Freekill</b><span class="dots"></span><span>pas de kill sans raison RP</span></div>
-        <div class="bline"><b>VDM</b><span class="dots"></span><span>véhicule = pas une arme, pas de tir sur véhicule</span></div>
-        <div class="bline"><b>Cuff Rush</b><span class="dots"></span><span>pas de menottes sans vrai RP avant</span></div>
-        <div class="bline"><b>NITRP</b><span class="dots"></span><span>toujours dans ton personnage</span></div>
-        <div class="bline"><b>Safe Zone</b><span class="dots"></span><span>spawns, tribunal, hôpital, postes : rien d'illégal</span></div>
-        <div class="bline"><b>GTA Driving</b><span class="dots"></span><span>conduite réaliste exigée</span></div>
-        <div class="bline"><b>Peace Timer</b><span class="dots"></span><span>aucune action illégale en temps de paix</span></div>
-        <div class="bline"><b>FRP</b><span class="dots"></span><span>rien d'impossible IRL</span></div>
-        <div class="bline"><b>Pain</b><span class="dots"></span><span>« AIE » + attendre 5 secondes</span></div>
-        <div class="bline"><b>Cop Baiting</b><span class="dots"></span><span>pas provoquer / insulter la police</span></div>
-        <div class="bline"><b>Réalisme</b><span class="dots"></span><span>police + gang/mafia = incompatible</span></div>
-        <div class="bline"><b>Sommations</b><span class="dots"></span><span>obligatoires : 1, 2, 3 fois</span></div>
-        <div class="bline"><b>Fear</b><span class="dots"></span><span>joue la peur devant une arme</span></div>
-        <div class="bline"><b>NLR</b><span class="dots"></span><span>15 min sans revenir sur la scène</span></div>
+
+      <div class="embed redline">
+        <h3><i class="fa-solid fa-gamepad"></i> Règlement Roblox</h3>
+        <ul>
+          <li><i class="fa-solid fa-skull bad"></i><span><b>RDM &amp; Freekill :</b> pas de kill sans raison valable en RP.</span></li>
+          <li><i class="fa-solid fa-car bad"></i><span><b>VDM :</b> véhicule = pas une arme. Pas de tir sur véhicule non plus.</span></li>
+          <li><i class="fa-solid fa-handcuffs bad"></i><span><b>Cuff Rush :</b> pas de menottes sans vrai RP préalable.</span></li>
+          <li><i class="fa-solid fa-masks-theater"></i><span><b>NITRP :</b> reste dans ton personnage, en tout temps.</span></li>
+          <li><i class="fa-solid fa-house-chimney"></i><span><b>Safe zones :</b> rien d'illégal aux spawns, tribunal, hôpital, postes et casernes.</span></li>
+          <li><i class="fa-solid fa-gauge-high"></i><span><b>GTA Driving :</b> la conduite irréalistement dangereuse est interdite.</span></li>
+          <li><i class="fa-solid fa-dove"></i><span><b>Peace Timer :</b> aucune action illégale pendant un temps de paix.</span></li>
+          <li><i class="fa-solid fa-person-falling-burst"></i><span><b>FRP :</b> rien d'impossible à reproduire dans la vraie vie.</span></li>
+          <li><i class="fa-solid fa-hand"></i><span><b>Pain :</b> joue la douleur. « AIE » puis attends 5 secondes avant de repartir.</span></li>
+          <li><i class="fa-solid fa-bullhorn bad"></i><span><b>Cop Baiting :</b> provoquer ou insulter la police sans raison RP est interdit.</span></li>
+          <li><i class="fa-solid fa-scale-balanced"></i><span><b>Réalisme :</b> police et gang ou mafia, jamais en même temps.</span></li>
+          <li><i class="fa-solid fa-bullhorn"></i><span><b>Sommations :</b> obligatoires. Une fois, deux fois, trois fois.</span></li>
+          <li><i class="fa-solid fa-face-flushed"></i><span><b>Fear :</b> joue la peur devant une arme ou un moyen de défense.</span></li>
+          <li><i class="fa-solid fa-clock"></i><span><b>NLR :</b> à ta mort, 15 minutes sans revenir sur la scène.</span></li>
+        </ul>
       </div>
+
     </div>
   </div>
 </section>
@@ -376,44 +388,78 @@ footer{background:var(--bluedark);color:#cfe0ff;padding:70px 0 30px;border-top:3
 <!-- ============ LANGAGE RP ============ -->
 <section id="langage">
   <div class="wrap">
-    <div class="sec-head rv">
-      <span class="sticker blue">🗣️ Parler comme un pro</span>
-      <h2>LE DICTIONNAIRE <mark>RP</mark></h2>
-      <p>En ville, on parle pas pareil. Voici comment t'exprimer en roleplay comme un vétéran du 514.</p>
-    </div>
-    <div class="lang-grid">
-      <div class="word rv"><span class="say">« Je vais faire un dodo »</span><span class="mean">Je me déconnecte / je reviens plus tard<small>« Je vais réapparaître » = je reviens après mon dodo</small></span></div>
-      <div class="word rv"><span class="say">« Mes cordes vocales »</span><span class="mean">Mon micro<small>Voice chat = cordes vocales</small></span></div>
-      <div class="word rv"><span class="say">« Radio »</span><span class="mean">Le vocal (police, EMS, civil…)<small>Discord = VPN</small></span></div>
-      <div class="word rv"><span class="say">« Muscle E / Muscle R »</span><span class="mean">Appuie sur E / fais R<small>« Fais travailler tes muscles »</small></span></div>
-      <div class="word rv"><span class="say">« J'ai un mal de tête »</span><span class="mean">Je bug / problème technique</span></div>
-      <div class="word rv"><span class="say">« Membre du gouvernement »</span><span class="mean">Staff / Modérateur<small>Mon skin = moi • Roblox = la ville</small></span></div>
-      <div class="word rv"><span class="say">« Chinois / Hamburger riz poulet »</span><span class="mean">Langage HRP (hors roleplay)<small>« Je reviens » = je vais être dans ma tête</small></span></div>
-      <div class="word rv"><span class="say">« AIE… »</span><span class="mean">Règle de la douleur : attends 5 secondes avant de repartir<small>Et joue la peur devant une arme !</small></span></div>
+    <span class="sec-tag blue"><i class="fa-solid fa-comments"></i> Le dictionnaire RP</span>
+    <h2 class="sec-title">Parle comme un citoyen du 514.</h2>
+    <p class="sec-sub">En ville, on ne parle pas comme dans la vraie vie. Voici comment t'exprimer en roleplay, directement dans le chat.</p>
+
+    <div class="chat">
+      <div class="chat-head"><i class="fa-solid fa-hashtag"></i> dictionnaire-rp</div>
+      <div class="chat-body">
+        <div class="msg">
+          <img src="https://cdn.discordapp.com/icons/1475659636819493089/8a80480870b623a2afc4d2d5cc14bfbf.webp?size=1024" alt="">
+          <div>
+            <div class="msg-head"><b>Urgence 514</b><span class="app">APP</span><time>Aujourd'hui à 9:41</time></div>
+            <p><span class="say">« Je vais faire un dodo »</span> <span class="eq">=</span> je me déconnecte ou je reviens plus tard. Mon skin, c'est moi. Roblox, c'est la ville.</p>
+          </div>
+        </div>
+        <div class="msg">
+          <img src="https://cdn.discordapp.com/icons/1475659636819493089/8a80480870b623a2afc4d2d5cc14bfbf.webp?size=1024" alt="">
+          <div>
+            <div class="msg-head"><b>Urgence 514</b><span class="app">APP</span><time>Aujourd'hui à 9:42</time></div>
+            <p><span class="say">« Mes cordes vocales »</span> <span class="eq">=</span> mon micro. Le voice chat, ce sont tes cordes vocales. Le vocal, c'est la radio (police, EMS, civil).</p>
+          </div>
+        </div>
+        <div class="msg">
+          <img src="https://cdn.discordapp.com/icons/1475659636819493089/8a80480870b623a2afc4d2d5cc14bfbf.webp?size=1024" alt="">
+          <div>
+            <div class="msg-head"><b>Urgence 514</b><span class="app">APP</span><time>Aujourd'hui à 9:44</time></div>
+            <p><span class="say">« Discord »</span> <span class="eq">=</span> un VPN. <span class="say">« Muscle E »</span> et <span class="say">« Muscle R »</span> = appuie sur E, fais R. Fais travailler tes muscles.</p>
+          </div>
+        </div>
+        <div class="msg">
+          <img src="https://cdn.discordapp.com/icons/1475659636819493089/8a80480870b623a2afc4d2d5cc14bfbf.webp?size=1024" alt="">
+          <div>
+            <div class="msg-head"><b>Urgence 514</b><span class="app">APP</span><time>Aujourd'hui à 9:45</time></div>
+            <p><span class="say">« J'ai un mal de tête »</span> <span class="eq">=</span> je bug, problème technique. <span class="say">« Membre du gouvernement »</span> = staff ou modérateur.</p>
+          </div>
+        </div>
+        <div class="msg">
+          <img src="https://cdn.discordapp.com/icons/1475659636819493089/8a80480870b623a2afc4d2d5cc14bfbf.webp?size=1024" alt="">
+          <div>
+            <div class="msg-head"><b>Urgence 514</b><span class="app">APP</span><time>Aujourd'hui à 9:47</time></div>
+            <p><span class="say">« Chinois »</span> ou <span class="say">« Hamburger riz poulet »</span> <span class="eq">=</span> le langage HRP, hors roleplay. « Je reviens » = je vais être dans ma tête.</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
 <!-- ============ RECRUTEMENT ============ -->
 <section id="recrutement">
-  <div class="wrap">
-    <div class="recruit-card rv">
-      <div>
-        <h2>🚨 ON EMBAUCHE !<br>DEVIENT MEMBRE DU STAFF</h2>
-        <ul>
-          <li>Être sur PC (ordinateur)</li>
-          <li>Avoir 14 ans et plus</li>
-          <li>Être présent sur le serveur depuis plus de 7 jours</li>
-          <li>Avoir moins de 10 sanctions disciplinaires</li>
-          <li class="warn">Demander des nouvelles de ta candidature = refus automatique</li>
-        </ul>
-        <a class="btn btn-yellow" href="https://melonly.xyz/forms/7450697881423450112" target="_blank" rel="noopener">⭐ Remplir ma candidature</a>
+  <div class="wrap rec-grid">
+    <div>
+      <span class="sec-tag white"><i class="fa-solid fa-user-shield"></i> Recrutement staff</span>
+      <h2 class="sec-title">On a besoin de toi pour garder la ville propre.</h2>
+      <ul class="rec-list">
+        <li><i class="fa-solid fa-check"></i> Être sur PC (ordinateur)</li>
+        <li><i class="fa-solid fa-check"></i> Avoir 14 ans et plus</li>
+        <li><i class="fa-solid fa-check"></i> Être présent sur le serveur depuis plus de 7 jours</li>
+        <li><i class="fa-solid fa-check"></i> Avoir moins de 10 sanctions disciplinaires</li>
+        <li class="warn"><i class="fa-solid fa-triangle-exclamation"></i> Demander des nouvelles de ta candidature = refus automatique</li>
+      </ul>
+      <a class="btn btn-white btn-lg" href="https://melonly.xyz/forms/7450697881423450112" target="_blank" rel="noopener"><i class="fa-solid fa-file-pen"></i> Remplir ma candidature</a>
+    </div>
+    <div class="rec-card">
+      <h3><i class="fa-solid fa-bell"></i> Active tes notifications</h3>
+      <p>Dans le salon de notifications du Discord, choisis les rôles qui te conviennent et ne manque plus jamais rien.</p>
+      <div class="roles">
+        <div class="role-line"><i class="fa-solid fa-eye"></i><div><b>Spoiler</b><small>Vois les coulisses avant tout le monde</small></div></div>
+        <div class="role-line"><i class="fa-solid fa-star"></i><div><b>Nouveautés</b><small>Les nouveaux systèmes en premier</small></div></div>
+        <div class="role-line"><i class="fa-solid fa-gift"></i><div><b>Évènement / Giveaway</b><small>Concours et récompenses de la communauté</small></div></div>
+        <div class="role-line"><i class="fa-solid fa-tower-broadcast"></i><div><b>Diffusion en direct</b><small>Sois alerté dès qu'un live commence</small></div></div>
       </div>
-      <div class="recruit-side">
-        <div class="anton">Merci de ton implication !</div>
-        <p>Un staff responsable et présent, des sessions actives et du roleplay de qualité : c'est ça, la recette du 514.</p>
-        <p style="margin-top:12px;font-weight:700">— La Direction ⚜️</p>
-      </div>
+      <a class="btn btn-outline btn-sm" href="https://www.tiktok.com/@urgence_514" target="_blank" rel="noopener"><i class="fa-brands fa-tiktok"></i> TikTok @urgence_514</a>
     </div>
   </div>
 </section>
@@ -421,28 +467,26 @@ footer{background:var(--bluedark);color:#cfe0ff;padding:70px 0 30px;border-top:3
 <!-- ============ ÉQUIPE ============ -->
 <section id="equipe">
   <div class="wrap">
-    <div class="sec-head rv">
-      <span class="sticker yellow">👥 La Direction</span>
-      <h2>LES <mark>CHEFS</mark> DE LA FRANCHISE</h2>
-      <p>L'équipe qui porte la vision d'Urgence 514 RP depuis 2026.</p>
-    </div>
+    <span class="sec-tag blue"><i class="fa-solid fa-users"></i> La direction</span>
+    <h2 class="sec-title">Ceux qui portent la vision.</h2>
+    <p class="sec-sub">Une équipe fondatrice investie, depuis 2026, pour faire d'Urgence 514 RP la référence du roleplay québécois.</p>
     <div class="team-grid">
-      <div class="member rv">
+      <div class="member">
         <img src="https://cdn.discordapp.com/avatars/1223417508573479054/1c57fc2ec3eb3649a47df048a9784358.webp?size=1024" alt="Fondateur">
         <h3>𝐌𝟒𝐗𝐋𝐄𝐂𝐇𝐎𝐂𝐎𝐋𝐀𝐓.𝐐𝐂</h3>
-        <span class="role fond">Fondateur</span>
+        <span class="tag fond">Fondateur</span><br>
         <small>@maxlechocolat.qc</small>
       </div>
-      <div class="member rv">
-        <img src="https://cdn.discordapp.com/avatars/1383156670120595506/19be53cc6be3a1869ca4e53927c1f7af.webp?size=1024" alt="Fondateur Adjoint">
+      <div class="member">
+        <img src="https://cdn.discordapp.com/avatars/1383156670120595506/19be53cc6be3a1869ca4e53927c1f7af.webp?size=1024" alt="Fondateur adjoint">
         <h3>L. K TV</h3>
-        <span class="role">Fondateur Adjoint</span>
+        <span class="tag adj">Fondateur Adjoint</span><br>
         <small>@l.ktv</small>
       </div>
-      <div class="member rv">
-        <img src="https://cdn.discordapp.com/avatars/1281784488854159421/608fbe0e316e417b5e83539ef8555255.webp?size=1024" alt="Développeur Web">
+      <div class="member">
+        <img src="https://cdn.discordapp.com/avatars/1281784488854159421/608fbe0e316e417b5e83539ef8555255.webp?size=1024" alt="Développeur web">
         <h3>Jacobin Babouain</h3>
-        <span class="role dev">Développeur Web</span>
+        <span class="tag dev">Développeur Web</span><br>
         <small>@jacobin904</small>
       </div>
     </div>
@@ -450,31 +494,30 @@ footer{background:var(--bluedark);color:#cfe0ff;padding:70px 0 30px;border-top:3
 </section>
 
 <!-- ============ FAQ ============ -->
-<section id="faq" style="background:#fff;border-top:3px solid var(--ink)">
+<section id="faq">
   <div class="wrap">
-    <div class="sec-head rv" style="text-align:center">
-      <span class="sticker red">❓ FAQ</span>
-      <h2>QUESTIONS <mark>FRÉQUENTES</mark></h2>
+    <div style="text-align:center">
+      <span class="sec-tag blue"><i class="fa-solid fa-circle-question"></i> FAQ</span>
+      <h2 class="sec-title">Questions fréquentes</h2>
     </div>
     <div class="faq-box">
-      <div class="faq-item rv"><button class="faq-q">Comment je rejoins le serveur ? <span class="ic">+</span></button><div class="faq-a"><p>Rejoins le <a href="https://discord.gg/ENgnZ629k6" target="_blank" rel="noopener">Discord</a>, lis les règlements, puis entre le code <b>URGRP</b> dans Roblox (.gg/514RP). Bienvenue en ville !</p></div></div>
-      <div class="faq-item rv"><button class="faq-q">Faut-il de l'expérience pour jouer ou rejoindre un département ? <span class="ic">+</span></button><div class="faq-a"><p>Non ! Chaque département offre une formation : le SPVM forme ses recrues, la SQ t'amène de Cadet à Agent probatoire en max 30 min de formation, et U‑Santé t'accompagne aussi.</p></div></div>
-      <div class="faq-item rv"><button class="faq-q">Comment devenir Staff ? <span class="ic">+</span></button><div class="faq-a"><p>PC obligatoire, 14 ans et +, 7 jours de présence sur le serveur et moins de 10 sanctions. Remplis le <a href="https://melonly.xyz/forms/7450697881423450112" target="_blank" rel="noopener">formulaire</a> — et ne demande pas de nouvelles, sinon refus automatique.</p></div></div>
-      <div class="faq-item rv"><button class="faq-q">C'est quoi les règles d'or en jeu ? <span class="ic">+</span></button><div class="faq-a"><p>Toujours en RP (NITRP), joue la peur et la douleur (« AIE » + 5 s), sommations 1‑2‑3, pas de RDM/VDM, respecte les safe zones, et NLR de 15 minutes si tu meurs.</p></div></div>
-      <div class="faq-item rv"><button class="faq-q">Je peux être policier ET dans un gang ? <span class="ic">+</span></button><div class="faq-a"><p>Non. Règle de réalisme : interdiction d'être dans la police et dans une mafia ou un gang en même temps.</p></div></div>
+      <div class="faq-item"><button class="faq-q">Comment rejoindre le serveur ? <i class="fa-solid fa-chevron-down"></i></button><div class="faq-a"><p>Rejoins le <a href="https://discord.gg/ENgnZ629k6" target="_blank" rel="noopener">Discord</a>, lis les règlements, puis entre le code <b>URGRP</b> dans Roblox. Bienvenue à Montréal.</p></div></div>
+      <div class="faq-item"><button class="faq-q">Faut-il de l'expérience pour rejoindre un département ? <i class="fa-solid fa-chevron-down"></i></button><div class="faq-a"><p>Non. Chaque département forme ses recrues : le SPVM offre une formation complète, la SQ t'amène de cadet à agent probatoire avec une formation de 30 minutes maximum, et Urgence Santé t'accompagne dès ton arrivée.</p></div></div>
+      <div class="faq-item"><button class="faq-q">Comment devenir staff ? <i class="fa-solid fa-chevron-down"></i></button><div class="faq-a"><p>PC obligatoire, 14 ans et plus, 7 jours de présence sur le serveur et moins de 10 sanctions. Remplis le <a href="https://melonly.xyz/forms/7450697881423450112" target="_blank" rel="noopener">formulaire de candidature</a>. Ne demande pas de nouvelles : cela entraîne un refus automatique.</p></div></div>
+      <div class="faq-item"><button class="faq-q">C'est quoi les règles d'or en jeu ? <i class="fa-solid fa-chevron-down"></i></button><div class="faq-a"><p>Toujours en RP (NITRP), joue la peur et la douleur (« AIE » + 5 secondes), sommations obligatoires (1, 2, 3), pas de RDM ni VDM, respect des safe zones, et NLR de 15 minutes si ton personnage meurt.</p></div></div>
+      <div class="faq-item"><button class="faq-q">Je peux être policier et membre d'un gang en même temps ? <i class="fa-solid fa-chevron-down"></i></button><div class="faq-a"><p>Non. La règle de réalisme interdit d'être dans la police et dans une mafia ou un gang simultanément.</p></div></div>
     </div>
   </div>
 </section>
 
 <!-- ============ CTA FINAL ============ -->
-<section class="cta-final">
-  <div class="wrap rv">
-    <h2>PRÊT À <span>PUNCHER</span> ?</h2>
-    <p>Rejoins des milliers de citoyens dans le roleplay le plus immersif du Québec.</p>
-    <div class="cta-row" style="justify-content:center">
-      <a class="btn btn-yellow" href="https://discord.gg/ENgnZ629k6" target="_blank" rel="noopener">💬 Rejoindre le Discord</a>
-      <button class="btn" style="background:#fff" onclick="copyCode(this)">📋 Copier le code URGRP</button>
-      <a class="btn" style="background:var(--blue);color:#fff" href="https://www.tiktok.com/@urgence_514" target="_blank" rel="noopener">🎵 TikTok @urgence_514</a>
+<section class="cta">
+  <div class="wrap">
+    <h2>Prêt à <em>puncher</em> ton premier quart ?</h2>
+    <p>Rejoins la communauté roleplay la plus immersive du Québec. La ville t'attend.</p>
+    <div class="cta-btns">
+      <a class="btn btn-blue btn-lg" href="https://discord.gg/ENgnZ629k6" target="_blank" rel="noopener"><i class="fa-brands fa-discord"></i> Rejoindre le Discord</a>
+      <button class="btn btn-white btn-lg" onclick="copyCode(this)"><i class="fa-solid fa-copy"></i> Copier le code URGRP</button>
     </div>
   </div>
 </section>
@@ -484,60 +527,58 @@ footer{background:var(--bluedark);color:#cfe0ff;padding:70px 0 30px;border-top:3
   <div class="wrap">
     <div class="foot-grid">
       <div>
-        <div class="foot-logo"><img src="https://cdn.discordapp.com/icons/1475659636819493089/8a80480870b623a2afc4d2d5cc14bfbf.webp?size=1024" alt="Logo"><b>URGENCE 514 RP</b></div>
-        <p style="font-size:.92rem">Serveur roleplay Roblox 100% québécois inspiré de Montréal. Staff responsable et présent, sessions actives, roleplay de qualité. Depuis 2026. ⚜️</p>
+        <div class="foot-logo"><img src="https://cdn.discordapp.com/icons/1475659636819493089/8a80480870b623a2afc4d2d5cc14bfbf.webp?size=1024" alt=""> Urgence 514 RP</div>
+        <p>Serveur roleplay Roblox immersif basé sur l'île de Montréal. Staff responsable et présent, sessions actives, roleplay de qualité. Depuis 2026.</p>
+        <div class="socials">
+          <a href="https://discord.gg/ENgnZ629k6" target="_blank" rel="noopener" aria-label="Discord"><i class="fa-brands fa-discord"></i></a>
+          <a href="https://www.tiktok.com/@urgence_514" target="_blank" rel="noopener" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+        </div>
       </div>
       <div>
         <h4>Navigation</h4>
         <ul>
-          <li><a href="#menu">Le Menu (départements)</a></li>
-          <li><a href="#promos">Promos & notifications</a></li>
-          <li><a href="#regles">Règles de la maison</a></li>
-          <li><a href="#langage">Dictionnaire RP</a></li>
-          <li><a href="#equipe">L'Équipe</a></li>
+          <li><a href="#departements">Départements</a></li>
+          <li><a href="#reglements">Règlements</a></li>
+          <li><a href="#langage">Langage RP</a></li>
+          <li><a href="#recrutement">Recrutement</a></li>
+          <li><a href="#equipe">Équipe</a></li>
         </ul>
       </div>
       <div>
         <h4>Départements</h4>
         <ul>
-          <li><a href="https://melonly.xyz/forms/7438335389661663232" target="_blank" rel="noopener">🚔 SPVM — Postuler</a></li>
-          <li><a href="https://discord.gg/ByVMrB8kpj" target="_blank" rel="noopener">👮‍♂️ Sûreté du Québec</a></li>
-          <li><a href="https://discord.gg/bFmcNf7Nk4" target="_blank" rel="noopener">🚑 Urgence Santé</a></li>
-          <li><a href="https://discord.gg/ENgnZ629k6" target="_blank" rel="noopener">🚒 SIM / 🚗 CRQ / 🍁 GRC</a></li>
+          <li><a href="https://melonly.xyz/forms/7438335389661663232" target="_blank" rel="noopener">SPVM — Postuler</a></li>
+          <li><a href="https://discord.gg/ByVMrB8kpj" target="_blank" rel="noopener">Sûreté du Québec</a></li>
+          <li><a href="https://discord.gg/bFmcNf7Nk4" target="_blank" rel="noopener">Urgence Santé</a></li>
+          <li><a href="https://discord.gg/ENgnZ629k6" target="_blank" rel="noopener">SIM, CRQ, GRC</a></li>
         </ul>
       </div>
       <div>
         <h4>Communauté</h4>
         <ul>
-          <li><a href="https://discord.gg/ENgnZ629k6" target="_blank" rel="noopener">💬 Discord (.gg/514RP)</a></li>
-          <li><a href="https://www.tiktok.com/@urgence_514" target="_blank" rel="noopener">🎵 TikTok @urgence_514</a></li>
-          <li><a href="https://melonly.xyz/forms/7450697881423450112" target="_blank" rel="noopener">⭐ Candidature Staff</a></li>
+          <li><a href="https://discord.gg/ENgnZ629k6" target="_blank" rel="noopener">Discord (.gg/514RP)</a></li>
+          <li><a href="https://www.tiktok.com/@urgence_514" target="_blank" rel="noopener">TikTok @urgence_514</a></li>
+          <li><a href="https://melonly.xyz/forms/7450697881423450112" target="_blank" rel="noopener">Candidature staff</a></li>
         </ul>
       </div>
     </div>
-    <div class="copy">© 2026 Urgence 514 RP — Depuis 2026 ⚜️ | Site conçu par <span>Jacobin Babouain</span>, développeur web | Code Roblox : <span>URGRP</span></div>
+    <div class="copy">
+      <span>© 2026 Urgence 514 RP — Depuis 2026. Tous droits réservés.</span>
+      <span>Site conçu par <b>Jacobin Babouain</b> — Code Roblox : <b>URGRP</b></span>
+    </div>
   </div>
 </footer>
 
 <script>
-// Copier le code Roblox
 function copyCode(btn){
   const old = btn.innerHTML;
-  const done = () => { btn.innerHTML = '✅ COPIÉ !'; setTimeout(()=>btn.innerHTML = old, 1800); };
+  const done = () => { btn.innerHTML = '<i class="fa-solid fa-check"></i> Code copié!'; setTimeout(()=>btn.innerHTML = old, 1800); };
   if(navigator.clipboard){ navigator.clipboard.writeText('URGRP').then(done).catch(()=>prompt('Copie le code :','URGRP')); }
   else { prompt('Copie le code :','URGRP'); }
 }
-// Header ombre
-const header = document.getElementById('header');
-window.addEventListener('scroll', ()=> header.classList.toggle('scrolled', window.scrollY > 40), {passive:true});
-// Burger
 const burger = document.getElementById('burger'), navLinks = document.getElementById('navLinks');
 burger.addEventListener('click', ()=> navLinks.classList.toggle('open'));
 navLinks.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>navLinks.classList.remove('open')));
-// Reveal au scroll
-const obs = new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('on'); obs.unobserve(e.target);} }),{threshold:.12});
-document.querySelectorAll('.rv').forEach(el=>obs.observe(el));
-// FAQ accordéon
 document.querySelectorAll('.faq-item').forEach(item=>{
   item.querySelector('.faq-q').addEventListener('click', ()=>{
     const open = item.classList.contains('open');
