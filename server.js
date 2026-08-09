@@ -15,8 +15,9 @@ const GUILD_ID = '1475659636819493089';
 const REQUIRED_ROLE_ID = '1475659637289127937';
 const WEBHOOK_URL = process.env.WEBHOOK_URL;
 const SECRET = process.env.SESSION_SECRET || 'dev_secret';
-const JSONBIN_BIN_ID = process.env.JSONBIN_BIN_ID || '';
-const JSONBIN_API_KEY = process.env.JSONBIN_API_KEY || '';
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN || '';
+const GITHUB_REPO = process.env.GITHUB_REPO || 'jacobin904/Urgence-514-RP';
+const GITHUB_BRANCH = process.env.GITHUB_BRANCH || 'main';
 const SITE = 'https://jacobin904.github.io/Urgence-514-RP';
 
 // CORS (autorise seulement ton site GitHub Pages)
@@ -28,7 +29,54 @@ app.use((req, res, next) => {
   next();
 });
 
-// ===== TOKENS SIGNÉS (pas de cookies, compatible GitHub Pages) =====
+// ===== STOCKAGE GITHUB (même repo, branche backend) =====
+const DATA_FILE = path.join(__dirname, 'applications.json');
+
+async function githubRead(){
+  const r = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/applications.json?ref=${GITHUB_BRANCH}`, {
+    headers: {Authorization: `token ${GITHUB_TOKEN}`, 'User-Agent': 'urgence-514-backend'}
+  });
+  if (r.status === 404) return {list: [], sha: null};
+  const d = await r.json();
+  return {
+    list: JSON.parse(Buffer.from(d.content, 'base64').toString('utf8') || '[]'),
+    sha: d.sha
+  };
+}
+
+async function loadApplications(){
+  if (GITHUB_TOKEN){
+    const {list} = await githubRead();
+    return list;
+  }
+  try{ return JSON.parse(await fs.readFile(DATA_FILE, 'utf8')); }catch{ return []; }
+}
+
+async function saveApplications(list){
+  if (GITHUB_TOKEN){
+    const {sha} = await githubRead();
+    const body = {
+      message: 'update applications',
+      content: Buffer.from(JSON.stringify(list, null, 2)).toString('base64'),
+      branch: GITHUB_BRANCH
+    };
+    if (sha) body.sha = sha;
+    const r = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/applications.json`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `token ${GITHUB_TOKEN}`,
+        'User-Agent': 'urgence-514-backend',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+    if (!r.ok) throw new Error('GitHub save failed: ' + r.status);
+    return;
+  }
+  await fs.writeFile(DATA_FILE, JSON.stringify(list, null, 2));
+}
+
+// ===== TOKENS SIGNÉS =====
 function signToken(payload){
   const data = Buffer.from(JSON.stringify(payload)).toString('base64url');
   const sig = crypto.createHmac('sha256', SECRET).update(data).digest('base64url');
@@ -48,30 +96,6 @@ function getUserFromReq(req){
   const h = req.headers.authorization || '';
   if (!h.startsWith('Bearer ')) return null;
   return verifyToken(h.slice(7));
-}
-
-// ===== STOCKAGE (jsonbin.io en ligne, ou fichier en local) =====
-const DATA_FILE = path.join(__dirname, 'applications.json');
-async function loadApplications(){
-  if (JSONBIN_BIN_ID && JSONBIN_API_KEY){
-    const r = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
-      headers: {'X-Master-Key': JSONBIN_API_KEY}
-    });
-    const d = await r.json();
-    return d.record || [];
-  }
-  try{ return JSON.parse(await fs.readFile(DATA_FILE, 'utf8')); }catch{ return []; }
-}
-async function saveApplications(apps){
-  if (JSONBIN_BIN_ID && JSONBIN_API_KEY){
-    await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
-      method: 'PUT',
-      headers: {'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_API_KEY},
-      body: JSON.stringify(apps)
-    });
-    return;
-  }
-  await fs.writeFile(DATA_FILE, JSON.stringify(apps, null, 2));
 }
 
 // ===== DISCORD =====
@@ -96,7 +120,7 @@ app.get('/auth/discord', (req, res) => {
 });
 
 app.get('/auth/discord/callback', async (req, res) => {
-  const { code, state } = req.query;
+  const {code, state} = req.query;
   if (!code) return res.redirect(SITE);
   try{
     const tokenRes = await fetch('https://discord.com/api/oauth2/token', {
