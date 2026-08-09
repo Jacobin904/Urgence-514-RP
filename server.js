@@ -1,77 +1,103 @@
 const express = require('express');
-const session = require('express-session');
 const fetch = require('node-fetch');
+const crypto = require('crypto');
 const fs = require('fs').promises;
 const path = require('path');
 
 const app = express();
+app.use(express.json());
 
-// ========== CONFIGURATION ==========
+// ===== CONFIG =====
 const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID;
 const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
 const DISCORD_REDIRECT_URI = process.env.DISCORD_REDIRECT_URI;
 const GUILD_ID = '1475659636819493089';
 const REQUIRED_ROLE_ID = '1475659637289127937';
 const WEBHOOK_URL = process.env.WEBHOOK_URL;
-const SESSION_SECRET = process.env.SESSION_SECRET || 'change_this_secret_key';
+const SECRET = process.env.SESSION_SECRET || 'dev_secret';
+const JSONBIN_BIN_ID = process.env.JSONBIN_BIN_ID || '';
+const JSONBIN_API_KEY = process.env.JSONBIN_API_KEY || '';
+const SITE = 'https://jacobin904.github.io/Urgence-514-RP';
 
-app.use(express.json());
-app.use(express.urlencoded({extended: true}));
-app.use(session({
-  secret: SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false,
-  cookie: { 
-    secure: process.env.NODE_ENV === 'production',
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-    sameSite: 'lax'
-  }
-}));
-
-// CORS pour GitHub Pages
+// CORS (autorise seulement ton site GitHub Pages)
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', 'https://jacobin904.github.io');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   if (req.method === 'OPTIONS') return res.sendStatus(200);
   next();
 });
 
-const DATA_FILE = path.join(__dirname, 'applications.json');
-
-async function loadApplications(){
+// ===== TOKENS SIGNÉS (pas de cookies, compatible GitHub Pages) =====
+function signToken(payload){
+  const data = Buffer.from(JSON.stringify(payload)).toString('base64url');
+  const sig = crypto.createHmac('sha256', SECRET).update(data).digest('base64url');
+  return data + '.' + sig;
+}
+function verifyToken(token){
   try{
-    const data = await fs.readFile(DATA_FILE, 'utf8');
-    return JSON.parse(data);
-  }catch{
-    return [];
-  }
+    const [data, sig] = token.split('.');
+    const expected = crypto.createHmac('sha256', SECRET).update(data).digest('base64url');
+    if (sig !== expected) return null;
+    const payload = JSON.parse(Buffer.from(data, 'base64url').toString());
+    if (payload.exp < Date.now()) return null;
+    return payload;
+  }catch(e){ return null; }
+}
+function getUserFromReq(req){
+  const h = req.headers.authorization || '';
+  if (!h.startsWith('Bearer ')) return null;
+  return verifyToken(h.slice(7));
 }
 
+// ===== STOCKAGE (jsonbin.io en ligne, ou fichier en local) =====
+const DATA_FILE = path.join(__dirname, 'applications.json');
+async function loadApplications(){
+  if (JSONBIN_BIN_ID && JSONBIN_API_KEY){
+    const r = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+      headers: {'X-Master-Key': JSONBIN_API_KEY}
+    });
+    const d = await r.json();
+    return d.record || [];
+  }
+  try{ return JSON.parse(await fs.readFile(DATA_FILE, 'utf8')); }catch{ return []; }
+}
 async function saveApplications(apps){
+  if (JSONBIN_BIN_ID && JSONBIN_API_KEY){
+    await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_API_KEY},
+      body: JSON.stringify(apps)
+    });
+    return;
+  }
   await fs.writeFile(DATA_FILE, JSON.stringify(apps, null, 2));
 }
 
-// ========== OAUTH2 DISCORD ==========
+// ===== DISCORD =====
+async function getMember(accessToken){
+  const r = await fetch(`https://discord.com/api/users/@me/guilds/${GUILD_ID}/member`, {
+    headers: {Authorization: `Bearer ${accessToken}`}
+  });
+  if (!r.ok) return null;
+  return r.json();
+}
+
 app.get('/auth/discord', (req, res) => {
-  const redirect = req.query.redirect === 'admin' ? 'admin' : 'recrutement';
-  req.session.redirect = redirect;
-  
+  const state = req.query.redirect === 'admin' ? 'admin' : 'recrutement';
   const params = new URLSearchParams({
     client_id: DISCORD_CLIENT_ID,
     redirect_uri: DISCORD_REDIRECT_URI,
     response_type: 'code',
-    scope: 'identify guilds guilds.members.read'
+    scope: 'identify guilds.members.read',
+    state
   });
-  
   res.redirect(`https://discord.com/api/oauth2/authorize?${params}`);
 });
 
 app.get('/auth/discord/callback', async (req, res) => {
-  const code = req.query.code;
-  if(!code) return res.redirect('https://jacobin904.github.io/Urgence-514-RP/');
-
+  const { code, state } = req.query;
+  if (!code) return res.redirect(SITE);
   try{
     const tokenRes = await fetch('https://discord.com/api/oauth2/token', {
       method: 'POST',
@@ -80,172 +106,125 @@ app.get('/auth/discord/callback', async (req, res) => {
         client_id: DISCORD_CLIENT_ID,
         client_secret: DISCORD_CLIENT_SECRET,
         grant_type: 'authorization_code',
-        code: code,
+        code,
         redirect_uri: DISCORD_REDIRECT_URI
       })
     });
-    
-    const tokenData = await tokenRes.json();
-    
-    if(!tokenData.access_token){
-      return res.redirect('https://jacobin904.github.io/Urgence-514-RP/?error=oauth_failed');
-    }
+    const tok = await tokenRes.json();
+    if (!tok.access_token) return res.redirect(SITE);
 
     const userRes = await fetch('https://discord.com/api/users/@me', {
-      headers: {Authorization: `Bearer ${tokenData.access_token}`}
+      headers: {Authorization: `Bearer ${tok.access_token}`}
     });
     const user = await userRes.json();
 
-    const guildRes = await fetch(`https://discord.com/api/users/@me/guilds/${GUILD_ID}/member`, {
-      headers: {Authorization: `Bearer ${tokenData.access_token}`}
-    });
+    const member = await getMember(tok.access_token);
+    const hasRole = !!(member && member.roles && member.roles.includes(REQUIRED_ROLE_ID));
 
-    let hasRole = false;
-    if(guildRes.ok){
-      const member = await guildRes.json();
-      hasRole = member.roles && member.roles.includes(REQUIRED_ROLE_ID);
-    }
-
-    req.session.user = {
+    const token = signToken({
       id: user.id,
       username: user.username,
-      discriminator: user.discriminator || '0',
-      avatar: user.avatar,
-      hasRole: hasRole
-    };
+      avatar: user.avatar || null,
+      hasRole,
+      accessToken: tok.access_token,
+      exp: Date.now() + 7 * 24 * 60 * 60 * 1000
+    });
 
-    if(req.session.redirect === 'admin'){
-      if(!hasRole){
-        return res.send(`
-          <html>
-            <head><meta charset="UTF-8"><title>Accès refusé</title>
-            <style>body{font-family:sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#050D1F;color:#fff}
-            .box{text-align:center;padding:40px;background:#0A1B3D;border-radius:12px;max-width:500px}
-            a{color:#0B4EB0;background:#E8F2FF;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:20px}</style></head>
-            <body><div class="box">
-              <h1>Accès refusé</h1>
-              <p>Tu n'as pas le rôle requis pour accéder au panel admin.</p>
-              <a href="https://jacobin904.github.io/Urgence-514-RP/">Retour au site</a>
-            </div></body>
-          </html>
-        `);
+    if (state === 'admin'){
+      if (!hasRole){
+        return res.send('<html><body style="font-family:sans-serif;background:#050D1F;color:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh"><div style="text-align:center;background:#0A1B3D;padding:40px;border-radius:12px"><h1>Accès refusé</h1><p>Tu n\'as pas le rôle requis.</p><a style="color:#7CC0FF" href="' + SITE + '">Retour au site</a></div></body></html>');
       }
-      res.redirect('https://jacobin904.github.io/Urgence-514-RP/Admin/');
-    }else{
-      const redirectData = encodeURIComponent(JSON.stringify({
-        id: user.id,
-        username: user.username,
-        discriminator: user.discriminator || '0'
-      }));
-      res.redirect(`https://jacobin904.github.io/Urgence-514-RP/Recrutement/?discord=${redirectData}`);
+      return res.redirect(`${SITE}/Admin/?token=${token}`);
     }
+    return res.redirect(`${SITE}/Recrutement/?token=${token}`);
   }catch(e){
-    console.error('OAuth callback error:', e);
-    res.redirect('https://jacobin904.github.io/Urgence-514-RP/?error=oauth_error');
+    console.error(e);
+    return res.redirect(SITE);
   }
 });
 
-app.get('/auth/logout', (req, res) => {
-  req.session.destroy();
-  res.redirect('https://jacobin904.github.io/Urgence-514-RP/');
-});
-
-// ========== API ==========
-app.get('/api/auth/check', (req, res) => {
-  if(req.session.user && req.session.user.hasRole){
-    res.json({authorized: true, user: req.session.user});
-  }else{
-    res.json({authorized: false});
-  }
+// ===== API =====
+app.get('/api/auth/me', async (req, res) => {
+  const user = getUserFromReq(req);
+  if (!user) return res.status(401).json({authorized: false});
+  const member = await getMember(user.accessToken);
+  const hasRole = !!(member && member.roles && member.roles.includes(REQUIRED_ROLE_ID));
+  res.json({authorized: hasRole, user: {id: user.id, username: user.username, avatar: user.avatar, hasRole}});
 });
 
 app.post('/api/applications', async (req, res) => {
-  try{
-    const apps = await loadApplications();
-    const newApp = {
-      ...req.body,
-      status: 'pending',
-      avatarHash: req.session.user?.avatar || null,
-      submittedAt: new Date().toISOString()
-    };
-    apps.push(newApp);
-    await saveApplications(apps);
-    res.json({success: true, message: 'Candidature soumise'});
-  }catch(e){
-    console.error('Submit error:', e);
-    res.status(500).json({error: 'Erreur'});
-  }
-});
-
-app.get('/api/applications', async (req, res) => {
-  if(!req.session.user || !req.session.user.hasRole){
-    return res.status(403).json({error: 'Non autorisé'});
-  }
+  const user = getUserFromReq(req);
+  if (!user) return res.status(401).json({error: 'Connexion Discord requise'});
   const apps = await loadApplications();
-  res.json(apps);
+  apps.push({
+    discordId: user.id,
+    discordUsername: user.username,
+    avatarHash: user.avatar,
+    age: req.body.age,
+    timezone: req.body.timezone,
+    availability: req.body.availability,
+    motivation: req.body.motivation,
+    experience: req.body.experience || '',
+    status: 'pending',
+    submittedAt: new Date().toISOString()
+  });
+  await saveApplications(apps);
+  res.json({success: true});
 });
 
-app.post('/api/applications/:discordId/:action', async (req, res) => {
-  if(!req.session.user || !req.session.user.hasRole){
-    return res.status(403).json({error: 'Non autorisé'});
+async function requireAdmin(req, res, next){
+  const user = getUserFromReq(req);
+  if (!user) return res.status(401).json({error: 'Non autorisé'});
+  const member = await getMember(user.accessToken);
+  if (!member || !member.roles || !member.roles.includes(REQUIRED_ROLE_ID)){
+    return res.status(403).json({error: 'Rôle requis manquant'});
   }
+  req.user = user;
+  next();
+}
 
+app.get('/api/applications', requireAdmin, async (req, res) => {
+  res.json(await loadApplications());
+});
+
+app.post('/api/applications/:discordId/:action', requireAdmin, async (req, res) => {
   const {discordId, action} = req.params;
-  
-  if(!['approve', 'reject'].includes(action)){
-    return res.status(400).json({error: 'Action invalide'});
-  }
+  if (!['approve','reject'].includes(action)) return res.status(400).json({error: 'Action invalide'});
+  const apps = await loadApplications();
+  const app = apps.find(a => a.discordId === discordId && a.status === 'pending');
+  if (!app) return res.status(404).json({error: 'Candidature non trouvée'});
 
-  try{
-    const apps = await loadApplications();
-    const appIndex = apps.findIndex(a => a.discordId === discordId && a.status === 'pending');
-    
-    if(appIndex === -1){
-      return res.status(404).json({error: 'Candidature non trouvée'});
-    }
+  app.status = action === 'approve' ? 'approved' : 'rejected';
+  app.reviewedAt = new Date().toISOString();
+  app.reviewedBy = req.user.username;
+  await saveApplications(apps);
 
-    apps[appIndex].status = action === 'approve' ? 'approved' : 'rejected';
-    apps[appIndex].reviewedAt = new Date().toISOString();
-    apps[appIndex].reviewedBy = req.session.user.username;
-    await saveApplications(apps);
+  const embed = {
+    title: action === 'approve' ? '✅ Candidature approuvée' : '❌ Candidature refusée',
+    color: action === 'approve' ? 3066993 : 15158332,
+    fields: [
+      {name: 'Candidat', value: `<@${app.discordId}> (${app.discordUsername})`, inline: true},
+      {name: 'Âge', value: `${app.age} ans`, inline: true},
+      {name: 'Fuseau horaire', value: app.timezone, inline: true},
+      {name: 'Disponibilités', value: app.availability || 'Non spécifié'},
+      {name: 'Motivations', value: (app.motivation || '').substring(0, 1024)}
+    ],
+    footer: {text: `Traité par ${req.user.username}`},
+    timestamp: new Date().toISOString()
+  };
+  if (app.experience) embed.fields.push({name: 'Expérience', value: app.experience.substring(0, 1024)});
 
-    const app = apps[appIndex];
-    const embed = {
-      title: action === 'approve' ? '✅ Candidature Approuvée' : '❌ Candidature Refusée',
-      color: action === 'approve' ? 3066993 : 15158332,
-      fields: [
-        {name: 'Candidat', value: `<@${app.discordId}> (${app.discordUsername})`, inline: true},
-        {name: 'Âge', value: app.age + ' ans', inline: true},
-        {name: 'Fuseau horaire', value: app.timezone, inline: true},
-        {name: 'Disponibilités', value: app.availability || 'Non spécifié'},
-        {name: 'Motivations', value: (app.motivation || 'Non spécifié').substring(0, 1024)},
-      ],
-      footer: {text: `Traité par ${req.session.user.username}`},
-      timestamp: new Date().toISOString()
-    };
-
-    if(app.experience){
-      embed.fields.push({name: 'Expérience', value: app.experience.substring(0, 1024)});
-    }
-
+  if (WEBHOOK_URL){
     await fetch(WEBHOOK_URL, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({embeds: [embed]})
     });
-
-    res.json({success: true, message: `Candidature ${action === 'approve' ? 'approuvée' : 'refusée'}`});
-  }catch(e){
-    console.error('Review error:', e);
-    res.status(500).json({error: 'Erreur'});
   }
+  res.json({success: true});
 });
 
-app.get('/', (req, res) => {
-  res.send('API Urgence 514 RP - Backend actif');
-});
+app.get('/', (req, res) => res.send('API Urgence 514 RP active'));
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`✅ Serveur démarré sur le port ${PORT}`);
-});
+app.listen(PORT, () => console.log('Serveur démarré sur le port ' + PORT));
