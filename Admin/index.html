@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Admin — Urgence 514 RP</title>
+<link rel="icon" href="https://cdn.discordapp.com/icons/1475659636819493089/8a80480870b623a2afc4d2d5cc14bfbf.webp?size=1024">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+:root{
+  --navy-950:#050D1F; --navy-900:#060F24; --navy-800:#0A1B3D;
+  --blue:#0B4EB0; --blue-dark:#083A85; --blue-light:#E8F2FF;
+  --ink:#0B1B33; --text:#2D3748; --muted:#5A6B8C; --border:#E4EDF9;
+  --white:#FFFFFF; --gray-50:#F8FAFC;
+  --radius:12px; --shadow:0 4px 12px rgba(6,15,36,.06);
+  --danger:#D32F2F; --success:#059669; --warning:#F59E0B;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:var(--gray-50);color:var(--text);line-height:1.65;-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%}
+a{text-decoration:none;color:var(--blue)}
+button{font-family:'Inter',sans-serif}
+.wrap{max-width:1200px;margin:0 auto;padding:0 24px}
+h1,h2,h3{letter-spacing:-.02em;color:var(--ink)}
+
+header{background:var(--navy-800);color:#fff;padding:20px 0;border-bottom:3px solid var(--blue)}
+.nav{display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:12px;font-weight:700;font-size:1rem}
+.logo img{width:40px;height:40px;border-radius:50%}
+.logo span{color:var(--blue-light)}
+.btn{display:inline-flex;align-items:center;gap:10px;border:none;cursor:pointer;font-weight:600;font-size:.9rem;border-radius:8px;padding:10px 20px;transition:all .2s}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-danger:hover{background:#B71C1C}
+
+main{padding:40px 0 80px}
+.hero{text-align:center;margin-bottom:40px}
+.hero h1{font-size:2rem;font-weight:800;margin-bottom:8px}
+.hero p{color:var(--muted)}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:40px}
+.stat-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:24px;text-align:center;box-shadow:var(--shadow)}
+.stat-card b{display:block;font-size:2rem;font-weight:800;color:var(--blue);margin-bottom:4px}
+.stat-card span{font-size:.85rem;color:var(--muted);font-weight:600}
+
+.app-list{display:flex;flex-direction:column;gap:20px}
+.app-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:28px;box-shadow:var(--shadow)}
+.app-header{display:flex;justify-content:space-between;align-items:start;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.app-user{display:flex;gap:16px;align-items:center}
+.app-user img{width:56px;height:56px;border-radius:50%;border:2px solid var(--border)}
+.app-user h3{font-size:1.15rem;font-weight:700;margin-bottom:4px}
+.app-user small{color:var(--muted);font-size:.85rem}
+.app-date{color:var(--muted);font-size:.85rem;font-weight:600}
+
+.app-details{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:20px}
+.detail{background:var(--gray-50);border:1px solid var(--border);border-radius:8px;padding:14px}
+.detail label{display:block;font-size:.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}
+.detail p{font-size:.92rem;color:var(--ink);font-weight:600}
+
+.app-content{margin-bottom:20px}
+.app-content h4{font-size:.92rem;font-weight:700;margin-bottom:8px;color:var(--blue)}
+.app-content p{font-size:.92rem;line-height:1.7;color:var(--text);background:var(--gray-50);border:1px solid var(--border);border-radius:8px;padding:14px;white-space:pre-wrap}
+
+.app-actions{display:flex;gap:12px;justify-content:flex-end}
+.btn-approve{background:var(--success);color:#fff;padding:12px 28px}
+.btn-approve:hover{background:#047857}
+.btn-reject{background:var(--danger);color:#fff;padding:12px 28px}
+.btn-reject:hover{background:#B71C1C}
+
+.login-screen{text-align:center;padding:80px 24px;max-width:500px;margin:0 auto}
+.login-screen h1{font-size:2rem;margin-bottom:16px}
+.login-screen p{color:var(--muted);margin-bottom:32px}
+.login-screen .btn{background:#5865F2;color:#fff;padding:16px 36px;font-size:1.05rem}
+.login-screen .btn:hover{background:#4752C4}
+
+.empty{text-align:center;padding:60px 24px;color:var(--muted)}
+.empty i{font-size:3rem;margin-bottom:16px;color:var(--border)}
+.empty h3{color:var(--ink);margin-bottom:8px}
+
+.modal{display:none;position:fixed;inset:0;background:rgba(6,15,36,.75);z-index:1000;align-items:center;justify-content:center;padding:24px}
+.modal.active{display:flex}
+.modal-content{background:var(--white);border-radius:var(--radius);padding:32px;max-width:480px;width:100%}
+.modal-content h3{font-size:1.3rem;margin-bottom:12px}
+.modal-content p{color:var(--muted);margin-bottom:24px}
+.modal-actions{display:flex;gap:12px;justify-content:flex-end}
+.modal-actions button{padding:10px 24px;border-radius:8px;border:none;font-weight:600;cursor:pointer}
+</style>
+</head>
+<body>
+
+<div id="loginScreen" class="login-screen">
+  <h1>Panel Admin</h1>
+  <p>Connecte-toi avec Discord pour accéder au panel d'administration.</p>
+  <button class="btn" onclick="window.location.href='/auth/discord?redirect=admin'">
+    <i class="fa-brands fa-discord"></i> Se connecter avec Discord
+  </button>
+</div>
+
+<div id="dashboard" style="display:none">
+  <header>
+    <div class="wrap nav">
+      <div class="logo">
+        <img src="https://cdn.discordapp.com/icons/1475659636819493089/8a80480870b623a2afc4d2d5cc14bfbf.webp?size=1024" alt="Logo">
+        Urgence 514 RP <span>— Admin</span>
+      </div>
+      <button class="btn btn-danger" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Déconnexion</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <div class="hero">
+        <h1>Candidatures Staff</h1>
+        <p>Gère les candidatures reçues et approuve ou refuse les candidats.</p>
+      </div>
+
+      <div class="stats">
+        <div class="stat-card"><b id="statTotal">0</b><span>Total</span></div>
+        <div class="stat-card"><b id="statPending">0</b><span>En attente</span></div>
+        <div class="stat-card"><b id="statApproved">0</b><span>Approuvées</span></div>
+        <div class="stat-card"><b id="statRejected">0</b><span>Refusées</span></div>
+      </div>
+
+      <div id="appList" class="app-list"></div>
+    </div>
+  </main>
+</div>
+
+<div id="modal" class="modal">
+  <div class="modal-content">
+    <h3 id="modalTitle">Confirmer l'action</h3>
+    <p id="modalText">Es-tu sûr de vouloir continuer ?</p>
+    <div class="modal-actions">
+      <button onclick="closeModal()" style="background:var(--gray-50);border:1px solid var(--border)">Annuler</button>
+      <button id="modalConfirm" style="background:var(--blue);color:#fff">Confirmer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentUser = null;
+let applications = [];
+
+async function checkAuth(){
+  try{
+    const response = await fetch('/api/auth/check');
+    if(response.ok){
+      const data = await response.json();
+      if(data.authorized){
+        currentUser = data.user;
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
+        loadApplications();
+      }
+    }
+  }catch(e){}
+}
+
+async function loadApplications(){
+  try{
+    const response = await fetch('/api/applications');
+    if(response.ok){
+      applications = await response.json();
+      renderApplications();
+    }
+  }catch(e){
+    document.getElementById('appList').innerHTML = '<div class="empty"><i class="fa-solid fa-circle-exclamation"></i><h3>Erreur de chargement</h3><p>Impossible de charger les candidatures.</p></div>';
+  }
+}
+
+function renderApplications(){
+  const list = document.getElementById('appList');
+  const pending = applications.filter(a => a.status === 'pending');
+  
+  document.getElementById('statTotal').textContent = applications.length;
+  document.getElementById('statPending').textContent = pending.length;
+  document.getElementById('statApproved').textContent = applications.filter(a => a.status === 'approved').length;
+  document.getElementById('statRejected').textContent = applications.filter(a => a.status === 'rejected').length;
+
+  if(pending.length === 0){
+    list.innerHTML = '<div class="empty"><i class="fa-solid fa-circle-check"></i><h3>Aucune candidature en attente</h3><p>Toutes les candidatures ont été traitées.</p></div>';
+    return;
+  }
+
+  list.innerHTML = pending.map(app => `
+    <div class="app-card">
+      <div class="app-header">
+        <div class="app-user">
+          <img src="https://cdn.discordapp.com/avatars/${app.discordId}/${app.avatarHash || 'default'}.png?size=128" alt="${app.discordUsername}">
+          <div>
+            <h3>${app.discordUsername}</h3>
+            <small>${app.age} ans — ${app.timezone}</small>
+          </div>
+        </div>
+        <div class="app-date">Soumise le ${new Date(app.submittedAt).toLocaleDateString('fr-CA')}</div>
+      </div>
+      
+      <div class="app-details">
+        <div class="detail">
+          <label>Disponibilités</label>
+          <p>${app.availability}</p>
+        </div>
+        <div class="detail">
+          <label>Expérience</label>
+          <p>${app.experience || 'Aucune'}</p>
+        </div>
+      </div>
+
+      <div class="app-content">
+        <h4>Motivations</h4>
+        <p>${app.motivation}</p>
+      </div>
+
+      <div class="app-actions">
+        <button class="btn btn-reject" onclick="showModal('reject', '${app.discordId}', '${app.discordUsername}')">
+          <i class="fa-solid fa-xmark"></i> Refuser
+        </button>
+        <button class="btn btn-approve" onclick="showModal('approve', '${app.discordId}', '${app.discordUsername}')">
+          <i class="fa-solid fa-check"></i> Approuver
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+let modalAction = null;
+let modalAppId = null;
+
+function showModal(action, appId, username){
+  modalAction = action;
+  modalAppId = appId;
+  document.getElementById('modalTitle').textContent = action === 'approve' ? 'Approuver la candidature' : 'Refuser la candidature';
+  document.getElementById('modalText').textContent = `Es-tu sûr de vouloir ${action === 'approve' ? 'approuver' : 'refuser'} la candidature de ${username} ?`;
+  document.getElementById('modal').classList.add('active');
+}
+
+function closeModal(){
+  document.getElementById('modal').classList.remove('active');
+}
+
+document.getElementById('modalConfirm').addEventListener('click', async function(){
+  try{
+    const response = await fetch(`/api/applications/${modalAppId}/${modalAction}`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'}
+    });
+
+    if(response.ok){
+      alert('Action effectuée avec succès');
+      closeModal();
+      loadApplications();
+    }else{
+      throw new Error('Erreur');
+    }
+  }catch(e){
+    alert('Erreur lors de l\'action');
+    closeModal();
+  }
+});
+
+function logout(){
+  window.location.href = '/auth/logout';
+}
+
+checkAuth();
+</script>
+</body>
+</html>
