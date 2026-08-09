@@ -20,6 +20,12 @@ const GITHUB_REPO = process.env.GITHUB_REPO || 'jacobin904/Urgence-514-RP';
 const GITHUB_BRANCH = process.env.GITHUB_BRANCH || 'main';
 const SITE = 'https://jacobin904.github.io/Urgence-514-RP';
 
+// ===== SUPER ADMINS (accès admin garanti, peu importe les rôles) =====
+const SUPER_ADMINS = [
+  '1281784488854159421'  // Jacobin Babouain (@jacobin904)
+  // Ajouter d'autres IDs ici au besoin
+];
+
 const QUESTIONS = [
   {id:'q1', label:'1. Découverte du serveur'},
   {id:'q2', label:'2. Ancienneté et interactions'},
@@ -36,7 +42,7 @@ const QUESTIONS = [
   {id:'q13', label:'13. Combat logging'}
 ];
 
-// CORS (autorise seulement ton site GitHub Pages)
+// CORS (autorise seulement le site GitHub Pages)
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', 'https://jacobin904.github.io');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -114,6 +120,17 @@ async function getMember(accessToken){
   return r.json();
 }
 
+function isSuperAdmin(userId){
+  return SUPER_ADMINS.includes(userId);
+}
+
+async function hasAdminAccess(accessToken, userId){
+  if (isSuperAdmin(userId)) return true;
+  const member = await getMember(accessToken);
+  return !!(member && member.roles && member.roles.includes(REQUIRED_ROLE_ID));
+}
+
+// ===== OAUTH2 =====
 app.get('/auth/discord', (req, res) => {
   const state = req.query.redirect === 'admin' ? 'admin' : 'recrutement';
   const params = new URLSearchParams({
@@ -150,7 +167,7 @@ app.get('/auth/discord/callback', async (req, res) => {
     const user = await userRes.json();
 
     const member = await getMember(tok.access_token);
-    const hasRole = !!(member && member.roles && member.roles.includes(REQUIRED_ROLE_ID));
+    const hasRole = isSuperAdmin(user.id) || !!(member && member.roles && member.roles.includes(REQUIRED_ROLE_ID));
 
     const token = signToken({
       id: user.id, username: user.username, avatar: user.avatar || null,
@@ -175,9 +192,8 @@ app.get('/auth/discord/callback', async (req, res) => {
 app.get('/api/auth/me', async (req, res) => {
   const user = getUserFromReq(req);
   if (!user) return res.status(401).json({authorized: false});
-  const member = await getMember(user.accessToken);
-  const hasRole = !!(member && member.roles && member.roles.includes(REQUIRED_ROLE_ID));
-  res.json({authorized: hasRole, user: {id: user.id, username: user.username, avatar: user.avatar, hasRole}});
+  const authorized = await hasAdminAccess(user.accessToken, user.id);
+  res.json({authorized, user: {id: user.id, username: user.username, avatar: user.avatar, hasRole: authorized}});
 });
 
 app.post('/api/applications', async (req, res) => {
@@ -213,8 +229,8 @@ app.post('/api/applications', async (req, res) => {
 async function requireAdmin(req, res, next){
   const user = getUserFromReq(req);
   if (!user) return res.status(401).json({error: 'Non autorisé'});
-  const member = await getMember(user.accessToken);
-  if (!member || !member.roles || !member.roles.includes(REQUIRED_ROLE_ID)){
+  const authorized = await hasAdminAccess(user.accessToken, user.id);
+  if (!authorized){
     return res.status(403).json({error: 'Rôle requis manquant'});
   }
   req.user = user;
