@@ -1,497 +1,271 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Urgence 514 RP — Serveur roleplay Roblox basé à Montréal</title>
-<meta name="description" content="Urgence 514 RP est un serveur roleplay Roblox immersif basé sur l'île de Montréal. Police, pompiers, paramédics et services d'urgence québécois. Code : urgrp">
-<meta property="og:title" content="Urgence 514 RP — Roleplay Québécois">
-<meta property="og:description" content="Serveur roleplay Roblox immersif. SPVM, Sûreté du Québec, SIM, Urgence Santé, GRC. Code : urgrp">
-<meta property="og:image" content="https://cdn.discordapp.com/icons/1475659636819493089/8a80480870b623a2afc4d2d5cc14bfbf.webp?size=1024">
-<meta name="theme-color" content="#0B4EB0">
-<link rel="icon" href="https://cdn.discordapp.com/icons/1475659636819493089/8a80480870b623a2afc4d2d5cc14bfbf.webp?size=1024">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-:root{
-  --navy-950:#050D1F; --navy-900:#060F24; --navy-800:#0A1B3D; --navy-700:#0E2A5C; --navy-600:#123C8C;
-  --blue:#0B4EB0; --blue-dark:#083A85; --blue-light:#E8F2FF;
-  --ink:#0B1B33; --text:#2D3748; --muted:#5A6B8C; --border:#E4EDF9;
-  --white:#FFFFFF; --gray-50:#F8FAFC; --gray-100:#F1F5F9;
-  --radius:12px; --radius-sm:8px;
-  --shadow:0 4px 12px rgba(6,15,36,.06);
-  --shadow-lg:0 12px 32px rgba(6,15,36,.1);
-}
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth;scroll-padding-top:80px}
-body{font-family:'Inter',sans-serif;background:var(--white);color:var(--text);line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden}
-::selection{background:var(--blue);color:#fff}
-img{display:block;max-width:100%}
-a{text-decoration:none;color:inherit;transition:color .2s}
-a:hover{color:var(--blue)}
-.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
-h1,h2,h3{letter-spacing:-.02em;line-height:1.2;color:var(--ink)}
-button{font-family:'Inter',sans-serif}
+const express = require('express');
+const fetch = require('node-fetch');
+const crypto = require('crypto');
+const fs = require('fs').promises;
+const path = require('path');
 
-header{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
-.nav{display:flex;align-items:center;justify-content:space-between;height:72px}
-.logo{display:flex;align-items:center;gap:12px;font-weight:700;font-size:1rem;color:var(--ink)}
-.logo img{width:40px;height:40px;border-radius:50%}
-.nav-links{display:flex;gap:32px;list-style:none}
-.nav-links a{color:var(--muted);font-weight:600;font-size:.9rem}
-.nav-cta{display:flex;gap:12px;align-items:center}
-.btn{display:inline-flex;align-items:center;gap:10px;border:none;cursor:pointer;font-weight:600;font-size:.9rem;border-radius:var(--radius-sm);padding:12px 24px;transition:all .2s}
-.btn-blue{background:var(--blue);color:#fff}
-.btn-blue:hover{background:var(--blue-dark);box-shadow:0 4px 12px rgba(11,78,176,.25)}
-.btn-ghost{background:transparent;color:var(--muted)}
-.btn-ghost:hover{color:var(--ink);background:var(--gray-50)}
-.btn-outline{background:transparent;color:var(--blue);box-shadow:inset 0 0 0 1.5px var(--blue)}
-.btn-outline:hover{background:var(--blue-light)}
-.btn-sm{padding:9px 18px;font-size:.85rem}
-.btn-lg{padding:14px 32px;font-size:1rem}
-.burger{display:none;background:none;border:none;color:var(--ink);font-size:1.4rem;cursor:pointer}
+const app = express();
+app.use(express.json());
 
-.hero{padding:160px 0 100px;background:linear-gradient(180deg,var(--gray-50) 0%,var(--white) 100%)}
-.hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:64px;align-items:center}
-.hero-badge{display:inline-flex;align-items:center;gap:8px;background:var(--blue-light);color:var(--blue);border-radius:999px;padding:6px 14px;font-size:.8rem;font-weight:700;margin-bottom:24px}
-.hero h1{font-size:clamp(2.4rem,5vw,3.8rem);font-weight:800;margin-bottom:20px}
-.hero p{font-size:1.1rem;color:var(--muted);max-width:520px;margin-bottom:32px}
-.hero-btns{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:48px}
-.hero-visual{position:relative}
-.hero-visual img{border-radius:var(--radius);box-shadow:var(--shadow-lg)}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;padding-top:32px;border-top:1px solid var(--border)}
-.stat b{display:block;font-size:1.5rem;font-weight:800;color:var(--ink);letter-spacing:-.02em}
-.stat span{font-size:.85rem;color:var(--muted);font-weight:600}
+// ===== CONFIG =====
+const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID;
+const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
+const DISCORD_REDIRECT_URI = process.env.DISCORD_REDIRECT_URI;
+const GUILD_ID = '1475659636819493089';
+const REQUIRED_ROLE_ID = '1475659637289127937';
+const WEBHOOK_URL = process.env.WEBHOOK_URL;
+const SECRET = process.env.SESSION_SECRET || 'dev_secret';
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN || '';
+const GITHUB_REPO = process.env.GITHUB_REPO || 'jacobin904/Urgence-514-RP';
+const GITHUB_BRANCH = process.env.GITHUB_BRANCH || 'main';
+const SITE = 'https://jacobin904.github.io/Urgence-514-RP';
 
-section{padding:96px 0}
-.sec-header{text-align:center;margin-bottom:64px}
-.sec-badge{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:6px 14px;font-size:.78rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;margin-bottom:16px;background:var(--blue-light);color:var(--blue)}
-.sec-title{font-size:clamp(1.8rem,3.5vw,2.6rem);font-weight:800;margin-bottom:12px}
-.sec-sub{font-size:1.05rem;color:var(--muted);max-width:640px;margin:0 auto}
+const QUESTIONS = [
+  {id:'q1', label:'1. Découverte du serveur'},
+  {id:'q2', label:'2. Ancienneté et interactions'},
+  {id:'q3', label:'3. Plateforme'},
+  {id:'q4', label:'4. Insultes en vocale'},
+  {id:'q5', label:'5. Réponse à un ticket'},
+  {id:'q6', label:'6. Requests ER:LC'},
+  {id:'q7', label:'7. Réunions staff'},
+  {id:'q8', label:'8. 1h de modération/semaine'},
+  {id:'q9', label:'9. Expérience Melonly/ER:LC'},
+  {id:'q10', label:'10. RDM — procédure et sanction'},
+  {id:'q11', label:'11. Manque de respect staff'},
+  {id:'q12', label:'12. Cinq commandes'},
+  {id:'q13', label:'13. Combat logging'}
+];
 
-#departments{background:var(--gray-50)}
-.dpt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
-.dpt-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:32px;transition:box-shadow .2s,border-color .2s}
-.dpt-card:hover{box-shadow:var(--shadow-lg);border-color:var(--blue)}
-.dpt-head{display:flex;align-items:center;gap:16px;margin-bottom:18px}
-.dpt-logo{width:64px;height:64px;border-radius:12px;object-fit:cover;border:1px solid var(--border);background:#fff}
-.dpt-info h3{font-size:1.15rem;font-weight:700;margin-bottom:4px}
-.dpt-info small{color:var(--muted);font-weight:600;font-size:.82rem;text-transform:uppercase;letter-spacing:.04em}
-.dpt-card p{font-size:.92rem;color:var(--muted);margin-bottom:18px;line-height:1.7}
-.dpt-tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
-.dpt-tags i{font-style:normal;background:var(--gray-100);color:var(--text);font-weight:600;font-size:.78rem;border-radius:6px;padding:5px 12px}
-.dpt-link{display:inline-flex;align-items:center;gap:8px;color:var(--blue);font-weight:600;font-size:.9rem}
-
-#rules{background:var(--white)}
-.rules-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px}
-.rule-section{background:var(--gray-50);border:1px solid var(--border);border-radius:var(--radius);padding:36px}
-.rule-section h3{display:flex;align-items:center;gap:12px;font-size:1.25rem;font-weight:700;margin-bottom:24px;color:var(--ink)}
-.rule-section h3 i{color:var(--blue)}
-.rule-list{list-style:none;display:flex;flex-direction:column;gap:16px}
-.rule-list li{display:flex;gap:14px;font-size:.92rem;line-height:1.65}
-.rule-list li i{color:var(--blue);margin-top:3px;font-size:.85rem;flex-shrink:0}
-.rule-list li b{color:var(--ink);font-weight:700}
-.rule-list li.danger i{color:#D32F2F}
-
-#dictionary{background:var(--gray-50)}
-.dict-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
-.dict-item{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-sm);padding:24px}
-.dict-say{font-weight:700;color:var(--blue);font-size:1.05rem;margin-bottom:8px}
-.dict-mean{font-size:.92rem;color:var(--muted);line-height:1.6}
-.dict-mean small{display:block;color:var(--text);font-weight:600;margin-top:4px}
-
-#team{background:var(--white)}
-.team-section{margin-bottom:56px}
-.team-section:last-child{margin-bottom:0}
-.team-section-title{font-size:1.3rem;font-weight:700;margin-bottom:24px;color:var(--ink);display:flex;align-items:center;gap:12px}
-.team-section-title::after{content:'';flex:1;height:1px;background:var(--border)}
-.team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
-.team-card{background:var(--gray-50);border:1px solid var(--border);border-radius:var(--radius);padding:32px 24px;text-align:center;transition:box-shadow .2s,transform .2s}
-.team-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-2px)}
-.team-card img{width:88px;height:88px;border-radius:50%;margin:0 auto 16px;border:2px solid var(--border)}
-.team-card h3{font-size:1.05rem;font-weight:700;margin-bottom:10px;word-break:break-word}
-.team-role{display:inline-block;border-radius:999px;padding:4px 12px;font-size:.75rem;font-weight:700;margin-bottom:10px}
-.role-founder{background:var(--blue);color:#fff}
-.role-manager{background:var(--navy-700);color:#fff}
-.role-dev{background:var(--blue-light);color:var(--blue)}
-.team-card small{color:var(--muted);font-weight:600;font-size:.82rem}
-
-#faq{background:var(--gray-50)}
-.faq-list{max-width:760px;margin:0 auto}
-.faq-item{border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:12px;overflow:hidden;background:var(--white)}
-.faq-q{width:100%;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 24px;font-weight:600;font-size:.98rem;color:var(--ink);background:none;border:none;cursor:pointer;text-align:left}
-.faq-q i{color:var(--muted);transition:transform .25s}
-.faq-item.open .faq-q i{transform:rotate(180deg)}
-.faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease}
-.faq-a p{padding:0 24px 20px;color:var(--muted);font-size:.92rem;line-height:1.7}
-.faq-a a{color:var(--blue);font-weight:600}
-.faq-item.open .faq-a{max-height:280px}
-
-.cta{background:linear-gradient(135deg,var(--navy-800) 0%,var(--blue) 100%);color:#fff;text-align:center;padding:100px 0}
-.cta h2{font-size:clamp(2rem,4.5vw,3.2rem);font-weight:800;margin-bottom:14px;color:#fff}
-.cta p{font-size:1.1rem;color:rgba(255,255,255,.85);max-width:540px;margin:0 auto 36px}
-.cta-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
-
-footer{background:var(--navy-950);color:rgba(255,255,255,.7);padding:64px 0 32px}
-.foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:48px;margin-bottom:48px}
-.foot-grid h4{color:#fff;font-size:.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:20px}
-.foot-grid ul{list-style:none}
-.foot-grid li{margin-bottom:12px}
-.foot-grid a{font-size:.9rem;font-weight:500;color:rgba(255,255,255,.7);transition:color .2s}
-.foot-grid a:hover{color:#fff}
-.foot-logo{display:flex;align-items:center;gap:12px;color:#fff;font-weight:700;margin-bottom:16px}
-.foot-logo img{width:44px;height:44px;border-radius:50%}
-.foot-grid p{font-size:.88rem;max-width:280px;line-height:1.65}
-.socials{display:flex;gap:10px;margin-top:18px}
-.socials a{width:38px;height:38px;border-radius:8px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1rem;transition:background .2s}
-.socials a:hover{background:var(--blue)}
-.copy{border-top:1px solid rgba(255,255,255,.1);padding-top:24px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:.82rem}
-.copy b{color:rgba(255,255,255,.95);font-weight:700}
-
-@media(max-width:1000px){
-  .nav-links{display:none;position:absolute;top:72px;left:0;right:0;background:var(--white);flex-direction:column;padding:20px;gap:16px;border-bottom:1px solid var(--border);box-shadow:var(--shadow)}
-  .nav-links.open{display:flex}
-  .burger{display:block}
-  .hero-grid,.rules-grid{grid-template-columns:1fr}
-  .dpt-grid,.team-grid{grid-template-columns:repeat(2,1fr)}
-  .stats{grid-template-columns:repeat(2,1fr)}
-  .foot-grid{grid-template-columns:1fr 1fr}
-}
-@media(max-width:640px){
-  .dpt-grid,.team-grid,.dict-grid,.foot-grid{grid-template-columns:1fr}
-  .hero{padding-top:120px}
-}
-</style>
-</head>
-<body>
-
-<header>
-  <div class="wrap nav">
-    <a class="logo" href="#top">
-      <img src="https://cdn.discordapp.com/icons/1475659636819493089/8a80480870b623a2afc4d2d5cc14bfbf.webp?size=1024" alt="Logo Urgence 514 RP">
-      Urgence 514 RP
-    </a>
-    <ul class="nav-links" id="navLinks">
-      <li><a href="#departments">Départements</a></li>
-      <li><a href="#rules">Règlements</a></li>
-      <li><a href="#dictionary">Langage RP</a></li>
-      <li><a href="#team">Équipe</a></li>
-      <li><a href="#faq">FAQ</a></li>
-    </ul>
-    <div class="nav-cta">
-      <button class="btn btn-ghost btn-sm" onclick="copyCode(this)"><i class="fa-solid fa-copy"></i> Code : urgrp</button>
-      <a class="btn btn-blue btn-sm" href="https://discord.gg/ENgnZ629k6" target="_blank" rel="noopener"><i class="fa-brands fa-discord"></i> Discord</a>
-      <a class="btn btn-outline btn-sm" href="Recrutement/">Recrutement</a>
-      <button class="burger" id="burger" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>
-    </div>
-  </div>
-</header>
-
-<section class="hero" id="top">
-  <div class="wrap">
-    <div class="hero-grid">
-      <div>
-        <span class="hero-badge"><i class="fa-solid fa-location-dot"></i> Montréal, Québec</span>
-        <h1>Urgence 514 RP</h1>
-        <p>Serveur roleplay Roblox immersif basé sur l'île de Montréal. Police, pompiers, paramédics et services d'urgence québécois.</p>
-        <div class="hero-btns">
-          <a class="btn btn-blue btn-lg" href="https://discord.gg/ENgnZ629k6" target="_blank" rel="noopener"><i class="fa-brands fa-discord"></i> Rejoindre Discord</a>
-          <button class="btn btn-outline btn-lg" onclick="copyCode(this)"><i class="fa-solid fa-gamepad"></i> Copier le code urgrp</button>
-        </div>
-      </div>
-      <div class="hero-visual">
-        <img src="https://cdn.discordapp.com/banners/1475659636819493089/2dc3c27d34a282832fa6624802d65c17.webp?size=1024" alt="Patrouille SPVM et ambulance à Montréal">
-      </div>
-    </div>
-    <div class="stats">
-      <div class="stat"><b>2026</b><span>Fondation</span></div>
-      <div class="stat"><b>5</b><span>Départements</span></div>
-      <div class="stat"><b>~200</b><span>Membres</span></div>
-      <div class="stat"><b>100%</b><span>Québécois</span></div>
-    </div>
-  </div>
-</section>
-
-<section id="departments">
-  <div class="wrap">
-    <div class="sec-header">
-      <span class="sec-badge"><i class="fa-solid fa-briefcase"></i> Départements</span>
-      <h2 class="sec-title">Choisis ton uniforme</h2>
-      <p class="sec-sub">Chaque département possède son propre serveur, sa formation et sa hiérarchie.</p>
-    </div>
-    <div class="dpt-grid">
-      <div class="dpt-card">
-        <div class="dpt-head">
-          <img class="dpt-logo" src="https://cdn.discordapp.com/attachments/1428905447112577127/1536082682914545766/C389cusson_SPVM_2018.png?ex=6a7a1bfa&is=6a78ca7a&hm=de82002566d997ba2771c213861a71e62d49a87288d7cb05eeac23bdd3eaba98&animated=true" alt="Logo SPVM">
-          <div class="dpt-info"><h3>SPVM</h3><small>Service de police de Montréal</small></div>
-        </div>
-        <p>Service de police de la Ville de Montréal. Patrouille, enquêtes et unités spécialisées. Formation offerte aux recrues.</p>
-        <div class="dpt-tags"><i>Cadet</i><i>Agent</i><i>Enquêteur</i><i>GTI</i></div>
-        <a class="dpt-link" href="https://melonly.xyz/forms/7438335389661663232" target="_blank" rel="noopener">Déposer ma candidature <i class="fa-solid fa-arrow-right"></i></a>
-      </div>
-      <div class="dpt-card">
-        <div class="dpt-head">
-          <img class="dpt-logo" src="https://cdn.discordapp.com/attachments/1428905447112577127/1536082431579521064/19m1mt7.png?ex=6a7a1bbe&is=6a78ca3e&hm=d8026a1aa38762700672c75eda546a7d0579a92b145be328b6f6406643793c30&animated=true" alt="Logo Sûreté du Québec">
-          <div class="dpt-info"><h3>Sûreté du Québec</h3><small>Police provinciale</small></div>
-        </div>
-        <p>Candidature à l'écrit, poste de cadet en prévention à Montréal, formation de 30 minutes maximum, puis agent probatoire.</p>
-        <div class="dpt-tags"><i>Cadet</i><i>Agent probatoire</i><i>Formation 30 min</i></div>
-        <a class="dpt-link" href="https://discord.gg/ByVMrB8kpj" target="_blank" rel="noopener">Rejoindre le serveur <i class="fa-solid fa-arrow-right"></i></a>
-      </div>
-      <div class="dpt-card">
-        <div class="dpt-head">
-          <img class="dpt-logo" src="https://cdn.discordapp.com/attachments/1428905447112577127/1536083999905284218/2982tn4.png?ex=6a7a1d34&is=6a78cbb4&hm=7538b2919064654d78e7d455a944166ea41507c0b82ffd2119f176379d3ffafc&animated=true" alt="Logo Urgence Santé">
-          <div class="dpt-info"><h3>Urgence Santé</h3><small>Services paramédicaux</small></div>
-        </div>
-        <p>Paramédics de soins primaires passionnés. Interventions médicales immersives et formation complète.</p>
-        <div class="dpt-tags"><i>Paramédic</i><i>Soins primaires</i></div>
-        <a class="dpt-link" href="https://discord.gg/bFmcNf7Nk4" target="_blank" rel="noopener">Rejoindre Urgence Santé <i class="fa-solid fa-arrow-right"></i></a>
-      </div>
-      <div class="dpt-card">
-        <div class="dpt-head">
-          <img class="dpt-logo" src="https://cdn.discordapp.com/attachments/1428905447112577127/1536082739063947274/SIM_Logo.png?ex=6a7a1c08&is=6a78ca88&hm=109ff6476b792aec8ef20181ef7e17dc39df20facfbbcb9bd8316c86a05c4d01&animated=true" alt="Logo SIM">
-          <div class="dpt-info"><h3>SIM</h3><small>Service d'incendie de Montréal</small></div>
-        </div>
-        <p>Incendies, désincarcération, assistance aux citoyens. Chaque seconde compte. Toujours prêts à intervenir.</p>
-        <div class="dpt-tags"><i>Pompier</i><i>Désincarcération</i><i>Secours</i></div>
-        <a class="dpt-link" href="https://discord.gg/ENgnZ629k6" target="_blank" rel="noopener">Recrutement via Discord <i class="fa-solid fa-arrow-right"></i></a>
-      </div>
-      <div class="dpt-card">
-        <div class="dpt-head">
-          <img class="dpt-logo" src="https://cdn.discordapp.com/attachments/1428905447112577127/1536085306200293457/d7d865h.png?ex=6a7a1e6c&is=6a78ccec&hm=4f53dcb6afad466a92fea487adb59227966f30ec57ca32a4bbf899bd88b49883&animated=true" alt="Logo GRC">
-          <div class="dpt-info"><h3>GRC</h3><small>Gendarmerie royale du Canada</small></div>
-        </div>
-        <p>L'élite fédérale au cœur du roleplay montréalais. Maintiens l'ordre et enquête sur les crimes majeurs.</p>
-        <div class="dpt-tags"><i>Fédéral</i><i>Enquêtes majeures</i></div>
-        <a class="dpt-link" href="https://discord.gg/ENgnZ629k6" target="_blank" rel="noopener">Recrutement via Discord <i class="fa-solid fa-arrow-right"></i></a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="rules">
-  <div class="wrap">
-    <div class="sec-header">
-      <span class="sec-badge"><i class="fa-solid fa-scale-balanced"></i> Règlements</span>
-      <h2 class="sec-title">Un RP encadré, une ville respectueuse</h2>
-      <p class="sec-sub">Deux règlements simples : côté Discord et côté Roblox.</p>
-    </div>
-    <div class="rules-grid">
-      <div class="rule-section">
-        <h3><i class="fa-brands fa-discord"></i> Règlement Discord</h3>
-        <ul class="rule-list">
-          <li><i class="fa-solid fa-heart"></i><span><b>Respect obligatoire.</b> Pas d'insultes, de harcèlement ou de discrimination.</span></li>
-          <li><i class="fa-solid fa-ban"></i><span><b>Pas de spam</b> ni de messages inutiles ou identiques.</span></li>
-          <li><i class="fa-solid fa-shield-halved"></i><span><b>Contenu inapproprié interdit,</b> tolérance zéro.</span></li>
-          <li><i class="fa-solid fa-bullhorn"></i><span><b>Aucune publicité</b> en MP ou sur le serveur. Sanction : ban.</span></li>
-          <li><i class="fa-solid fa-user-secret"></i><span><b>Pas de multi-comptes</b> pour les giveaways ou avantages.</span></li>
-          <li><i class="fa-solid fa-user-shield"></i><span><b>Les modérateurs</b> font respecter le règlement et le respect.</span></li>
-          <li><i class="fa-solid fa-triangle-exclamation"></i><span><b>Tout comportement suspect</b> (raid) entraîne un bannissement.</span></li>
-          <li><i class="fa-solid fa-hashtag"></i><span><b>Chaque salon a sa fonction,</b> respecte-la.</span></li>
-          <li><i class="fa-solid fa-signature"></i><span><b>Pas de pseudo offensant</b> ou choquant lisible.</span></li>
-        </ul>
-      </div>
-      <div class="rule-section">
-        <h3><i class="fa-solid fa-gamepad"></i> Règlement Roblox</h3>
-        <ul class="rule-list">
-          <li class="danger"><i class="fa-solid fa-skull"></i><span><b>RDM &amp; Freekill :</b> pas de kill sans raison valable en RP.</span></li>
-          <li class="danger"><i class="fa-solid fa-car"></i><span><b>VDM :</b> véhicule = pas une arme. Pas de tir sur véhicule non plus.</span></li>
-          <li class="danger"><i class="fa-solid fa-handcuffs"></i><span><b>Cuff Rush :</b> pas de menottes sans vrai RP préalable.</span></li>
-          <li><i class="fa-solid fa-masks-theater"></i><span><b>NITRP :</b> reste dans ton personnage, en tout temps.</span></li>
-          <li><i class="fa-solid fa-house-chimney"></i><span><b>Safe zones :</b> rien d'illégal aux spawns, tribunal, hôpital, postes et casernes.</span></li>
-          <li class="danger"><i class="fa-solid fa-gauge-high"></i><span><b>GTA Driving :</b> la conduite irréalistement dangereuse est interdite.</span></li>
-          <li><i class="fa-solid fa-dove"></i><span><b>Peace Timer :</b> aucune action illégale pendant un temps de paix.</span></li>
-          <li><i class="fa-solid fa-person-falling-burst"></i><span><b>FRP :</b> rien d'impossible à reproduire dans la vraie vie.</span></li>
-          <li><i class="fa-solid fa-hand"></i><span><b>Pain :</b> joue la douleur. « AIE » puis attends 5 secondes avant de repartir.</span></li>
-          <li class="danger"><i class="fa-solid fa-bullhorn"></i><span><b>Cop Baiting :</b> provoquer ou insulter la police sans raison RP est interdit.</span></li>
-          <li><i class="fa-solid fa-scale-balanced"></i><span><b>Réalisme :</b> police et gang ou mafia, jamais en même temps.</span></li>
-          <li><i class="fa-solid fa-bullhorn"></i><span><b>Sommations :</b> obligatoires. Une fois, deux fois, trois fois.</span></li>
-          <li><i class="fa-solid fa-face-flushed"></i><span><b>Fear :</b> joue la peur devant une arme ou un moyen de défense.</span></li>
-          <li><i class="fa-solid fa-clock"></i><span><b>NLR :</b> à ta mort, 15 minutes sans revenir sur la scène.</span></li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="dictionary">
-  <div class="wrap">
-    <div class="sec-header">
-      <span class="sec-badge"><i class="fa-solid fa-comments"></i> Langage RP</span>
-      <h2 class="sec-title">Parle comme un citoyen du 514</h2>
-      <p class="sec-sub">En ville, on ne parle pas comme dans la vraie vie.</p>
-    </div>
-    <div class="dict-grid">
-      <div class="dict-item">
-        <div class="dict-say">« Je vais faire un dodo »</div>
-        <div class="dict-mean">Je me déconnecte ou je reviens plus tard.<small>Mon skin = moi. Roblox = la ville.</small></div>
-      </div>
-      <div class="dict-item">
-        <div class="dict-say">« Mes cordes vocales »</div>
-        <div class="dict-mean">Mon micro.<small>Voice chat = cordes vocales. Vocal = radio (police, EMS, civil).</small></div>
-      </div>
-      <div class="dict-item">
-        <div class="dict-say">« Discord »</div>
-        <div class="dict-mean">Un VPN.<small>« Muscle E » et « Muscle R » = appuie sur E, fais R.</small></div>
-      </div>
-      <div class="dict-item">
-        <div class="dict-say">« J'ai un mal de tête »</div>
-        <div class="dict-mean">Je bug, problème technique.<small>« Membre du gouvernement » = staff ou modérateur.</small></div>
-      </div>
-      <div class="dict-item">
-        <div class="dict-say">« Chinois » ou « Hamburger riz poulet »</div>
-        <div class="dict-mean">Le langage HRP, hors roleplay.<small>« Je reviens » = je vais être dans ma tête.</small></div>
-      </div>
-      <div class="dict-item">
-        <div class="dict-say">« AIE »</div>
-        <div class="dict-mean">Règle de la douleur : attends 5 secondes avant de repartir.<small>Et joue la peur devant une arme.</small></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="team">
-  <div class="wrap">
-    <div class="sec-header">
-      <span class="sec-badge"><i class="fa-solid fa-users"></i> Équipe</span>
-      <h2 class="sec-title">Ceux qui portent la vision</h2>
-      <p class="sec-sub">Une équipe fondatrice investie, depuis 2026, pour faire d'Urgence 514 RP la référence du roleplay québécois.</p>
-    </div>
-    
-    <div class="team-section">
-      <h3 class="team-section-title">Direction</h3>
-      <div class="team-grid">
-        <div class="team-card">
-          <img src="https://cdn.discordapp.com/avatars/1223417508573479054/1c57fc2ec3eb3649a47df048a9784358.webp?size=1024" alt="Fondateur">
-          <h3>𝐌𝟒𝐗𝐋𝐄𝐂𝐇𝐎𝐂𝐎𝐋𝐀𝐓.𝐐𝐂</h3>
-          <span class="team-role role-founder">Fondateur</span><br>
-          <small>@maxlechocolat.qc</small>
-        </div>
-        <div class="team-card">
-          <img src="https://cdn.discordapp.com/avatars/1383156670120595506/19be53cc6be3a1869ca4e53927c1f7af.webp?size=1024" alt="Fondateur adjoint">
-          <h3>L. K TV</h3>
-          <span class="team-role role-founder">Fondateur Adjoint</span><br>
-          <small>@l.ktv</small>
-        </div>
-      </div>
-    </div>
-
-    <div class="team-section">
-      <h3 class="team-section-title">Gestion</h3>
-      <div class="team-grid">
-        <div class="team-card">
-          <img src="https://cdn.discordapp.com/avatars/1416237976043786323/36f8b4afde4d04ed404223968d32aaf3.webp?size=1024" alt="Manager">
-          <h3>!Bibibopm</h3>
-          <span class="team-role role-manager">Manager</span><br>
-          <small>@bibibopm_84423</small>
-        </div>
-      </div>
-    </div>
-
-    <div class="team-section">
-      <h3 class="team-section-title">Développement</h3>
-      <div class="team-grid">
-        <div class="team-card">
-          <img src="https://cdn.discordapp.com/avatars/1281784488854159421/608fbe0e316e417b5e83539ef8555255.webp?size=1024" alt="Développeur web">
-          <h3>Jacobin Babouain</h3>
-          <span class="team-role role-dev">Développeur Web</span><br>
-          <small>@jacobin904</small>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="faq">
-  <div class="wrap">
-    <div class="sec-header">
-      <span class="sec-badge"><i class="fa-solid fa-circle-question"></i> FAQ</span>
-      <h2 class="sec-title">Questions fréquentes</h2>
-    </div>
-    <div class="faq-list">
-      <div class="faq-item"><button class="faq-q">Comment rejoindre le serveur ? <i class="fa-solid fa-chevron-down"></i></button><div class="faq-a"><p>Rejoins le <a href="https://discord.gg/ENgnZ629k6" target="_blank" rel="noopener">Discord</a>, lis les règlements, puis entre le code <b>urgrp</b> dans Roblox. Bienvenue à Montréal.</p></div></div>
-      <div class="faq-item"><button class="faq-q">Faut-il de l'expérience pour rejoindre un département ? <i class="fa-solid fa-chevron-down"></i></button><div class="faq-a"><p>Non. Chaque département forme ses recrues : le SPVM offre une formation complète, la SQ t'amène de cadet à agent probatoire avec une formation de 30 minutes maximum, et Urgence Santé t'accompagne dès ton arrivée.</p></div></div>
-      <div class="faq-item"><button class="faq-q">Comment devenir staff ? <i class="fa-solid fa-chevron-down"></i></button><div class="faq-a"><p>PC obligatoire, 14 ans et plus, 7 jours de présence sur le serveur et moins de 10 sanctions. Remplis le <a href="Recrutement/" target="_blank">formulaire de candidature</a>. Ne demande pas de nouvelles : cela entraîne un refus automatique.</p></div></div>
-      <div class="faq-item"><button class="faq-q">C'est quoi les règles d'or en jeu ? <i class="fa-solid fa-chevron-down"></i></button><div class="faq-a"><p>Toujours en RP (NITRP), joue la peur et la douleur (« AIE » + 5 secondes), sommations obligatoires (1, 2, 3), pas de RDM ni VDM, respect des safe zones, et NLR de 15 minutes si ton personnage meurt.</p></div></div>
-      <div class="faq-item"><button class="faq-q">Je peux être policier et membre d'un gang en même temps ? <i class="fa-solid fa-chevron-down"></i></button><div class="faq-a"><p>Non. La règle de réalisme interdit d'être dans la police et dans une mafia ou un gang simultanément.</p></div></div>
-    </div>
-  </div>
-</section>
-
-<section class="cta">
-  <div class="wrap">
-    <h2>Prêt à commencer ton histoire ?</h2>
-    <p>Rejoins la communauté roleplay la plus immersive du Québec. La ville t'attend.</p>
-    <div class="cta-btns">
-      <a class="btn btn-blue btn-lg" href="https://discord.gg/ENgnZ629k6" target="_blank" rel="noopener"><i class="fa-brands fa-discord"></i> Rejoindre Discord</a>
-      <button class="btn btn-outline btn-lg" onclick="copyCode(this)" style="background:rgba(255,255,255,.15);color:#fff;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.4)"><i class="fa-solid fa-copy"></i> Copier le code urgrp</button>
-    </div>
-  </div>
-</section>
-
-<footer>
-  <div class="wrap">
-    <div class="foot-grid">
-      <div>
-        <div class="foot-logo"><img src="https://cdn.discordapp.com/icons/1475659636819493089/8a80480870b623a2afc4d2d5cc14bfbf.webp?size=1024" alt=""> Urgence 514 RP</div>
-        <p>Serveur roleplay Roblox immersif basé sur l'île de Montréal. Staff responsable et présent, sessions actives, roleplay de qualité. Depuis 2026.</p>
-        <div class="socials">
-          <a href="https://discord.gg/ENgnZ629k6" target="_blank" rel="noopener" aria-label="Discord"><i class="fa-brands fa-discord"></i></a>
-          <a href="https://www.tiktok.com/@urgence_514" target="_blank" rel="noopener" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
-        </div>
-      </div>
-      <div>
-        <h4>Navigation</h4>
-        <ul>
-          <li><a href="#departments">Départements</a></li>
-          <li><a href="#rules">Règlements</a></li>
-          <li><a href="#dictionary">Langage RP</a></li>
-          <li><a href="#team">Équipe</a></li>
-          <li><a href="Recrutement/">Recrutement</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4>Départements</h4>
-        <ul>
-          <li><a href="https://melonly.xyz/forms/7438335389661663232" target="_blank" rel="noopener">SPVM — Postuler</a></li>
-          <li><a href="https://discord.gg/ByVMrB8kpj" target="_blank" rel="noopener">Sûreté du Québec</a></li>
-          <li><a href="https://discord.gg/bFmcNf7Nk4" target="_blank" rel="noopener">Urgence Santé</a></li>
-          <li><a href="https://discord.gg/ENgnZ629k6" target="_blank" rel="noopener">SIM, GRC</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4>Communauté</h4>
-        <ul>
-          <li><a href="https://discord.gg/ENgnZ629k6" target="_blank" rel="noopener">Discord (.gg/514RP)</a></li>
-          <li><a href="https://www.tiktok.com/@urgence_514" target="_blank" rel="noopener">TikTok @urgence_514</a></li>
-          <li><a href="Admin/">Panel Admin</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="copy">
-      <span>© 2026 Urgence 514 RP — Depuis 2026. Tous droits réservés.</span>
-      <span>Site conçu par <b>Jacobin Babouain</b> — Code Roblox : <b>urgrp</b></span>
-    </div>
-  </div>
-</footer>
-
-<script>
-function copyCode(btn){
-  const old = btn.innerHTML;
-  const done = () => { btn.innerHTML = '<i class="fa-solid fa-check"></i> Code copié'; setTimeout(()=>btn.innerHTML = old, 1800); };
-  if(navigator.clipboard){ navigator.clipboard.writeText('urgrp').then(done).catch(()=>prompt('Copie le code :','urgrp')); }
-  else { prompt('Copie le code :','urgrp'); }
-}
-const burger = document.getElementById('burger'), navLinks = document.getElementById('navLinks');
-burger.addEventListener('click', ()=> navLinks.classList.toggle('open'));
-navLinks.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>navLinks.classList.remove('open')));
-document.querySelectorAll('.faq-item').forEach(item=>{
-  item.querySelector('.faq-q').addEventListener('click', ()=>{
-    const open = item.classList.contains('open');
-    document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
-    if(!open) item.classList.add('open');
-  });
+// CORS
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'https://jacobin904.github.io');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  if (req.method === 'OPTIONS') return res.sendStatus(200);
+  next();
 });
-</script>
-</body>
-</html>
+
+// ===== STOCKAGE GITHUB =====
+const DATA_FILE = path.join(__dirname, 'applications.json');
+
+async function githubRead(){
+  const r = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/applications.json?ref=${GITHUB_BRANCH}`, {
+    headers: {Authorization: `token ${GITHUB_TOKEN}`, 'User-Agent': 'urgence-514-backend'}
+  });
+  if (r.status === 404) return {list: [], sha: null};
+  const d = await r.json();
+  return {
+    list: JSON.parse(Buffer.from(d.content, 'base64').toString('utf8') || '[]'),
+    sha: d.sha
+  };
+}
+async function loadApplications(){
+  if (GITHUB_TOKEN){ const {list} = await githubRead(); return list; }
+  try{ return JSON.parse(await fs.readFile(DATA_FILE, 'utf8')); }catch{ return []; }
+}
+async function saveApplications(list){
+  if (GITHUB_TOKEN){
+    const {sha} = await githubRead();
+    const body = {
+      message: 'update applications',
+      content: Buffer.from(JSON.stringify(list, null, 2)).toString('base64'),
+      branch: GITHUB_BRANCH
+    };
+    if (sha) body.sha = sha;
+    const r = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/applications.json`, {
+      method: 'PUT',
+      headers: {Authorization: `token ${GITHUB_TOKEN}`, 'User-Agent': 'urgence-514-backend', 'Content-Type': 'application/json'},
+      body: JSON.stringify(body)
+    });
+    if (!r.ok) throw new Error('GitHub save failed: ' + r.status);
+    return;
+  }
+  await fs.writeFile(DATA_FILE, JSON.stringify(list, null, 2));
+}
+
+// ===== TOKENS =====
+function signToken(payload){
+  const data = Buffer.from(JSON.stringify(payload)).toString('base64url');
+  const sig = crypto.createHmac('sha256', SECRET).update(data).digest('base64url');
+  return data + '.' + sig;
+}
+function verifyToken(token){
+  try{
+    const [data, sig] = token.split('.');
+    const expected = crypto.createHmac('sha256', SECRET).update(data).digest('base64url');
+    if (sig !== expected) return null;
+    const payload = JSON.parse(Buffer.from(data, 'base64url').toString());
+    if (payload.exp < Date.now()) return null;
+    return payload;
+  }catch(e){ return null; }
+}
+function getUserFromReq(req){
+  const h = req.headers.authorization || '';
+  if (!h.startsWith('Bearer ')) return null;
+  return verifyToken(h.slice(7));
+}
+
+// ===== DISCORD =====
+async function getMember(accessToken){
+  const r = await fetch(`https://discord.com/api/users/@me/guilds/${GUILD_ID}/member`, {
+    headers: {Authorization: `Bearer ${accessToken}`}
+  });
+  if (!r.ok) return null;
+  return r.json();
+}
+
+app.get('/auth/discord', (req, res) => {
+  const state = req.query.redirect === 'admin' ? 'admin' : 'recrutement';
+  const params = new URLSearchParams({
+    client_id: DISCORD_CLIENT_ID,
+    redirect_uri: DISCORD_REDIRECT_URI,
+    response_type: 'code',
+    scope: 'identify guilds.members.read',
+    state
+  });
+  res.redirect(`https://discord.com/api/oauth2/authorize?${params}`);
+});
+
+app.get('/auth/discord/callback', async (req, res) => {
+  const {code, state} = req.query;
+  if (!code) return res.redirect(SITE);
+  try{
+    const tokenRes = await fetch('https://discord.com/api/oauth2/token', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: new URLSearchParams({
+        client_id: DISCORD_CLIENT_ID,
+        client_secret: DISCORD_CLIENT_SECRET,
+        grant_type: 'authorization_code',
+        code,
+        redirect_uri: DISCORD_REDIRECT_URI
+      })
+    });
+    const tok = await tokenRes.json();
+    if (!tok.access_token) return res.redirect(SITE);
+
+    const userRes = await fetch('https://discord.com/api/users/@me', {
+      headers: {Authorization: `Bearer ${tok.access_token}`}
+    });
+    const user = await userRes.json();
+
+    const member = await getMember(tok.access_token);
+    const hasRole = !!(member && member.roles && member.roles.includes(REQUIRED_ROLE_ID));
+
+    const token = signToken({
+      id: user.id, username: user.username, avatar: user.avatar || null,
+      hasRole, accessToken: tok.access_token,
+      exp: Date.now() + 7 * 24 * 60 * 60 * 1000
+    });
+
+    if (state === 'admin'){
+      if (!hasRole){
+        return res.send('<html><body style="font-family:sans-serif;background:#050D1F;color:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh"><div style="text-align:center;background:#0A1B3D;padding:40px;border-radius:12px"><h1>Accès refusé</h1><p>Tu n\'as pas le rôle requis.</p><a style="color:#7CC0FF" href="' + SITE + '">Retour au site</a></div></body></html>');
+      }
+      return res.redirect(`${SITE}/Admin/?token=${token}`);
+    }
+    return res.redirect(`${SITE}/Recrutement/?token=${token}`);
+  }catch(e){
+    console.error(e);
+    return res.redirect(SITE);
+  }
+});
+
+// ===== API =====
+app.get('/api/auth/me', async (req, res) => {
+  const user = getUserFromReq(req);
+  if (!user) return res.status(401).json({authorized: false});
+  const member = await getMember(user.accessToken);
+  const hasRole = !!(member && member.roles && member.roles.includes(REQUIRED_ROLE_ID));
+  res.json({authorized: hasRole, user: {id: user.id, username: user.username, avatar: user.avatar, hasRole}});
+});
+
+app.post('/api/applications', async (req, res) => {
+  const user = getUserFromReq(req);
+  if (!user) return res.status(401).json({error: 'Connexion Discord requise'});
+  const apps = await loadApplications();
+  apps.push({
+    ...req.body,
+    discordId: user.id,
+    discordUsername: user.username,
+    avatarHash: user.avatar,
+    status: 'pending',
+    submittedAt: new Date().toISOString()
+  });
+  await saveApplications(apps);
+
+  // Notification "nouvelle candidature" dans Discord
+  if (WEBHOOK_URL){
+    await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({embeds: [{
+        title: '📨 Nouvelle candidature staff',
+        color: 5793266,
+        description: `<@${user.id}> (${user.username}) vient de soumettre une candidature.`,
+        fields: [{name: 'Plateforme', value: String(req.body.q3 || '-'), inline: true}],
+        timestamp: new Date().toISOString()
+      }]})
+    });
+  }
+  res.json({success: true});
+});
+
+async function requireAdmin(req, res, next){
+  const user = getUserFromReq(req);
+  if (!user) return res.status(401).json({error: 'Non autorisé'});
+  const member = await getMember(user.accessToken);
+  if (!member || !member.roles || !member.roles.includes(REQUIRED_ROLE_ID)){
+    return res.status(403).json({error: 'Rôle requis manquant'});
+  }
+  req.user = user;
+  next();
+}
+
+app.get('/api/applications', requireAdmin, async (req, res) => {
+  res.json(await loadApplications());
+});
+
+app.post('/api/applications/:discordId/:action', requireAdmin, async (req, res) => {
+  const {discordId, action} = req.params;
+  if (!['approve','reject'].includes(action)) return res.status(400).json({error: 'Action invalide'});
+  const apps = await loadApplications();
+  const app = apps.find(a => a.discordId === discordId && a.status === 'pending');
+  if (!app) return res.status(404).json({error: 'Candidature non trouvée'});
+
+  app.status = action === 'approve' ? 'approved' : 'rejected';
+  app.reviewedAt = new Date().toISOString();
+  app.reviewedBy = req.user.username;
+  await saveApplications(apps);
+
+  const fields = [
+    {name: 'Candidat', value: `<@${app.discordId}> (${app.discordUsername})`, inline: true},
+    {name: 'Plateforme', value: String(app.q3 || '-'), inline: true},
+    {name: 'Décision', value: action === 'approve' ? 'Approuvée' : 'Refusée', inline: true}
+  ];
+  QUESTIONS.forEach(q => {
+    fields.push({name: q.label, value: String(app[q.id] || '-').substring(0, 300)});
+  });
+
+  const embed = {
+    title: action === 'approve' ? '✅ Candidature approuvée' : '❌ Candidature refusée',
+    color: action === 'approve' ? 3066993 : 15158332,
+    fields,
+    footer: {text: `Traité par ${req.user.username}`},
+    timestamp: new Date().toISOString()
+  };
+
+  if (WEBHOOK_URL){
+    await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({embeds: [embed]})
+    });
+  }
+  res.json({success: true});
+});
+
+app.get('/', (req, res) => res.send('API Urgence 514 RP active'));
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log('Serveur démarré sur le port ' + PORT));
