@@ -2,7 +2,6 @@ const express = require('express');
 const crypto = require('crypto');
 const fs = require('fs').promises;
 const path = require('path');
-
 const botClient = require('./bot.js');
 
 const app = express();
@@ -14,10 +13,7 @@ const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
 const DISCORD_REDIRECT_URI = process.env.DISCORD_REDIRECT_URI;
 const GUILD_ID = process.env.GUILD_ID || '1475659636819493089';
 const REQUIRED_ROLE_ID = process.env.REQUIRED_ROLE_ID || '1475659637289127937';
-
-// 🎯 NOUVEAU : Rôle à donner quand une candidature est approuvée
-const APPROVED_ROLE_ID = '1475659637255831601';
-
+const APPROVED_ROLE_ID = '1475659637255831601'; // Rôle donné à l'approbation
 const NEW_APP_CHANNEL_ID = '1521586593943785552';
 const RESULT_APP_CHANNEL_ID = '1475659638618980515';
 const SECRET = process.env.SESSION_SECRET || 'dev_secret';
@@ -25,7 +21,6 @@ const GITHUB_TOKEN = process.env.GITHUB_TOKEN || '';
 const GITHUB_REPO = process.env.GITHUB_REPO || 'jacobin904/Urgence-514-RP';
 const GITHUB_BRANCH = process.env.GITHUB_BRANCH || 'main';
 const SITE = 'https://jacobin904.github.io/Urgence-514-RP';
-
 const SUPER_ADMINS = ['1281784488854159421'];
 
 // ===== CORS =====
@@ -42,29 +37,16 @@ app.get('/api/stats', async (req, res) => {
   try {
     const guild = botClient.guilds.cache.get(GUILD_ID);
     if (!guild) return res.status(404).json({ error: 'Serveur non trouvé' });
-    const totalMembers = guild.memberCount;
     let onlineMembers = 0;
-    try {
-      onlineMembers = guild.members.cache.filter(m => m.presence?.status !== 'offline').size;
-    } catch (e) { onlineMembers = totalMembers; }
-    res.json({
-      totalMembers, onlineMembers,
-      channels: guild.channels.cache.size,
-      roles: guild.roles.cache.size,
-      botOnline: botClient.isReady()
-    });
-  } catch (e) {
-    console.error('Erreur stats:', e);
-    res.status(500).json({ error: 'Erreur interne' });
-  }
+    try { onlineMembers = guild.members.cache.filter(m => m.presence?.status !== 'offline').size; } catch (e) { onlineMembers = guild.memberCount; }
+    res.json({ totalMembers: guild.memberCount, onlineMembers, channels: guild.channels.cache.size, roles: guild.roles.cache.size, botOnline: botClient.isReady() });
+  } catch (e) { res.status(500).json({ error: 'Erreur interne' }); }
 });
 
 // ===== BASE DE DONNÉES (GitHub) =====
 const DATA_FILE = path.join(__dirname, 'applications.json');
 async function githubRead() {
-  const r = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/applications.json?ref=${GITHUB_BRANCH}`, {
-    headers: { Authorization: `token ${GITHUB_TOKEN}`, 'User-Agent': 'urgence-514-backend' }
-  });
+  const r = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/applications.json?ref=${GITHUB_BRANCH}`, { headers: { Authorization: `token ${GITHUB_TOKEN}`, 'User-Agent': 'urgence-514-backend' } });
   if (r.status === 404) return { list: [], sha: null };
   const d = await r.json();
   return { list: JSON.parse(Buffer.from(d.content, 'base64').toString('utf8') || '[]'), sha: d.sha };
@@ -79,9 +61,7 @@ async function saveApplications(list) {
       const { sha } = await githubRead();
       const body = { message: 'update applications', content: Buffer.from(JSON.stringify(list, null, 2)).toString('base64'), branch: GITHUB_BRANCH };
       if (sha) body.sha = sha;
-      const r = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/applications.json`, {
-        method: 'PUT', headers: { Authorization: `token ${GITHUB_TOKEN}`, 'User-Agent': 'urgence-514-backend', 'Content-Type': 'application/json' }, body: JSON.stringify(body)
-      });
+      const r = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/applications.json`, { method: 'PUT', headers: { Authorization: `token ${GITHUB_TOKEN}`, 'User-Agent': 'urgence-514-backend', 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       if (r.ok) return;
       if (r.status === 409 || r.status === 422) continue;
       throw new Error('GitHub save failed: ' + r.status);
@@ -93,14 +73,12 @@ async function saveApplications(list) {
 // ===== TOKENS & AUTH =====
 function signToken(payload) {
   const data = Buffer.from(JSON.stringify(payload)).toString('base64url');
-  const sig = crypto.createHmac('sha256', SECRET).update(data).digest('base64url');
-  return data + '.' + sig;
+  return data + '.' + crypto.createHmac('sha256', SECRET).update(data).digest('base64url');
 }
 function verifyToken(token) {
   try {
     const [data, sig] = token.split('.');
-    const expected = crypto.createHmac('sha256', SECRET).update(data).digest('base64url');
-    if (sig !== expected) return null;
+    if (sig !== crypto.createHmac('sha256', SECRET).update(data).digest('base64url')) return null;
     const payload = JSON.parse(Buffer.from(data, 'base64url').toString());
     if (payload.exp < Date.now()) return null;
     return payload;
@@ -137,10 +115,7 @@ app.get('/auth/discord/callback', async (req, res) => {
   const { code, state } = req.query;
   if (!code) return res.redirect(SITE);
   try {
-    const tokenRes = await fetch('https://discord.com/api/oauth2/token', {
-      method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({ client_id: DISCORD_CLIENT_ID, client_secret: DISCORD_CLIENT_SECRET, grant_type: 'authorization_code', code, redirect_uri: DISCORD_REDIRECT_URI })
-    });
+    const tokenRes = await fetch('https://discord.com/api/oauth2/token', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams({ client_id: DISCORD_CLIENT_ID, client_secret: DISCORD_CLIENT_SECRET, grant_type: 'authorization_code', code, redirect_uri: DISCORD_REDIRECT_URI }) });
     const tok = await tokenRes.json();
     if (!tok.access_token) return res.redirect(SITE);
     const userRes = await fetch('https://discord.com/api/users/@me', { headers: { Authorization: `Bearer ${tok.access_token}` } });
@@ -159,8 +134,7 @@ app.get('/auth/discord/callback', async (req, res) => {
 app.get('/api/auth/me', async (req, res) => {
   const user = getUserFromReq(req);
   if (!user) return res.status(401).json({ authorized: false });
-  const authorized = await hasAdminAccess(user.id);
-  res.json({ authorized, user: { id: user.id, username: user.username, avatar: user.avatar, hasRole: authorized } });
+  res.json({ authorized: await hasAdminAccess(user.id), user: { id: user.id, username: user.username, avatar: user.avatar, hasRole: await hasAdminAccess(user.id) } });
 });
 
 // ===== SOUMISSION CANDIDATURE =====
@@ -173,11 +147,7 @@ app.post('/api/applications', async (req, res) => {
 
   const channel = botClient.channels.cache.get(NEW_APP_CHANNEL_ID);
   if (channel) {
-    await channel.send({ embeds: [{
-      title: '📨 Nouvelle candidature staff', color: 5793266,
-      description: `<@${user.id}> (${user.username}) vient de soumettre une candidature.`,
-      footer: { text: 'Réponses consultables uniquement dans le panel admin' }, timestamp: new Date().toISOString()
-    }] }).catch(console.error);
+    await channel.send({ embeds: [{ title: '📨 Nouvelle candidature staff', color: 5793266, description: `<@${user.id}> (${user.username}) vient de soumettre une candidature.`, footer: { text: 'Réponses consultables uniquement dans le panel admin' }, timestamp: new Date().toISOString() }] }).catch(console.error);
   }
   res.json({ success: true });
 });
@@ -200,19 +170,15 @@ app.post('/api/applications/:discordId/:action', requireAdmin, async (req, res) 
   const app = apps.find(a => a.discordId === discordId && a.status === 'pending');
   if (!app) return res.status(404).json({ error: 'Candidature non trouvée' });
 
-  // Message personnalisé (optionnel) envoyé par le staff
   const customMessage = req.body.customMessage?.trim() || null;
-
-  // Réponses par défaut
   const DEFAULT_APPROVE = '🎉 Félicitations ! Ta candidature au poste de membre de la modération a été **approuvée**. Bienvenue dans l\'équipe d\'Urgence 514 RP ! Nous te contacterons bientôt pour la suite de ton intégration.';
   const DEFAULT_REJECT = 'Merci pour ta candidature au poste de membre de la modération. Malheureusement, elle n\'a **pas été retenue** cette fois-ci. Nous t\'invitons à repostuler dans quelques semaines après avoir gagné en expérience sur le serveur.';
-
   const finalMessage = customMessage || (action === 'approve' ? DEFAULT_APPROVE : DEFAULT_REJECT);
 
   app.status = action === 'approve' ? 'approved' : 'rejected';
   app.reviewedAt = new Date().toISOString();
   app.reviewedBy = req.user.username;
-  app.customMessage = customMessage; // On garde une trace
+  app.customMessage = customMessage;
   await saveApplications(apps);
 
   // 🎯 DONNER LE RÔLE SI APPROUVÉ
@@ -224,59 +190,39 @@ app.post('/api/applications/:discordId/:action', requireAdmin, async (req, res) 
         if (member) {
           await member.roles.add(APPROVED_ROLE_ID);
           console.log(`✅ Rôle ${APPROVED_ROLE_ID} ajouté à ${app.discordUsername}`);
-        } else {
-          console.warn(`⚠️ Membre ${discordId} introuvable dans le serveur`);
         }
       }
-    } catch (e) {
-      console.error('❌ Erreur lors de l\'ajout du rôle:', e.message);
-    }
+    } catch (e) { console.error('❌ Erreur ajout rôle:', e.message); }
   }
 
-  //  ENVOYER UN MP AU CANDIDAT (avec message personnalisé ou par défaut)
+  // 📩 ENVOYER UN MP AU CANDIDAT
   try {
     const user = await botClient.users.fetch(discordId).catch(() => null);
     if (user) {
       const { EmbedBuilder } = require('discord.js');
-      const embed = new EmbedBuilder()
-        .setColor(action === 'approve' ? 0x3BA55C : 0xED4245)
-        .setTitle(action === 'approve' ? '✅ Candidature approuvée' : '❌ Candidature refusée')
-        .setDescription(finalMessage)
-        .setFooter({ text: 'Urgence 514 RP', iconURL: LOGO })
-        .setTimestamp();
-      await user.send({ embeds: [embed] }).catch(() => {
-        console.log(`⚠️ MP fermés pour ${app.discordUsername}`);
-      });
+      await user.send({ embeds: [new EmbedBuilder().setColor(action === 'approve' ? 0x3BA55C : 0xED4245).setTitle(action === 'approve' ? '✅ Candidature approuvée' : '❌ Candidature refusée').setDescription(finalMessage).setFooter({ text: 'Urgence 514 RP' }).setTimestamp()] }).catch(() => {});
     }
-  } catch (e) {
-    console.error('Erreur envoi MP:', e.message);
-  }
+  } catch (e) { console.error('Erreur envoi MP:', e.message); }
 
-  // 📢 ENVOI DANS LE SALON DE RÉSULTATS (anonyme, sans "Traité par")
+  // 📢 ENVOI DANS LE SALON DE RÉSULTATS (AVEC PING GARANTI)
   const channel = botClient.channels.cache.get(RESULT_APP_CHANNEL_ID);
   if (channel) {
     const { EmbedBuilder } = require('discord.js');
     const resultEmbed = new EmbedBuilder()
       .setColor(action === 'approve' ? 0x3BA55C : 0xED4245)
-      .setTitle(action === 'approve' ? '✅ Candidature approuvée' : ' Candidature refusée')
-      .setDescription(`**Candidat :** <@${app.discordId}> (${app.discordUsername})`)
-      .addFields(
-        { name: 'Décision', value: action === 'approve' ? 'Approuvée' : 'Refusée', inline: true }
-      )
-      .setFooter({ text: 'Les réponses détaillées restent privées au panel admin' })
-      .setTimestamp();
+      .setTitle(action === 'approve' ? '✅ Candidature approuvée' : '❌ Candidature refusée')
+      .setDescription(`**Candidat :** <@${app.discordId}> (${app.discordUsername})`) // <-- Le ping est ici
+      .addFields({ name: 'Décision', value: action === 'approve' ? 'Approuvée' : 'Refusée', inline: true });
 
-    // Si message personnalisé, on l'ajoute dans l'embed du salon
     if (customMessage) {
-      resultEmbed.addFields({
-        name: '📝 Message envoyé au candidat',
-        value: customMessage.length > 200 ? customMessage.substring(0, 200) + '...' : customMessage
-      });
+      resultEmbed.addFields({ name: '📝 Message envoyé au candidat', value: customMessage.length > 200 ? customMessage.substring(0, 200) + '...' : customMessage });
     }
+    resultEmbed.setFooter({ text: 'Les réponses détaillées restent privées au panel admin' }).setTimestamp();
 
+    // ✅ allowedMentions force Discord à transformer <@ID> en un vrai ping bleu
     await channel.send({ 
       embeds: [resultEmbed],
-      allowedMentions: { users: [app.discordId] } // <-- CECI FORCE LE PING DE L'UTILISATEUR
+      allowedMentions: { users: [app.discordId] } 
     }).catch(console.error);
   }
 
