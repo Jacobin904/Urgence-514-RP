@@ -71,7 +71,8 @@ addCmd(new SlashCommandBuilder().setName('regles').addStringOption(o => o.setNam
   data.forEach(([t, d]) => e.addFields({ name: t, value: d, inline: false }));
   i.reply({ embeds: [e] });
 });
-addCmd(new SlashCommandBuilder().setName('langage').addStringOption(o => o.setName('terme').setDescription('Terme à chercher (optionnel)'), false), async i => {
+// ✅ CORRECTION ICI : suppression du ", false" mal placé
+addCmd(new SlashCommandBuilder().setName('langage').addStringOption(o => o.setName('terme').setDescription('Terme à chercher (optionnel)').setRequired(false)), async i => {
   const terme = i.options.getString('terme');
   if (terme) { const found = LANGAGE.find(([t]) => t.toLowerCase().includes(terme.toLowerCase())); if (found) return i.reply({ embeds: [baseEmbed().setTitle('🗣️ Langage RP').addFields({ name: found[0], value: found[1], inline: false })] }); return i.reply({ content: 'Terme introuvable.', ephemeral: true }); }
   const e = baseEmbed().setTitle('🗣️ Dictionnaire RP'); LANGAGE.forEach(([t, d]) => e.addFields({ name: t, value: d, inline: false })); i.reply({ embeds: [e] });
@@ -192,20 +193,19 @@ client.on('interactionCreate', async i => {
   try { await cmd.run(i); } catch (e) { console.error(e); if (!i.replied && !i.deferred) await i.reply({ content: '❌ Une erreur est survenue.', ephemeral: true }).catch(() => {}); }
 });
 
-// ===== START =====
-client.once('ready', async () => {
+// ✅ CORRECTION ICI : 'clientReady' au lieu de 'ready' pour éviter le warning
+client.once('clientReady', async () => {
   console.log('✅ Bot en ligne : ' + client.user.tag);
   client.user.setPresence({ status: 'online', activities: [{ name: 'urgrp • ER:LC', type: ActivityType.Watching }] });
   try {
     const { REST, Routes } = require('discord.js');
     const rest = new REST({ version: '10' }).setToken(BOT_TOKEN);
     await rest.put(Routes.applicationGuildCommands(client.user.id, GUILD_ID), { body: [...commands.values()].map(c => c.builder.toJSON()) });
-    console.log(`✅ ${commands.size} commandes enregistrées.`);
+    console.log(`✅ ${commands.size} commandes enregistrées avec succès.`);
   } catch (e) { console.error('Erreur commandes:', e.message); }
 });
 
 if (BOT_TOKEN) client.login(BOT_TOKEN).catch(e => console.error('❌ Erreur de connexion du bot:', e.message));
 else console.warn('⚠️ BOT_TOKEN manquant.');
 
-// EXPORT POUR SERVER.JS
 module.exports = client;
