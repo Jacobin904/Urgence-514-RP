@@ -70,27 +70,67 @@ client.on('guildMemberRemove', async (member) => {
   console.log(`[LOG] Membre parti : ${member.user.tag} (${member.id})`);
 });
 
-// ===== AUTO-MODÉRATION (Anti-Spam basique) =====
+// ===== AUTO-MODÉRATION (Anti-Spam avec Logs et Sanctions) =====
 client.on('messageCreate', async (message) => {
+  // 1. Ignorer les bots et les messages hors du serveur
   if (message.author.bot || !message.guild || message.guild.id !== GUILD_ID) return;
-  if (isStaff(message)) return; // Le staff est immunisé
+
+  // 2. Vérification Staff (CORRIGÉE pour les messages)
+  const isAuthorStaff = isSuperAdmin(message.author.id) || 
+                        message.member?.permissions.has(PermissionFlagsBits.ManageMessages) || 
+                        message.member?.roles.cache.has(REQUIRED_ROLE_ID);
+  
+  if (isAuthorStaff) {
+    console.log(`[AUTO-MOD] ✅ Ignoré : ${message.author.tag} est considéré comme staff.`);
+    return;
+  }
+
+  console.log(`[AUTO-MOD] 📩 Message reçu de ${message.author.tag} : "${message.content.substring(0, 40)}..."`);
 
   const key = `${message.guild.id}-${message.author.id}`;
   const now = Date.now();
   const userSpam = spamMap.get(key) || [];
-  
-  // Garder seulement les messages des 5 dernières secondes
+
+  // Garder seulement les timestamps des 5 dernières secondes
   const recentMessages = userSpam.filter(timestamp => now - timestamp < 5000);
   recentMessages.push(now);
   spamMap.set(key, recentMessages);
 
-  if (recentMessages.length >= 4) { // 4 messages en 5 secondes
-    spamMap.delete(key); // Reset pour éviter les boucles
+  console.log(`[AUTO-MOD] ⏱️ ${message.author.tag} a envoyé ${recentMessages.length} message(s) en 5s.`);
+
+  // 3 messages en 5 secondes déclenchent la sanction (plus facile à tester)
+  if (recentMessages.length >= 3) {
+    spamMap.delete(key); // Reset pour éviter les boucles infinies
+    console.log(`[AUTO-MOD] 🚨 SPAM DÉTECTÉ pour ${message.author.tag} ! Application des sanctions...`);
+    
     try {
-      await message.delete().catch(() => {});
-      await message.author.send('⚠️ Tu as été limité pour spam. Ralentis un peu !').catch(() => {});
-      console.log(`[AUTO-MOD] Spam détecté de la part de ${message.author.tag}`);
-    } catch (e) {}
+      // 1. Supprimer le message (nécessite la permission "Gérer les messages" pour le bot)
+      await message.delete();
+      console.log(`[AUTO-MOD] 🗑️ Message de ${message.author.tag} supprimé avec succès.`);
+      
+      // 2. Avertissement en MP
+      await message.author.send({
+        embeds: [new EmbedBuilder()
+          .setColor(0xED4245)
+          .setTitle('⚠️ Auto-Modération - Urgence 514 RP')
+          .setDescription('Tu as envoyé trop de messages en trop peu de temps (spam). \nMerci de ralentir pour éviter des sanctions plus lourdes.')
+          .setFooter({ text: 'Urgence 514 RP • Développé par Jacobin904', iconURL: LOGO })
+        ]
+      }).catch(() => {
+        console.log(`[AUTO-MOD] ⚠️ Impossible d'envoyer un MP à ${message.author.tag} (MP fermés).`);
+      });
+
+      // 3. Sanction : Timeout de 1 minute (60000 ms)
+      if (message.member && message.member.moderatable) {
+        await message.member.timeout(60000, 'Auto-Mod : Spam de messages');
+        console.log(`[AUTO-MOD] 🔇 ${message.author.tag} mis en timeout (sourdine) pour 1 minute.`);
+      } else {
+        console.log(`[AUTO-MOD] ⚠️ Impossible de mettre ${message.author.tag} en timeout (rôle trop élevé ou perms manquantes).`);
+      }
+
+    } catch (e) {
+      console.error(`[AUTO-MOD] ❌ Erreur lors de la sanction de ${message.author.tag}:`, e.message);
+    }
   }
 });
 
