@@ -37,7 +37,17 @@ header.scrolled{border-color:#E5E5E5;box-shadow:0 2px 8px rgba(0,0,0,.06)}
 .nav-links a{color:var(--dark);font-weight:600;font-size:.95rem;transition:color .2s;white-space:nowrap;padding:8px 0}
 .nav-links a:hover{color:var(--brand)}
 .nav-cta{display:flex;gap:14px;align-items:center;flex-shrink:0}
-.nav-cta .btn{white-space:nowrap}
+
+/* ===== BOUTONS ===== */
+.btn{display:inline-flex;align-items:center;gap:10px;font-weight:600;font-size:.95rem;border-radius:40px;padding:12px 24px;transition:all .2s;white-space:nowrap}
+.btn-primary{background:var(--brand);color:#fff;box-shadow:0 8px 16px rgba(11,91,215,.24)}
+.btn-primary:hover{background:var(--brand-hover);transform:translateY(-2px);box-shadow:0 12px 24px rgba(11,91,215,.32)}
+.btn-secondary{background:var(--dark);color:#fff}
+.btn-secondary:hover{background:#36393F;transform:translateY(-2px)}
+.btn-white{background:#fff;color:var(--dark);border:2px solid #E5E5E5}
+.btn-white:hover{border-color:var(--brand);color:var(--brand);transform:translateY(-2px)}
+.btn-sm{padding:10px 20px;font-size:.88rem}
+.btn-lg{padding:16px 32px;font-size:1.05rem}
 .burger{display:none;background:none;font-size:1.5rem;color:var(--dark)}
 
 /* Menu burger sur écrans moyens */
@@ -46,6 +56,7 @@ header.scrolled{border-color:#E5E5E5;box-shadow:0 2px 8px rgba(0,0,0,.06)}
   .nav-links{display:none;position:absolute;top:80px;left:0;right:0;background:var(--white);flex-direction:column;padding:24px 32px;gap:20px;border-bottom:1px solid #E5E5E5;box-shadow:0 8px 24px rgba(0,0,0,.1)}
   .nav-links.open{display:flex}
   .burger{display:block}
+}
 }
 
 /* ===== HERO ===== */
