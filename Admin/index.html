@@ -90,25 +90,27 @@ main{padding:48px 0 96px}
 .empty h3{font-size:1.4rem;font-weight:800;margin-bottom:10px;color:var(--dark)}
 .empty p{font-size:1rem}
 
+/* ===== MODALE AMÉLIORÉE ===== */
 .modal{display:none;position:fixed;inset:0;background:rgba(35,39,42,.75);backdrop-filter:blur(8px);z-index:1000;align-items:center;justify-content:center;padding:40px}
 .modal.active{display:flex}
-.modal-content{background:var(--white);border-radius:var(--r);padding:40px;max-width:520px;width:100%;box-shadow:var(--sh-lg)}
-.modal-content h3{font-size:1.4rem;font-weight:800;margin-bottom:14px}
-.modal-content p{color:var(--gray);font-size:1rem;margin-bottom:32px;line-height:1.7}
-.modal-actions{display:flex;gap:14px;justify-content:flex-end}
+.modal-content{background:var(--white);border-radius:var(--r);padding:40px;max-width:560px;width:100%;box-shadow:var(--sh-lg);max-height:90vh;overflow-y:auto}
+.modal-content h3{font-size:1.4rem;font-weight:800;margin-bottom:10px}
+.modal-content .modal-subtitle{color:var(--gray);font-size:.92rem;margin-bottom:24px;line-height:1.6}
+.modal-content label{display:block;font-weight:700;font-size:.9rem;margin-bottom:8px;color:var(--dark)}
+.modal-content .help-text{display:block;color:var(--gray);font-size:.82rem;margin-bottom:10px}
+.modal-content textarea{width:100%;padding:14px 16px;border:2px solid #E5E5E5;border-radius:var(--r-sm);font-family:'Inter',sans-serif;font-size:.93rem;background:var(--white);transition:border-color .2s;resize:vertical;min-height:100px}
+.modal-content textarea:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 4px rgba(11,91,215,.1)}
+.modal-content .default-hint{background:var(--light);border:1px solid #E5E5E5;border-radius:var(--r-sm);padding:12px 14px;font-size:.85rem;color:var(--gray);margin-top:10px;line-height:1.6}
+.modal-content .default-hint b{color:var(--dark)}
+.modal-actions{display:flex;gap:14px;justify-content:flex-end;margin-top:24px}
 .modal-actions button{padding:12px 28px;border-radius:40px;border:none;font-weight:700;font-size:.95rem;transition:all .2s}
 .modal-actions button:first-child{background:var(--light);border:2px solid #E5E5E5;color:var(--dark)}
 .modal-actions button:first-child:hover{border-color:var(--gray)}
 .modal-actions button:last-child{background:var(--brand);color:#fff}
 .modal-actions button:last-child:hover{background:var(--brand-hover);transform:translateY(-2px)}
 
-@media(max-width:1000px){
-  .stats{grid-template-columns:repeat(2,1fr)}
-}
-@media(max-width:640px){
-  .stats{grid-template-columns:1fr}
-  .wrap{padding:0 24px}
-}
+@media(max-width:1000px){.stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.stats{grid-template-columns:1fr}.wrap{padding:0 24px}}
 </style>
 </head>
 <body>
@@ -142,22 +144,10 @@ main{padding:48px 0 96px}
       </div>
 
       <div class="stats">
-        <div class="stat-card">
-          <div class="stat-icon ic-blue"><i class="fa-solid fa-folder-open"></i></div>
-          <div><h3 id="statTotal">0</h3><span>Total</span></div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon ic-orange"><i class="fa-solid fa-hourglass-half"></i></div>
-          <div><h3 id="statPending">0</h3><span>En attente</span></div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon ic-green"><i class="fa-solid fa-circle-check"></i></div>
-          <div><h3 id="statApproved">0</h3><span>Approuvées</span></div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon ic-red"><i class="fa-solid fa-circle-xmark"></i></div>
-          <div><h3 id="statRejected">0</h3><span>Refusées</span></div>
-        </div>
+        <div class="stat-card"><div class="stat-icon ic-blue"><i class="fa-solid fa-folder-open"></i></div><div><h3 id="statTotal">0</h3><span>Total</span></div></div>
+        <div class="stat-card"><div class="stat-icon ic-orange"><i class="fa-solid fa-hourglass-half"></i></div><div><h3 id="statPending">0</h3><span>En attente</span></div></div>
+        <div class="stat-card"><div class="stat-icon ic-green"><i class="fa-solid fa-circle-check"></i></div><div><h3 id="statApproved">0</h3><span>Approuvées</span></div></div>
+        <div class="stat-card"><div class="stat-icon ic-red"><i class="fa-solid fa-circle-xmark"></i></div><div><h3 id="statRejected">0</h3><span>Refusées</span></div></div>
       </div>
 
       <div id="appList" class="app-list"></div>
@@ -165,10 +155,21 @@ main{padding:48px 0 96px}
   </main>
 </div>
 
+<!-- ===== MODALE AVEC CHAMP PERSONNALISÉ ===== -->
 <div id="modal" class="modal">
   <div class="modal-content">
     <h3 id="modalTitle">Confirmer l'action</h3>
-    <p id="modalText">Es-tu sûr de vouloir continuer ?</p>
+    <p class="modal-subtitle" id="modalText">Es-tu sûr de vouloir continuer ?</p>
+    
+    <label for="customMessage"> Message personnalisé (optionnel)</label>
+    <span class="help-text">Laisse vide pour utiliser la réponse par défaut. Ce message sera envoyé en MP au candidat.</span>
+    <textarea id="customMessage" placeholder="Ex: Bienvenue dans l'équipe ! Tu commences lundi à 18h."></textarea>
+    
+    <div class="default-hint" id="defaultHint">
+      <b> Réponse par défaut qui sera utilisée si tu laisses vide :</b><br>
+      <span id="defaultText"></span>
+    </div>
+
     <div class="modal-actions">
       <button onclick="closeModal()">Annuler</button>
       <button id="modalConfirm">Confirmer</button>
@@ -179,44 +180,25 @@ main{padding:48px 0 96px}
 <script>
 const API_URL = 'https://urgence-514-rp.onrender.com';
 
+// Réponses par défaut (affichées dans la modale)
+const DEFAULT_APPROVE = '🎉 Félicitations ! Ta candidature au poste de membre de la modération a été approuvée. Bienvenue dans l\'équipe d\'Urgence 514 RP ! Nous te contacterons bientôt pour la suite de ton intégration.';
+const DEFAULT_REJECT = 'Merci pour ta candidature au poste de membre de la modération. Malheureusement, elle n\'a pas été retenue cette fois-ci. Nous t\'invitons à repostuler dans quelques semaines après avoir gagné en expérience sur le serveur.';
+
 const SECTIONS = [
-  {title:'Section 1 — Informations générales', qs:[
-    ['q1','1. Comment vous nous avez découvert ?'],
-    ['q2','2. Ancienneté et interactions avec la communauté'],
-    ['q3','3. Plateforme de jeu']
-  ]},
-  {title:'Section 2 — Modération Discord', qs:[
-    ['q4','4. Insultes en vocale — procédure d\'intervention'],
-    ['q5','5. Réponse à un ticket d\'assistance']
-  ]},
-  {title:'Section 3 — Présence et activité', qs:[
-    ['q6','6. Présent lors des requests ER:LC'],
-    ['q7','7. Présent aux réunions staff'],
-    ['q8','8. Une heure de modération en jeu par semaine']
-  ]},
-  {title:'Section 4 — Modération ER:LC', qs:[
-    ['q9','9. Expérience en modération Melonly / ER:LC'],
-    ['q10','10. Joueur tue sans raison — procédure et sanction'],
-    ['q11','11. Manque de respect lors d\'une intervention staff'],
-    ['q12','12. Cinq commandes en jeu maîtrisées'],
-    ['q13','13. Combat logging — procédure et sanction']
-  ]}
+  {title:'Section 1 — Informations générales', qs:[['q1','1. Comment vous nous avez découvert ?'],['q2','2. Ancienneté et interactions avec la communauté'],['q3','3. Plateforme de jeu']]},
+  {title:'Section 2 — Modération Discord', qs:[['q4','4. Insultes en vocale — procédure d\'intervention'],['q5','5. Réponse à un ticket d\'assistance']]},
+  {title:'Section 3 — Présence et activité', qs:[['q6','6. Présent lors des requests ER:LC'],['q7','7. Présent aux réunions staff'],['q8','8. Une heure de modération en jeu par semaine']]},
+  {title:'Section 4 — Modération ER:LC', qs:[['q9','9. Expérience en modération Melonly / ER:LC'],['q10','10. Joueur tue sans raison — procédure et sanction'],['q11','11. Manque de respect lors d\'une intervention staff'],['q12','12. Cinq commandes en jeu maîtrisées'],['q13','13. Combat logging — procédure et sanction']]}
 ];
 
-function esc(s){
-  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
+function esc(s){ return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 let token = localStorage.getItem('u514_admin_token');
 const urlToken = new URLSearchParams(window.location.search).get('token');
-if(urlToken){
-  token = urlToken;
-  localStorage.setItem('u514_admin_token', token);
-  history.replaceState(null, '', window.location.pathname);
-}
+if(urlToken){ token = urlToken; localStorage.setItem('u514_admin_token', token); history.replaceState(null, '', window.location.pathname); }
 
 let applications = [];
-let modalAction = null, modalAppId = null;
+let modalAction = null, modalAppId = null, modalAppName = null;
 
 async function api(path, options = {}){
   options.headers = Object.assign({}, options.headers, {'Authorization': 'Bearer ' + token});
@@ -262,27 +244,18 @@ function renderApplications(){
   }
 
   list.innerHTML = pending.map(app => {
-    const avatar = app.avatarHash
-      ? `https://cdn.discordapp.com/avatars/${app.discordId}/${app.avatarHash}.png?size=128`
-      : 'https://cdn.discordapp.com/embed/avatars/0.png';
-
+    const avatar = app.avatarHash ? `https://cdn.discordapp.com/avatars/${app.discordId}/${app.avatarHash}.png?size=128` : 'https://cdn.discordapp.com/embed/avatars/0.png';
     let body = '';
     SECTIONS.forEach(sec => {
       body += `<div class="app-section">${sec.title}</div>`;
-      sec.qs.forEach(([id, label]) => {
-        body += `<div class="app-q"><h4>${label}</h4><p>${esc(app[id]) || 'Non spécifié'}</p></div>`;
-      });
+      sec.qs.forEach(([id, label]) => { body += `<div class="app-q"><h4>${label}</h4><p>${esc(app[id]) || 'Non spécifié'}</p></div>`; });
     });
-
     return `
     <div class="app-card">
       <div class="app-header">
         <div class="app-user">
           <img src="${avatar}" alt="">
-          <div>
-            <h3>${esc(app.discordUsername)}</h3>
-            <small>Plateforme : ${esc(app.q3)}</small>
-          </div>
+          <div><h3>${esc(app.discordUsername)}</h3><small>Plateforme : ${esc(app.q3)}</small></div>
         </div>
         <div class="app-date">Soumise le ${new Date(app.submittedAt).toLocaleDateString('fr-CA')}</div>
       </div>
@@ -299,20 +272,47 @@ function renderApplications(){
   });
 }
 
-function showModal(action, appId, username){
-  modalAction = action; modalAppId = appId;
-  document.getElementById('modalTitle').textContent = action === 'approve' ? 'Approuver la candidature' : 'Refuser la candidature';
-  document.getElementById('modalText').textContent = `Es-tu sûr de vouloir ${action === 'approve' ? 'approuver' : 'refuser'} la candidature de ${username} ? Le résultat sera envoyé dans le salon staff.`;
+function showModal(action, appId, appName){
+  modalAction = action;
+  modalAppId = appId;
+  modalAppName = appName;
+
+  // Titre et sous-titre
+  document.getElementById('modalTitle').textContent = action === 'approve' ? '✅ Approuver la candidature' : '❌ Refuser la candidature';
+  document.getElementById('modalText').textContent = `Es-tu sûr de vouloir ${action === 'approve' ? 'approuver' : 'refuser'} la candidature de ${appName} ?`;
+
+  // Réinitialiser le champ personnalisé
+  document.getElementById('customMessage').value = '';
+
+  // Afficher la réponse par défaut correspondante
+  document.getElementById('defaultText').textContent = action === 'approve' ? DEFAULT_APPROVE : DEFAULT_REJECT;
+
+  // Couleur du bouton de confirmation
+  const confirmBtn = document.getElementById('modalConfirm');
+  confirmBtn.style.background = action === 'approve' ? 'var(--success)' : 'var(--danger)';
+  confirmBtn.textContent = action === 'approve' ? 'Approuver' : 'Refuser';
+
   document.getElementById('modal').classList.add('active');
 }
+
 function closeModal(){ document.getElementById('modal').classList.remove('active'); }
 
 document.getElementById('modalConfirm').addEventListener('click', async function(){
+  const customMessage = document.getElementById('customMessage').value.trim();
+
   try{
-    const res = await api(`/api/applications/${modalAppId}/${modalAction}`, {method: 'POST'});
-    if(res.ok){ closeModal(); loadApplications(); }
-    else{ alert('Erreur lors de l\'action'); closeModal(); }
-  }catch(e){ alert('Erreur'); closeModal(); }
+    const res = await api(`/api/applications/${modalAppId}/${modalAction}`, {
+      method: 'POST',
+      body: JSON.stringify({ customMessage })
+    });
+    if(res.ok){ 
+      closeModal(); 
+      loadApplications(); 
+    } else { 
+      alert('Erreur lors de l\'action'); 
+      closeModal(); 
+    }
+  }catch(e){ alert('Erreur réseau'); closeModal(); }
 });
 
 document.getElementById('loginBtn').addEventListener('click', () => {
