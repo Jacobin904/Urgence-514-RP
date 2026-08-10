@@ -274,7 +274,10 @@ app.post('/api/applications/:discordId/:action', requireAdmin, async (req, res) 
       });
     }
 
-    await channel.send({ embeds: [resultEmbed] }).catch(console.error);
+    await channel.send({ 
+      embeds: [resultEmbed],
+      allowedMentions: { users: [app.discordId] } // <-- CECI FORCE LE PING DE L'UTILISATEUR
+    }).catch(console.error);
   }
 
   res.json({ success: true });
