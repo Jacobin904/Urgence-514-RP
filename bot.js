@@ -573,7 +573,7 @@ registerCommand(
       .setTitle(`${ICONS.TEAM} Équipe`)
       .setDescription('Les membres qui portent la vision d\'Urgence 514 RP:')
       .addFields(
-        { name: '▸ Fondateur', value: '𝐌𝟒𝐋𝐄𝐇𝐎𝐂𝐋𝐀𝐓.𝐐𝐂 (@maxlechocolat.qc)', inline: false },
+        { name: '▸ Fondateur', value: '𝐌𝟒𝐗𝐋𝐄𝐂𝐇𝐎𝐂𝐎𝐋𝐀𝐓.𝐐𝐂 (@maxlechocolat.qc)', inline: false },
         { name: '▸ Fondateur Adjoint', value: 'L. K TV (@l.ktv)', inline: false },
         { name: '▸ Manager', value: '!Bibibopm (@bibibopm_84423)', inline: false },
         { name: '▸ Développeur Web', value: 'Jacobin Babouain (@jacobin904)', inline: false }
