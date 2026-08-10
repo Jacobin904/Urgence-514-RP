@@ -7,87 +7,108 @@
 <link rel="icon" href="https://cdn.discordapp.com/icons/1475659636819493089/8a80480870b623a2afc4d2d5cc14bfbf.webp?size=1024">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
 :root{
-  --bg:#F7F9FC; --surface:#FFFFFF;
-  --ink:#0A1628; --ink-2:#33415C; --muted:#64748B; --line:#E5EAF2;
-  --brand:#0B5BD7; --brand-2:#0A3D8F; --brand-soft:#EBF2FE;
-  --navy:#0A1628;
-  --success:#16A34A; --danger:#DC2626;
-  --r:16px; --r-sm:10px;
-  --sh-sm:0 1px 2px rgba(10,22,40,.06); --sh-md:0 8px 24px rgba(10,22,40,.08);
+  --brand:#0B5BD7; --brand-hover:#0A4AB8; --brand-light:#E8F0FE;
+  --dark:#23272A; --darker:#2C2F33; --gray:#99AAB5; --light:#F6F6F6;
+  --white:#FFFFFF; --success:#3BA55C; --danger:#ED4245;
+  --r:16px; --r-sm:12px;
+  --sh-sm:0 2px 8px rgba(0,0,0,.06);
+  --sh-md:0 8px 24px rgba(0,0,0,.08);
+  --sh-lg:0 24px 64px rgba(0,0,0,.12);
 }
+
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink-2);line-height:1.7;-webkit-font-smoothing:antialiased}
+body{font-family:'Inter',sans-serif;background:var(--light);color:var(--dark);line-height:1.6;-webkit-font-smoothing:antialiased}
 img{display:block;max-width:100%}
 button{font-family:'Inter',sans-serif;cursor:pointer}
-h1,h2,h3,h4{font-family:'Sora';color:var(--ink);letter-spacing:-.02em}
-.wrap{max-width:1100px;margin:0 auto;padding:0 28px}
+h1,h2,h3,h4{letter-spacing:-.02em;color:var(--dark)}
 
-header{background:var(--navy);color:#fff;padding:18px 0;border-bottom:1px solid rgba(255,255,255,.08)}
-.nav{display:flex;align-items:center;justify-content:space-between}
-.logo{display:flex;align-items:center;gap:12px;font-family:'Sora';font-weight:700}
-.logo img{width:40px;height:40px;border-radius:10px}
-.logo span{color:#6EA8FF}
-.btn{display:inline-flex;align-items:center;gap:10px;border:none;font-weight:600;font-size:.9rem;border-radius:var(--r-sm);padding:11px 20px;transition:all .2s}
+header{background:var(--darker);color:#fff;padding:20px 0;border-bottom:1px solid rgba(255,255,255,.1)}
+.nav{max-width:1264px;margin:0 auto;padding:0 40px;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:14px;font-weight:800;font-size:1.1rem}
+.logo img{width:48px;height:48px;border-radius:14px}
+.logo span{color:#7289DA;margin-left:4px}
+.btn{display:inline-flex;align-items:center;gap:10px;font-weight:600;font-size:.95rem;border-radius:40px;padding:12px 24px;transition:all .2s}
 .btn-danger{background:var(--danger);color:#fff}
-.btn-danger:hover{background:#B91C1C}
+.btn-danger:hover{background:#C73538;transform:translateY(-2px)}
 
-main{padding:48px 0 90px}
-.page-head{text-align:center;margin-bottom:40px}
-.page-head h1{font-size:2rem;font-weight:800;margin-bottom:8px}
-.page-head p{color:var(--muted)}
+main{padding:48px 0 96px}
+.wrap{max-width:1264px;margin:0 auto;padding:0 40px}
 
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:36px}
-.stat-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px;display:flex;align-items:center;gap:16px;box-shadow:var(--sh-sm)}
-.stat-card .ic{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
-.ic.blue{background:var(--brand-soft);color:var(--brand)}
-.ic.orange{background:#FFF7ED;color:#EA580C}
-.ic.green{background:#F0FDF4;color:var(--success)}
-.ic.red{background:#FEF2F2;color:var(--danger)}
-.stat-card b{display:block;font-family:'Sora';font-size:1.5rem;font-weight:800;color:var(--ink);line-height:1.1}
-.stat-card span{font-size:.8rem;color:var(--muted);font-weight:600}
+.page-head{text-align:center;margin-bottom:48px}
+.page-head h1{font-size:2.2rem;font-weight:900;margin-bottom:12px}
+.page-head p{color:var(--gray);font-size:1.1rem}
 
-.app-list{display:flex;flex-direction:column;gap:20px}
-.app-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh-sm);overflow:hidden}
-.app-header{display:flex;justify-content:space-between;align-items:center;padding:20px 28px;background:var(--bg);border-bottom:1px solid var(--line);gap:16px;flex-wrap:wrap}
-.app-user{display:flex;gap:14px;align-items:center}
-.app-user img{width:48px;height:48px;border-radius:50%;border:2px solid #fff;box-shadow:var(--sh-sm)}
-.app-user h3{font-size:1.02rem;font-weight:700}
-.app-user small{color:var(--muted);font-size:.82rem}
-.app-date{color:var(--muted);font-size:.82rem;font-weight:600}
-.app-body{padding:26px 28px}
-.app-section{margin:0 0 14px;font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--brand);display:flex;align-items:center;gap:10px}
-.app-section::after{content:'';flex:1;height:1px;background:var(--line)}
-.app-q{margin-bottom:16px}
-.app-q h4{font-size:.88rem;font-weight:700;color:var(--ink);margin-bottom:6px}
-.app-q p{font-size:.9rem;background:var(--bg);border:1px solid var(--line);border-radius:var(--r-sm);padding:12px 14px;white-space:pre-wrap}
-.app-actions{display:flex;gap:12px;justify-content:flex-end;padding:20px 28px;border-top:1px solid var(--line);background:var(--bg)}
-.btn-approve{background:var(--success);color:#fff;padding:12px 26px}
-.btn-approve:hover{background:#15803D}
-.btn-reject{background:var(--danger);color:#fff;padding:12px 26px}
-.btn-reject:hover{background:#B91C1C}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-bottom:48px}
+.stat-card{background:var(--white);border-radius:var(--r);padding:28px;display:flex;align-items:center;gap:20px;box-shadow:var(--sh-sm);transition:all .3s}
+.stat-card:hover{transform:translateY(-4px);box-shadow:var(--sh-md)}
+.stat-icon{width:64px;height:64px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0}
+.ic-blue{background:var(--brand-light);color:var(--brand)}
+.ic-orange{background:#FFF3E0;color:#F57C00}
+.ic-green{background:#E8F5E9;color:var(--success)}
+.ic-red{background:#FFEBEE;color:var(--danger)}
+.stat-card h3{font-size:1.8rem;font-weight:900;line-height:1;margin-bottom:4px}
+.stat-card span{font-size:.88rem;color:var(--gray);font-weight:600}
 
-.login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
-.login-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh-md);padding:48px 40px;max-width:460px;width:100%;text-align:center}
-.login-card img{width:64px;height:64px;border-radius:16px;margin:0 auto 20px;box-shadow:var(--sh-sm)}
-.login-card h1{font-size:1.5rem;font-weight:800;margin-bottom:10px}
-.login-card p{color:var(--muted);font-size:.93rem;margin-bottom:28px}
-.login-card .btn{background:#5865F2;color:#fff;width:100%;justify-content:center;padding:14px}
-.login-card .btn:hover{background:#4752C4}
-.login-note{margin-top:18px;font-size:.8rem;color:var(--muted)}
+.app-list{display:flex;flex-direction:column;gap:24px}
+.app-card{background:var(--white);border-radius:var(--r);box-shadow:var(--sh-sm);overflow:hidden;transition:all .3s}
+.app-card:hover{box-shadow:var(--sh-md)}
+.app-header{display:flex;justify-content:space-between;align-items:center;padding:24px 32px;background:var(--light);border-bottom:1px solid #E5E5E5}
+.app-user{display:flex;gap:18px;align-items:center}
+.app-user img{width:56px;height:56px;border-radius:50%;border:3px solid var(--white);box-shadow:var(--sh-sm)}
+.app-user h3{font-size:1.15rem;font-weight:800;margin-bottom:4px}
+.app-user small{color:var(--gray);font-size:.88rem;font-weight:600}
+.app-date{color:var(--gray);font-size:.88rem;font-weight:700}
 
-.empty{text-align:center;padding:70px 24px;color:var(--muted);background:var(--surface);border:1px dashed var(--line);border-radius:var(--r)}
-.empty i{font-size:2.6rem;margin-bottom:16px;color:var(--line)}
-.empty h3{margin-bottom:8px}
+.app-body{padding:32px}
+.app-section{margin:0 0 20px;font-size:.9rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--brand);display:flex;align-items:center;gap:12px}
+.app-section::after{content:'';flex:1;height:2px;background:var(--brand-light)}
+.app-q{margin-bottom:20px}
+.app-q h4{font-size:.95rem;font-weight:700;color:var(--dark);margin-bottom:8px}
+.app-q p{font-size:.93rem;background:var(--light);border:1px solid #E5E5E5;border-radius:var(--r-sm);padding:16px 18px;line-height:1.7;white-space:pre-wrap}
 
-.modal{display:none;position:fixed;inset:0;background:rgba(10,22,40,.6);backdrop-filter:blur(4px);z-index:1000;align-items:center;justify-content:center;padding:24px}
+.app-actions{display:flex;gap:16px;justify-content:flex-end;padding:24px 32px;border-top:1px solid #E5E5E5;background:var(--light)}
+.btn-approve{background:var(--success);color:#fff;padding:14px 32px;font-weight:700}
+.btn-approve:hover{background:#2D8A4A;transform:translateY(-2px);box-shadow:0 8px 20px rgba(59,165,92,.3)}
+.btn-reject{background:var(--danger);color:#fff;padding:14px 32px;font-weight:700}
+.btn-reject:hover{background:#C73538;transform:translateY(-2px);box-shadow:0 8px 20px rgba(237,66,69,.3)}
+
+.login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px}
+.login-card{background:var(--white);border-radius:24px;box-shadow:var(--sh-lg);padding:64px 48px;max-width:520px;width:100%;text-align:center}
+.login-card img{width:80px;height:80px;border-radius:20px;margin:0 auto 28px;box-shadow:var(--sh-md)}
+.login-card h1{font-size:1.8rem;font-weight:900;margin-bottom:14px}
+.login-card p{color:var(--gray);font-size:1rem;margin-bottom:36px;line-height:1.7}
+.login-card .btn{background:#5865F2;color:#fff;width:100%;justify-content:center;padding:16px;font-size:1.05rem}
+.login-card .btn:hover{background:#4752C4;transform:translateY(-2px)}
+.login-note{margin-top:24px;font-size:.88rem;color:var(--gray);font-weight:600}
+.login-note i{color:var(--brand)}
+
+.empty{text-align:center;padding:80px 40px;color:var(--gray);background:var(--white);border:2px dashed #E5E5E5;border-radius:var(--r)}
+.empty i{font-size:3.5rem;margin-bottom:20px;color:#E5E5E5}
+.empty h3{font-size:1.4rem;font-weight:800;margin-bottom:10px;color:var(--dark)}
+.empty p{font-size:1rem}
+
+.modal{display:none;position:fixed;inset:0;background:rgba(35,39,42,.75);backdrop-filter:blur(8px);z-index:1000;align-items:center;justify-content:center;padding:40px}
 .modal.active{display:flex}
-.modal-content{background:var(--surface);border-radius:var(--r);padding:34px;max-width:460px;width:100%;box-shadow:var(--sh-md)}
-.modal-content h3{font-size:1.2rem;margin-bottom:10px}
-.modal-content p{color:var(--muted);font-size:.93rem;margin-bottom:26px}
-.modal-actions{display:flex;gap:12px;justify-content:flex-end}
-.modal-actions button{padding:10px 22px;border-radius:var(--r-sm);border:none;font-weight:600}
+.modal-content{background:var(--white);border-radius:var(--r);padding:40px;max-width:520px;width:100%;box-shadow:var(--sh-lg)}
+.modal-content h3{font-size:1.4rem;font-weight:800;margin-bottom:14px}
+.modal-content p{color:var(--gray);font-size:1rem;margin-bottom:32px;line-height:1.7}
+.modal-actions{display:flex;gap:14px;justify-content:flex-end}
+.modal-actions button{padding:12px 28px;border-radius:40px;border:none;font-weight:700;font-size:.95rem;transition:all .2s}
+.modal-actions button:first-child{background:var(--light);border:2px solid #E5E5E5;color:var(--dark)}
+.modal-actions button:first-child:hover{border-color:var(--gray)}
+.modal-actions button:last-child{background:var(--brand);color:#fff}
+.modal-actions button:last-child:hover{background:var(--brand-hover);transform:translateY(-2px)}
+
+@media(max-width:1000px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:640px){
+  .stats{grid-template-columns:1fr}
+  .wrap{padding:0 24px}
+}
 </style>
 </head>
 <body>
@@ -104,10 +125,10 @@ main{padding:48px 0 90px}
 
 <div id="dashboard" style="display:none">
   <header>
-    <div class="wrap nav">
+    <div class="nav">
       <div class="logo">
         <img src="https://cdn.discordapp.com/icons/1475659636819493089/8a80480870b623a2afc4d2d5cc14bfbf.webp?size=1024" alt="Logo">
-        Urgence 514 RP <span>· Admin</span>
+        Urgence 514 RP<span>· Admin</span>
       </div>
       <button class="btn btn-danger" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Déconnexion</button>
     </div>
@@ -121,10 +142,22 @@ main{padding:48px 0 90px}
       </div>
 
       <div class="stats">
-        <div class="stat-card"><div class="ic blue"><i class="fa-solid fa-folder-open"></i></div><div><b id="statTotal">0</b><span>Total</span></div></div>
-        <div class="stat-card"><div class="ic orange"><i class="fa-solid fa-hourglass-half"></i></div><div><b id="statPending">0</b><span>En attente</span></div></div>
-        <div class="stat-card"><div class="ic green"><i class="fa-solid fa-circle-check"></i></div><div><b id="statApproved">0</b><span>Approuvées</span></div></div>
-        <div class="stat-card"><div class="ic red"><i class="fa-solid fa-circle-xmark"></i></div><div><b id="statRejected">0</b><span>Refusées</span></div></div>
+        <div class="stat-card">
+          <div class="stat-icon ic-blue"><i class="fa-solid fa-folder-open"></i></div>
+          <div><h3 id="statTotal">0</h3><span>Total</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon ic-orange"><i class="fa-solid fa-hourglass-half"></i></div>
+          <div><h3 id="statPending">0</h3><span>En attente</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon ic-green"><i class="fa-solid fa-circle-check"></i></div>
+          <div><h3 id="statApproved">0</h3><span>Approuvées</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon ic-red"><i class="fa-solid fa-circle-xmark"></i></div>
+          <div><h3 id="statRejected">0</h3><span>Refusées</span></div>
+        </div>
       </div>
 
       <div id="appList" class="app-list"></div>
@@ -137,14 +170,14 @@ main{padding:48px 0 90px}
     <h3 id="modalTitle">Confirmer l'action</h3>
     <p id="modalText">Es-tu sûr de vouloir continuer ?</p>
     <div class="modal-actions">
-      <button onclick="closeModal()" style="background:var(--bg);border:1px solid var(--line);color:var(--ink)">Annuler</button>
-      <button id="modalConfirm" style="background:var(--brand);color:#fff">Confirmer</button>
+      <button onclick="closeModal()">Annuler</button>
+      <button id="modalConfirm">Confirmer</button>
     </div>
   </div>
 </div>
 
 <script>
-const API_URL = 'https://urgence-514-rp.onrender.com'; // ⚠️ Ton URL Render
+const API_URL = 'https://urgence-514-rp.onrender.com';
 
 const SECTIONS = [
   {title:'Section 1 — Informations générales', qs:[
