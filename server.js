@@ -4,6 +4,7 @@ const crypto = require('crypto');
 const fs = require('fs').promises;
 const path = require('path');
 const { Client, GatewayIntentBits, ActivityType } = require('discord.js');
+require('./bot.js'); // Lance le bot Discord
 
 const app = express();
 app.use(express.json());
