@@ -2,11 +2,17 @@
  * ============================================================
  * URGENCE 514 RP - BOT DISCORD PROFESSIONNEL
  * ============================================================
- * Développé par Jacobin904
- * Serveur roleplay Roblox basé à Montréal
+ * Version: 3.0.0
+ * Développé par: Jacobin904
+ * Serveur: Urgence 514 RP (Roleplay Roblox - Montréal)
  * ============================================================
  */
 
+'use strict';
+
+// ============================================================
+// IMPORTS
+// ============================================================
 const {
   Client,
   GatewayIntentBits,
@@ -25,20 +31,92 @@ const {
 // ============================================================
 // CONFIGURATION
 // ============================================================
-const CONFIG = {
+const CONFIG = Object.freeze({
   BOT_TOKEN: process.env.BOT_TOKEN,
   GUILD_ID: process.env.GUILD_ID || '1475659636819493089',
   REQUIRED_ROLE_ID: process.env.REQUIRED_ROLE_ID || '1475659637289127937',
-  SUPER_ADMINS: ['1281784488854159421'],
-  COLOR: 0x0B5BD7,
-  COLOR_SUCCESS: 0x3BA55C,
-  COLOR_DANGER: 0xED4245,
-  COLOR_WARNING: 0xFAA61A,
+  SUPER_ADMINS: Object.freeze(['1281784488854159421']),
+  
+  // Couleurs
+  COLORS: Object.freeze({
+    PRIMARY: 0x0B5BD7,
+    SUCCESS: 0x3BA55C,
+    DANGER: 0xED4245,
+    WARNING: 0xFAA61A,
+    NEUTRAL: 0x99AAB5
+  }),
+  
+  // Assets
   LOGO: 'https://cdn.discordapp.com/icons/1475659636819493089/8a80480870b623a2afc4d2d5cc14bfbf.webp?size=1024',
-  GITHUB_TOKEN: process.env.GITHUB_TOKEN || '',
-  GITHUB_REPO: process.env.GITHUB_REPO || 'jacobin904/Urgence-514-RP',
-  GITHUB_BRANCH: process.env.GITHUB_BRANCH || 'main'
-};
+  
+  // GitHub (pour persistence)
+  GITHUB: Object.freeze({
+    TOKEN: process.env.GITHUB_TOKEN || '',
+    REPO: process.env.GITHUB_REPO || 'jacobin904/Urgence-514-RP',
+    BRANCH: process.env.GITHUB_BRANCH || 'main'
+  }),
+  
+  // Auto-modération
+  AUTO_MOD: Object.freeze({
+    SPAM_WINDOW_MS: 5000,
+    SPAM_THRESHOLD: 4,
+    TIMEOUT_DURATION_MS: 60000
+  })
+});
+
+// ============================================================
+// ICÔNES UNICODE (remplacement des emojis)
+// ============================================================
+const ICONS = Object.freeze({
+  // Navigation
+  ARROW: '▸',
+  CHECK: '✓',
+  CROSS: '',
+  WARNING: '⚠',
+  INFO: 'ℹ',
+  
+  // Catégories
+  HELP: '◈',
+  INFO: '◉',
+  CODE: '◆',
+  PING: '◐',
+  STATS: '◫',
+  RULES: '◼',
+  LANGUAGE: '',
+  DEPARTMENTS: '◪',
+  TEAM: '',
+  RECRUITMENT: '◰',
+  USER: '◦',
+  SERVER: '◫',
+  
+  // Modération
+  WARN: '▲',
+  KICK: '◤',
+  BAN: '',
+  UNBAN: '◣',
+  TIMEOUT: '◑',
+  CLEAR: '◌',
+  LOCK: '',
+  UNLOCK: '◨',
+  SLOWMODE: '◔',
+  
+  // Administration
+  ROLES: '',
+  SAY: '◧',
+  EMBED: '◪',
+  ANNOUNCE: '◫',
+  GIVEAWAY: '◉',
+  
+  // Notifications
+  BELL: '',
+  GIFT: '◈',
+  LIVE: '◐',
+  
+  // Statuts
+  ONLINE: '●',
+  OFFLINE: '○',
+  PENDING: '◐'
+});
 
 // ============================================================
 // INITIALISATION DU CLIENT
@@ -58,35 +136,54 @@ const client = new Client({
 // ============================================================
 // STOCKAGE EN MÉMOIRE
 // ============================================================
-const giveaways = new Map();
-const spamTracker = new Map();
-const commands = new Map();
+const state = {
+  giveaways: new Map(),
+  spamTracker: new Map(),
+  commands: new Map()
+};
 
 // ============================================================
-// FONCTIONS UTILITAIRES
+// UTILITAIRES
 // ============================================================
 
 /**
- * Crée un embed de base avec le style du serveur
+ * Crée un embed standardisé avec le style du serveur
  */
-function createEmbed() {
-  return new EmbedBuilder()
-    .setColor(CONFIG.COLOR)
-    .setFooter({ text: 'Urgence 514 RP • Développé par Jacobin904', iconURL: CONFIG.LOGO })
-    .setTimestamp();
+function createEmbed(options = {}) {
+  const embed = new EmbedBuilder()
+    .setColor(options.color || CONFIG.COLORS.PRIMARY)
+    .setFooter({ 
+      text: 'Urgence 514 RP • Développé par Jacobin904', 
+      iconURL: CONFIG.LOGO 
+    });
+  
+  if (options.timestamp !== false) {
+    embed.setTimestamp();
+  }
+  
+  return embed;
 }
 
 /**
- * Parse une durée (ex: "10m", "1h", "2d") en millisecondes
+ * Parse une durée formatée (ex: "10m", "1h", "2d") en millisecondes
  */
 function parseDuration(str) {
   if (!str) return null;
   const match = String(str).match(/^(\d+)\s*([smhd])$/i);
   if (!match) return null;
-  const value = parseInt(match[1]);
+  
+  const value = parseInt(match[1], 10);
   const unit = match[2].toLowerCase();
   const multipliers = { s: 1000, m: 60000, h: 3600000, d: 86400000 };
+  
   return value * multipliers[unit];
+}
+
+/**
+ * Formate une date en timestamp Discord
+ */
+function formatTimestamp(date) {
+  return `<t:${Math.floor(date.getTime() / 1000)}:R>`;
 }
 
 /**
@@ -117,19 +214,25 @@ function isMemberStaff(member) {
 }
 
 /**
- * Envoie un message d'erreur éphémère
+ * Envoie une réponse d'erreur éphémère
  */
 async function sendError(interaction, message) {
+  const content = `${ICONS.CROSS} ${message}`;
+  
   if (!interaction.replied && !interaction.deferred) {
-    await interaction.reply({ content: message, ephemeral: true }).catch(() => {});
+    await interaction.reply({ content, ephemeral: true }).catch(() => {});
+  } else if (interaction.deferred && !interaction.replied) {
+    await interaction.editReply({ content }).catch(() => {});
   }
 }
 
 /**
- * Formate un timestamp Discord
+ * Logger professionnel
  */
-function formatTimestamp(date) {
-  return `<t:${Math.floor(date.getTime() / 1000)}:R>`;
+function log(category, message, level = 'INFO') {
+  const timestamp = new Date().toISOString();
+  const levels = { INFO: '', WARN: '⚠', ERROR: '✕', SUCCESS: '✓' };
+  console.log(`[${timestamp}] [${level}] [${category}] ${message}`);
 }
 
 // ============================================================
@@ -138,35 +241,35 @@ function formatTimestamp(date) {
 
 client.on('messageDelete', async (message) => {
   if (message.author?.bot || !message.guild || message.guild.id !== CONFIG.GUILD_ID) return;
-  console.log(`[LOG] 🗑️ Message supprimé | Auteur: ${message.author.tag} | Canal: #${message.channel?.name || 'inconnu'} | Contenu: "${message.content?.substring(0, 50) || 'embed/média'}"`);
+  
+  log('MODERATION', `Message supprimé | Auteur: ${message.author.tag} | Canal: #${message.channel?.name || 'inconnu'}`);
 });
 
 client.on('messageUpdate', async (oldMessage, newMessage) => {
   if (oldMessage.author?.bot || !oldMessage.guild || oldMessage.guild.id !== CONFIG.GUILD_ID) return;
   if (oldMessage.content === newMessage.content) return;
-  console.log(`[LOG] ✏️ Message modifié | Auteur: ${oldMessage.author.tag} | Canal: #${oldMessage.channel?.name || 'inconnu'}`);
-  console.log(`[LOG]    Avant: "${oldMessage.content?.substring(0, 50) || '...'}"`);
-  console.log(`[LOG]    Après: "${newMessage.content?.substring(0, 50) || '...'}"`);
+  
+  log('MODERATION', `Message modifié | Auteur: ${oldMessage.author.tag} | Canal: #${oldMessage.channel?.name || 'inconnu'}`);
 });
 
 client.on('guildMemberAdd', async (member) => {
   if (member.guild.id !== CONFIG.GUILD_ID) return;
-  console.log(`[LOG] 👋 Nouveau membre | ${member.user.tag} (${member.id}) | Total: ${member.guild.memberCount}`);
+  log('MEMBRES', `Nouveau membre | ${member.user.tag} (${member.id}) | Total: ${member.guild.memberCount}`);
 });
 
 client.on('guildMemberRemove', async (member) => {
   if (member.guild.id !== CONFIG.GUILD_ID) return;
-  console.log(`[LOG]  Membre parti | ${member.user.tag} (${member.id}) | Total: ${member.guild.memberCount}`);
+  log('MEMBRES', `Membre parti | ${member.user.tag} (${member.id}) | Total: ${member.guild.memberCount}`);
 });
 
 client.on('guildBanAdd', async (ban) => {
   if (ban.guild.id !== CONFIG.GUILD_ID) return;
-  console.log(`[LOG] 🔨 Membre banni | ${ban.user.tag} (${ban.id})`);
+  log('MODERATION', `Membre banni | ${ban.user.tag} (${ban.id})`);
 });
 
 client.on('guildBanRemove', async (ban) => {
   if (ban.guild.id !== CONFIG.GUILD_ID) return;
-  console.log(`[LOG] 🔓 Membre débanni | ${ban.user.tag} (${ban.id})`);
+  log('MODERATION', `Membre débanni | ${ban.user.tag} (${ban.id})`);
 });
 
 // ============================================================
@@ -174,53 +277,45 @@ client.on('guildBanRemove', async (ban) => {
 // ============================================================
 
 client.on('messageCreate', async (message) => {
-  // Ignorer les bots et les messages hors serveur
   if (message.author.bot || !message.guild || message.guild.id !== CONFIG.GUILD_ID) return;
-  
-  // Ignorer le staff
   if (isMemberStaff(message.member)) return;
 
   const key = `${message.guild.id}-${message.author.id}`;
   const now = Date.now();
-  const userMessages = spamTracker.get(key) || [];
+  const userMessages = state.spamTracker.get(key) || [];
   
-  // Garder uniquement les messages des 5 dernières secondes
-  const recentMessages = userMessages.filter(timestamp => now - timestamp < 5000);
+  const recentMessages = userMessages.filter(timestamp => now - timestamp < CONFIG.AUTO_MOD.SPAM_WINDOW_MS);
   recentMessages.push(now);
-  spamTracker.set(key, recentMessages);
+  state.spamTracker.set(key, recentMessages);
 
-  // Détection de spam (4 messages en 5 secondes)
-  if (recentMessages.length >= 4) {
-    spamTracker.delete(key);
-    console.log(`[AUTO-MOD]  Spam détecté | ${message.author.tag} (${message.author.id})`);
+  if (recentMessages.length >= CONFIG.AUTO_MOD.SPAM_THRESHOLD) {
+    state.spamTracker.delete(key);
+    log('AUTO-MOD', `Spam détecté | ${message.author.tag} (${message.author.id})`, 'WARN');
     
     try {
-      // Supprimer le message
       await message.delete().catch(() => {
-        console.log(`[AUTO-MOD] ⚠️ Impossible de supprimer le message de ${message.author.tag}`);
+        log('AUTO-MOD', `Impossible de supprimer le message de ${message.author.tag}`, 'WARN');
       });
 
-      // Avertissement en MP
       await message.author.send({
         embeds: [new EmbedBuilder()
-          .setColor(CONFIG.COLOR_DANGER)
-          .setTitle('⚠️ Auto-Modération - Urgence 514 RP')
+          .setColor(CONFIG.COLORS.DANGER)
+          .setTitle(`${ICONS.WARNING} Auto-Modération - Urgence 514 RP`)
           .setDescription('Tu as envoyé trop de messages en trop peu de temps (spam).\nMerci de ralentir pour éviter des sanctions plus lourdes.')
           .setFooter({ text: 'Urgence 514 RP', iconURL: CONFIG.LOGO })
         ]
       }).catch(() => {
-        console.log(`[AUTO-MOD] ⚠️ MP fermés pour ${message.author.tag}`);
+        log('AUTO-MOD', `MP fermés pour ${message.author.tag}`, 'WARN');
       });
 
-      // Timeout de 1 minute
       if (message.member && message.member.moderatable) {
-        await message.member.timeout(60000, 'Auto-Mod: Spam de messages');
-        console.log(`[AUTO-MOD] 🔇 ${message.author.tag} mis en timeout (1 minute)`);
+        await message.member.timeout(CONFIG.AUTO_MOD.TIMEOUT_DURATION_MS, 'Auto-Mod: Spam de messages');
+        log('AUTO-MOD', `${message.author.tag} mis en timeout (1 minute)`, 'SUCCESS');
       } else {
-        console.log(`[AUTO-MOD] ️ Impossible de timeout ${message.author.tag} (rôle trop élevé)`);
+        log('AUTO-MOD', `Impossible de timeout ${message.author.tag} (rôle trop élevé)`, 'WARN');
       }
     } catch (error) {
-      console.error(`[AUTO-MOD] ❌ Erreur lors de la sanction: ${error.message}`);
+      log('AUTO-MOD', `Erreur lors de la sanction: ${error.message}`, 'ERROR');
     }
   }
 });
@@ -230,7 +325,7 @@ client.on('messageCreate', async (message) => {
 // ============================================================
 
 function registerCommand(builder, handler) {
-  commands.set(builder.name, { builder, handler });
+  state.commands.set(builder.name, { builder, handler });
 }
 
 // ============================================================
@@ -243,15 +338,15 @@ registerCommand(
     .setDescription('Affiche la liste de toutes les commandes disponibles'),
   async (interaction) => {
     const embed = createEmbed()
-      .setTitle('📚 Aide - Urgence 514 RP')
+      .setTitle(`${ICONS.HELP} Aide - Urgence 514 RP`)
       .setDescription('Voici toutes les commandes disponibles sur le serveur.')
       .addFields(
-        { name: '🌐 Informations', value: '`/help` `/info` `/code` `/ping` `/serverstats`', inline: false },
-        { name: '📜 Règlements & Langage', value: '`/regles` `/langage` `/departements` `/equipe`', inline: false },
-        { name: '👤 Utilisateur', value: '`/avatar` `/userinfo` `/serverinfo`', inline: false },
-        { name: '⭐ Recrutement', value: '`/recrutement`', inline: false },
-        { name: '🛡️ Modération', value: '`/warn` `/warnings` `/clearwarns` `/kick` `/ban` `/unban` `/timeout` `/clear` `/lock` `/unlock` `/slowmode`', inline: false },
-        { name: '⚙️ Administration', value: '`/roles` `/say` `/embed` `/annonce` `/giveaway`', inline: false }
+        { name: `${ICONS.INFO} Informations`, value: '`/help` `/info` `/code` `/ping` `/serverstats`', inline: false },
+        { name: `${ICONS.RULES} Règlements & Langage`, value: '`/regles` `/langage` `/departements` `/equipe`', inline: false },
+        { name: `${ICONS.USER} Utilisateur`, value: '`/avatar` `/userinfo` `/serverinfo`', inline: false },
+        { name: `${ICONS.RECRUITMENT} Recrutement`, value: '`/recrutement`', inline: false },
+        { name: `${ICONS.WARN} Modération`, value: '`/warn` `/warnings` `/clearwarns` `/kick` `/ban` `/unban` `/timeout` `/clear` `/lock` `/unlock` `/slowmode`', inline: false },
+        { name: `${ICONS.ROLES} Administration`, value: '`/roles` `/say` `/embed` `/annonce` `/giveaway`', inline: false }
       );
     
     await interaction.reply({ embeds: [embed] });
@@ -264,15 +359,15 @@ registerCommand(
     .setDescription('Affiche les informations du serveur'),
   async (interaction) => {
     const embed = createEmbed()
-      .setTitle('🚨 Urgence 514 RP')
+      .setTitle(`${ICONS.INFO} Urgence 514 RP`)
       .setDescription('Serveur roleplay Roblox immersif basé sur l\'île de Montréal.')
       .setThumbnail(CONFIG.LOGO)
       .addFields(
-        { name: '🎮 Code Roblox', value: '`urgrp`', inline: true },
-        { name: '📅 Fondation', value: '2026', inline: true },
-        { name: '🌐 Site web', value: '[jacobin904.github.io/Urgence-514-RP](https://jacobin904.github.io/Urgence-514-RP/)', inline: false },
-        { name: '💬 Discord', value: '[discord.gg/ENgnZ629k6](https://discord.gg/ENgnZ629k6)', inline: true },
-        { name: '🎵 TikTok', value: '[@urgence_514](https://www.tiktok.com/@urgence_514)', inline: true }
+        { name: 'Code Roblox', value: '`urgrp`', inline: true },
+        { name: 'Fondation', value: '2026', inline: true },
+        { name: 'Site web', value: '[jacobin904.github.io/Urgence-514-RP](https://jacobin904.github.io/Urgence-514-RP/)', inline: false },
+        { name: 'Discord', value: '[discord.gg/ENgnZ629k6](https://discord.gg/ENgnZ629k6)', inline: true },
+        { name: 'TikTok', value: '[@urgence_514](https://www.tiktok.com/@urgence_514)', inline: true }
       );
     
     await interaction.reply({ embeds: [embed] });
@@ -285,7 +380,7 @@ registerCommand(
     .setDescription('Affiche le code Roblox du serveur'),
   async (interaction) => {
     const embed = createEmbed()
-      .setTitle(' Code Roblox')
+      .setTitle(`${ICONS.CODE} Code Roblox`)
       .setDescription('Entre ce code dans Roblox pour rejoindre la ville :\n\n# `urgrp`');
     
     await interaction.reply({ embeds: [embed] });
@@ -297,12 +392,12 @@ registerCommand(
     .setName('ping')
     .setDescription('Affiche la latence du bot'),
   async (interaction) => {
-    const sent = await interaction.reply({ content: '🏓 Ping...', fetchReply: true });
+    const sent = await interaction.reply({ content: `${ICONS.PING} Calcul...`, fetchReply: true });
     const latency = sent.createdTimestamp - interaction.createdTimestamp;
     const apiPing = Math.round(client.ws.ping);
     
     await interaction.editReply({
-      content: `🏓 **Pong !**\n• Latence du bot: **${latency}ms**\n• API Discord: **${apiPing}ms**`
+      content: `${ICONS.PING} **Pong !**\n▸ Latence du bot: **${latency}ms**\n API Discord: **${apiPing}ms**`
     });
   }
 );
@@ -326,17 +421,17 @@ registerCommand(
     const boosts = guild.premiumSubscriptionCount || 0;
 
     const embed = createEmbed()
-      .setTitle(`📊 Analyse Complète: ${guild.name}`)
+      .setTitle(`${ICONS.STATS} Analyse Complète: ${guild.name}`)
       .setThumbnail(guild.iconURL({ size: 512 }))
       .addFields(
-        { name: '👥 Membres Totaux', value: `${totalMembers}`, inline: true },
-        { name: '🟢 En Ligne', value: `${onlineMembers}`, inline: true },
-        { name: '🤖 Bots', value: `${botMembers}`, inline: true },
-        { name: '👤 Humains', value: `${humanMembers}`, inline: true },
-        { name: '💎 Niveau de Boost', value: `Niveau ${boostLevel} (${boosts} boosts)`, inline: true },
-        { name: ' Salons', value: `${guild.channels.cache.size}`, inline: true },
-        { name: ' Rôles', value: `${guild.roles.cache.size}`, inline: true },
-        { name: '📅 Création', value: formatTimestamp(guild.createdAt), inline: false }
+        { name: 'Membres Totaux', value: `${totalMembers}`, inline: true },
+        { name: 'En Ligne', value: `${onlineMembers}`, inline: true },
+        { name: 'Bots', value: `${botMembers}`, inline: true },
+        { name: 'Humains', value: `${humanMembers}`, inline: true },
+        { name: 'Niveau de Boost', value: `Niveau ${boostLevel} (${boosts} boosts)`, inline: true },
+        { name: 'Salons', value: `${guild.channels.cache.size}`, inline: true },
+        { name: 'Rôles', value: `${guild.roles.cache.size}`, inline: true },
+        { name: 'Création', value: formatTimestamp(guild.createdAt), inline: false }
       );
     
     await interaction.editReply({ embeds: [embed] });
@@ -388,11 +483,11 @@ registerCommand(
     ];
 
     const rules = type === 'discord' ? rulesDiscord : rulesRoblox;
-    const title = type === 'discord' ? '📜 Règlement Discord' : '🎮 Règlement Roblox';
+    const title = type === 'discord' ? `${ICONS.RULES} Règlement Discord` : `${ICONS.RULES} Règlement Roblox`;
 
     const embed = createEmbed().setTitle(title);
     rules.forEach(([rule, description]) => {
-      embed.addFields({ name: rule, value: description, inline: false });
+      embed.addFields({ name: `▸ ${rule}`, value: description, inline: false });
     });
 
     await interaction.reply({ embeds: [embed] });
@@ -425,16 +520,19 @@ registerCommand(
       const found = langage.find(([t]) => t.toLowerCase().includes(terme.toLowerCase()));
       if (found) {
         const embed = createEmbed()
-          .setTitle('️ Langage RP')
+          .setTitle(`${ICONS.LANGUAGE} Langage RP`)
           .addFields({ name: found[0], value: found[1], inline: false });
         await interaction.reply({ embeds: [embed] });
       } else {
-        await interaction.reply({ content: '❌ Terme introuvable. Utilise `/langage` sans option pour voir tout le dictionnaire.', ephemeral: true });
+        await interaction.reply({ 
+          content: `${ICONS.CROSS} Terme introuvable. Utilise \`${interaction.commandName}\` sans option pour voir tout le dictionnaire.`, 
+          ephemeral: true 
+        });
       }
     } else {
-      const embed = createEmbed().setTitle('🗣️ Dictionnaire RP');
+      const embed = createEmbed().setTitle(`${ICONS.LANGUAGE} Dictionnaire RP`);
       langage.forEach(([terme, definition]) => {
-        embed.addFields({ name: terme, value: definition, inline: false });
+        embed.addFields({ name: `▸ ${terme}`, value: definition, inline: false });
       });
       await interaction.reply({ embeds: [embed] });
     }
@@ -455,11 +553,11 @@ registerCommand(
     ];
 
     const embed = createEmbed()
-      .setTitle('🚔 Départements')
+      .setTitle(`${ICONS.DEPARTMENTS} Départements`)
       .setDescription('Voici les départements disponibles sur Urgence 514 RP:');
     
     departements.forEach(([name, description]) => {
-      embed.addFields({ name: name, value: description, inline: false });
+      embed.addFields({ name: `▸ ${name}`, value: description, inline: false });
     });
 
     await interaction.reply({ embeds: [embed] });
@@ -472,13 +570,13 @@ registerCommand(
     .setDescription('Affiche l\'équipe du serveur'),
   async (interaction) => {
     const embed = createEmbed()
-      .setTitle('👥 Équipe')
+      .setTitle(`${ICONS.TEAM} Équipe`)
       .setDescription('Les membres qui portent la vision d\'Urgence 514 RP:')
       .addFields(
-        { name: '👑 Fondateur', value: '𝐌𝟒𝐋𝐄𝐂𝐇𝐎𝐂𝐎𝐋𝐀𝐓.𝐂 (@maxlechocolat.qc)', inline: false },
-        { name: '👑 Fondateur Adjoint', value: 'L. K TV (@l.ktv)', inline: false },
-        { name: '💼 Manager', value: '!Bibibopm (@bibibopm_84423)', inline: false },
-        { name: '💻 Développeur Web', value: 'Jacobin Babouain (@jacobin904)', inline: false }
+        { name: '▸ Fondateur', value: '𝐌𝟒𝐋𝐄𝐇𝐎𝐂𝐋𝐀𝐓.𝐐𝐂 (@maxlechocolat.qc)', inline: false },
+        { name: '▸ Fondateur Adjoint', value: 'L. K TV (@l.ktv)', inline: false },
+        { name: '▸ Manager', value: '!Bibibopm (@bibibopm_84423)', inline: false },
+        { name: '▸ Développeur Web', value: 'Jacobin Babouain (@jacobin904)', inline: false }
       );
     
     await interaction.reply({ embeds: [embed] });
@@ -491,8 +589,8 @@ registerCommand(
     .setDescription('Affiche les informations de recrutement staff'),
   async (interaction) => {
     const embed = createEmbed()
-      .setTitle('⭐ Recrutement Staff')
-      .setDescription('**Conditions pour postuler:**\n• Être sur PC\n• 14 ans et +\n• 7 jours sur le serveur\n• Moins de 10 sanctions\n\n⚠️ Demander des nouvelles = refus automatique.')
+      .setTitle(`${ICONS.RECRUITMENT} Recrutement Staff`)
+      .setDescription('**Conditions pour postuler:**\n▸ Être sur PC\n▸ 14 ans et +\n▸ 7 jours sur le serveur\n▸ Moins de 10 sanctions\n\n⚠ Demander des nouvelles = refus automatique.')
       .setURL('https://jacobin904.github.io/Urgence-514-RP/Recrutement/');
 
     const button = new ActionRowBuilder()
@@ -518,7 +616,7 @@ registerCommand(
   async (interaction) => {
     const user = interaction.options.getUser('utilisateur') || interaction.user;
     const embed = createEmbed()
-      .setTitle(`Avatar de ${user.username}`)
+      .setTitle(`${ICONS.USER} Avatar de ${user.username}`)
       .setImage(user.displayAvatarURL({ size: 512 }));
     
     await interaction.reply({ embeds: [embed] });
@@ -538,11 +636,11 @@ registerCommand(
     const member = await interaction.guild.members.fetch(user.id).catch(() => null);
 
     const embed = createEmbed()
-      .setTitle(`👤 ${user.username}`)
+      .setTitle(`${ICONS.USER} ${user.username}`)
       .setThumbnail(user.displayAvatarURL({ size: 256 }))
       .addFields(
         { name: 'ID', value: user.id, inline: true },
-        { name: 'Bot ?', value: user.bot ? 'Oui' : 'Non', inline: true },
+        { name: 'Bot', value: user.bot ? 'Oui' : 'Non', inline: true },
         { name: 'Compte créé', value: formatTimestamp(user.createdAt), inline: false },
         { name: 'A rejoint', value: member ? formatTimestamp(member.joinedAt) : 'Inconnu', inline: false },
         { name: 'Rôles', value: member && member.roles.cache.size > 1 
@@ -561,7 +659,7 @@ registerCommand(
   async (interaction) => {
     const guild = interaction.guild;
     const embed = createEmbed()
-      .setTitle(`🏙️ ${guild.name}`)
+      .setTitle(`${ICONS.SERVER} ${guild.name}`)
       .setThumbnail(guild.iconURL({ size: 512 }))
       .addFields(
         { name: 'Membres', value: `${guild.memberCount}`, inline: true },
@@ -594,14 +692,14 @@ registerCommand(
     ),
   async (interaction) => {
     if (!isStaff(interaction)) {
-      return sendError(interaction, '❌ Permission insuffisante.');
+      return sendError(interaction, 'Permission insuffisante.');
     }
 
     const target = interaction.options.getUser('utilisateur');
     const reason = interaction.options.getString('raison');
 
     const embed = createEmbed()
-      .setTitle('⚠️ Avertissement')
+      .setTitle(`${ICONS.WARN} Avertissement`)
       .addFields(
         { name: 'Utilisateur', value: `<@${target.id}>`, inline: true },
         { name: 'Raison', value: reason, inline: true },
@@ -610,16 +708,15 @@ registerCommand(
 
     await interaction.reply({ embeds: [embed] });
 
-    // Envoi du MP
     await target.send({
       embeds: [new EmbedBuilder()
-        .setColor(CONFIG.COLOR_WARNING)
-        .setTitle('⚠️ Avertissement - Urgence 514 RP')
+        .setColor(CONFIG.COLORS.WARNING)
+        .setTitle(`${ICONS.WARN} Avertissement - Urgence 514 RP`)
         .setDescription(`Tu as reçu un avertissement.\n\n**Raison:** ${reason}\n**Par:** ${interaction.user.username}`)
         .setFooter({ text: 'Urgence 514 RP', iconURL: CONFIG.LOGO })
       ]
     }).catch(() => {
-      console.log(`[WARN] ⚠️ MP fermés pour ${target.tag}`);
+      log('MODERATION', `MP fermés pour ${target.tag}`, 'WARN');
     });
   }
 );
@@ -636,9 +733,8 @@ registerCommand(
   async (interaction) => {
     const target = interaction.options.getUser('utilisateur');
     
-    // Ici tu pourrais intégrer le système de warnings avec GitHub
     const embed = createEmbed()
-      .setTitle(`️ Avertissements de ${target.username}`)
+      .setTitle(`${ICONS.WARN} Avertissements de ${target.username}`)
       .setDescription('Système de warnings en cours de développement.');
     
     await interaction.reply({ embeds: [embed] });
@@ -656,13 +752,13 @@ registerCommand(
     ),
   async (interaction) => {
     if (!isSuperAdmin(interaction.user.id) && !interaction.member.permissions.has(PermissionFlagsBits.Administrator)) {
-      return sendError(interaction, '❌ Admin requis.');
+      return sendError(interaction, 'Admin requis.');
     }
 
     const target = interaction.options.getUser('utilisateur');
     
     const embed = createEmbed()
-      .setTitle('✅ Avertissements effacés')
+      .setTitle(`${ICONS.CHECK} Avertissements effacés`)
       .setDescription(`Tous les avertissements de ${target.username} ont été effacés.`);
     
     await interaction.reply({ embeds: [embed] });
@@ -685,7 +781,7 @@ registerCommand(
     ),
   async (interaction) => {
     if (!interaction.member.permissions.has(PermissionFlagsBits.KickMembers)) {
-      return sendError(interaction, '❌ Permission insuffisante.');
+      return sendError(interaction, 'Permission insuffisante.');
     }
 
     const target = interaction.options.getUser('utilisateur');
@@ -693,21 +789,19 @@ registerCommand(
     const member = await interaction.guild.members.fetch(target.id).catch(() => null);
 
     if (!member) {
-      return sendError(interaction, ' Membre introuvable.');
+      return sendError(interaction, 'Membre introuvable.');
     }
 
     if (!member.kickable) {
-      return sendError(interaction, '❌ Impossible d\'expulser ce membre (rôle trop élevé).');
+      return sendError(interaction, 'Impossible d\'expulser ce membre (rôle trop élevé).');
     }
 
     await member.kick(reason);
 
     const embed = createEmbed()
-      .setTitle('👢 Expulsion')
+      .setTitle(`${ICONS.KICK} Expulsion`)
       .setDescription(`${member.user.username} a été expulsé du serveur.`)
-      .addFields(
-        { name: 'Raison', value: reason, inline: false }
-      );
+      .addFields({ name: 'Raison', value: reason, inline: false });
     
     await interaction.reply({ embeds: [embed] });
   }
@@ -729,7 +823,7 @@ registerCommand(
     ),
   async (interaction) => {
     if (!interaction.member.permissions.has(PermissionFlagsBits.BanMembers)) {
-      return sendError(interaction, '❌ Permission insuffisante.');
+      return sendError(interaction, 'Permission insuffisante.');
     }
 
     const target = interaction.options.getUser('utilisateur');
@@ -738,11 +832,9 @@ registerCommand(
     await interaction.guild.members.ban(target, { reason });
 
     const embed = createEmbed()
-      .setTitle('🔨 Bannissement')
+      .setTitle(`${ICONS.BAN} Bannissement`)
       .setDescription(`${target.username} a été banni du serveur.`)
-      .addFields(
-        { name: 'Raison', value: reason, inline: false }
-      );
+      .addFields({ name: 'Raison', value: reason, inline: false });
     
     await interaction.reply({ embeds: [embed] });
   }
@@ -759,7 +851,7 @@ registerCommand(
     ),
   async (interaction) => {
     if (!interaction.member.permissions.has(PermissionFlagsBits.BanMembers)) {
-      return sendError(interaction, '❌ Permission insuffisante.');
+      return sendError(interaction, 'Permission insuffisante.');
     }
 
     const userId = interaction.options.getString('id');
@@ -767,12 +859,12 @@ registerCommand(
     try {
       await interaction.guild.members.unban(userId);
       const embed = createEmbed()
-        .setTitle(' Débannissement')
+        .setTitle(`${ICONS.UNBAN} Débannissement`)
         .setDescription(`L'utilisateur avec l'ID \`${userId}\` a été débanni.`);
       
       await interaction.reply({ embeds: [embed] });
     } catch (error) {
-      await sendError(interaction, '❌ Utilisateur non banni ou ID invalide.');
+      await sendError(interaction, 'Utilisateur non banni ou ID invalide.');
     }
   }
 );
@@ -798,7 +890,7 @@ registerCommand(
     ),
   async (interaction) => {
     if (!interaction.member.permissions.has(PermissionFlagsBits.ModerateMembers)) {
-      return sendError(interaction, '❌ Permission insuffisante.');
+      return sendError(interaction, 'Permission insuffisante.');
     }
 
     const target = interaction.options.getUser('utilisateur');
@@ -807,23 +899,23 @@ registerCommand(
     const ms = parseDuration(duration);
 
     if (!ms) {
-      return sendError(interaction, '❌ Durée invalide. Exemples: `10m`, `1h`, `1d`');
+      return sendError(interaction, 'Durée invalide. Exemples: `10m`, `1h`, `1d`');
     }
 
     const member = await interaction.guild.members.fetch(target.id).catch(() => null);
 
     if (!member) {
-      return sendError(interaction, '❌ Membre introuvable.');
+      return sendError(interaction, 'Membre introuvable.');
     }
 
     if (!member.moderatable) {
-      return sendError(interaction, '❌ Impossible de mettre ce membre en sourdine (rôle trop élevé).');
+      return sendError(interaction, 'Impossible de mettre ce membre en sourdine (rôle trop élevé).');
     }
 
     await member.timeout(ms, reason);
 
     const embed = createEmbed()
-      .setTitle('️ Timeout')
+      .setTitle(`${ICONS.TIMEOUT} Timeout`)
       .setDescription(`${member.user.username} a été mis en sourdine.`)
       .addFields(
         { name: 'Durée', value: duration, inline: true },
@@ -847,7 +939,7 @@ registerCommand(
     ),
   async (interaction) => {
     if (!interaction.member.permissions.has(PermissionFlagsBits.ManageMessages)) {
-      return sendError(interaction, '❌ Permission insuffisante.');
+      return sendError(interaction, 'Permission insuffisante.');
     }
 
     const amount = interaction.options.getInteger('nombre');
@@ -857,7 +949,7 @@ registerCommand(
     const deleted = await interaction.channel.bulkDelete(amount, true);
     
     const embed = createEmbed()
-      .setTitle('️ Messages supprimés')
+      .setTitle(`${ICONS.CLEAR} Messages supprimés`)
       .setDescription(`${deleted.size} message(s) ont été supprimés.`);
     
     await interaction.editReply({ embeds: [embed] });
@@ -874,7 +966,7 @@ registerCommand(
     .setDescription('Verrouille le salon'),
   async (interaction) => {
     if (!isStaff(interaction)) {
-      return sendError(interaction, '❌ Permission insuffisante.');
+      return sendError(interaction, 'Permission insuffisante.');
     }
 
     await interaction.channel.permissionOverwrites.edit(interaction.guild.id, {
@@ -882,7 +974,7 @@ registerCommand(
     });
 
     const embed = createEmbed()
-      .setTitle('🔒 Salon verrouillé')
+      .setTitle(`${ICONS.LOCK} Salon verrouillé`)
       .setDescription('Ce salon a été verrouillé. Seuls les membres avec les permissions appropriées peuvent envoyer des messages.');
     
     await interaction.reply({ embeds: [embed] });
@@ -895,7 +987,7 @@ registerCommand(
     .setDescription('Déverrouille le salon'),
   async (interaction) => {
     if (!isStaff(interaction)) {
-      return sendError(interaction, '❌ Permission insuffisante.');
+      return sendError(interaction, 'Permission insuffisante.');
     }
 
     await interaction.channel.permissionOverwrites.edit(interaction.guild.id, {
@@ -903,7 +995,7 @@ registerCommand(
     });
 
     const embed = createEmbed()
-      .setTitle(' Salon déverrouillé')
+      .setTitle(`${ICONS.UNLOCK} Salon déverrouillé`)
       .setDescription('Ce salon a été déverrouillé. Tous les membres peuvent à nouveau envoyer des messages.');
     
     await interaction.reply({ embeds: [embed] });
@@ -923,14 +1015,14 @@ registerCommand(
     ),
   async (interaction) => {
     if (!isStaff(interaction)) {
-      return sendError(interaction, '❌ Permission insuffisante.');
+      return sendError(interaction, 'Permission insuffisante.');
     }
 
     const seconds = interaction.options.getInteger('secondes');
     await interaction.channel.setRateLimitPerUser(seconds);
 
     const embed = createEmbed()
-      .setTitle('🐢 Slowmode activé')
+      .setTitle(`${ICONS.SLOWMODE} Slowmode activé`)
       .setDescription(`Le mode lent est maintenant de **${seconds} seconde(s)**.`);
     
     await interaction.reply({ embeds: [embed] });
@@ -947,14 +1039,14 @@ registerCommand(
     .setDescription('Crée le panel des rôles de notification'),
   async (interaction) => {
     if (!isStaff(interaction)) {
-      return sendError(interaction, ' Staff requis.');
+      return sendError(interaction, 'Staff requis.');
     }
 
     const roles = [
-      { name: 'Spoiler', emoji: '👀' },
-      { name: 'Nouveautés', emoji: '⭐' },
-      { name: 'Évènements & Giveaways', emoji: '🎊' },
-      { name: 'Live', emoji: '' }
+      { name: 'Spoiler', icon: ICONS.INFO },
+      { name: 'Nouveautés', icon: ICONS.STATS },
+      { name: 'Évènements & Giveaways', icon: ICONS.GIFT },
+      { name: 'Live', icon: ICONS.LIVE }
     ];
 
     const buttons = [];
@@ -963,7 +1055,7 @@ registerCommand(
       if (!guildRole) {
         guildRole = await interaction.guild.roles.create({
           name: role.name,
-          color: CONFIG.COLOR,
+          color: CONFIG.COLORS.PRIMARY,
           reason: 'Rôle de notification'
         });
       }
@@ -971,18 +1063,18 @@ registerCommand(
       buttons.push(
         new ButtonBuilder()
           .setCustomId(`notif:${role.name}`)
-          .setLabel(`${role.emoji} ${role.name}`)
+          .setLabel(`${role.icon} ${role.name}`)
           .setStyle(ButtonStyle.Secondary)
       );
     }
 
     const row = new ActionRowBuilder().addComponents(buttons);
     const embed = createEmbed()
-      .setTitle('🔔 Notifications')
+      .setTitle(`${ICONS.BELL} Notifications`)
       .setDescription('Clique sur les boutons pour activer/désactiver tes notifications.');
 
     await interaction.channel.send({ embeds: [embed], components: [row] });
-    await interaction.reply({ content: '✅ Panel de rôles envoyé.', ephemeral: true });
+    await interaction.reply({ content: `${ICONS.CHECK} Panel de rôles envoyé.`, ephemeral: true });
   }
 );
 
@@ -997,12 +1089,12 @@ registerCommand(
     ),
   async (interaction) => {
     if (!isStaff(interaction)) {
-      return sendError(interaction, '❌ Staff requis.');
+      return sendError(interaction, 'Staff requis.');
     }
 
     const message = interaction.options.getString('message');
     await interaction.channel.send(message);
-    await interaction.reply({ content: '✅ Message envoyé.', ephemeral: true });
+    await interaction.reply({ content: `${ICONS.CHECK} Message envoyé.`, ephemeral: true });
   }
 );
 
@@ -1026,13 +1118,13 @@ registerCommand(
     ),
   async (interaction) => {
     if (!isStaff(interaction)) {
-      return sendError(interaction, '❌ Staff requis.');
+      return sendError(interaction, 'Staff requis.');
     }
 
     const title = interaction.options.getString('titre');
     const description = interaction.options.getString('description');
     const colorHex = interaction.options.getString('couleur');
-    const color = colorHex ? parseInt(colorHex, 16) || CONFIG.COLOR : CONFIG.COLOR;
+    const color = colorHex ? parseInt(colorHex, 16) || CONFIG.COLORS.PRIMARY : CONFIG.COLORS.PRIMARY;
 
     const embed = new EmbedBuilder()
       .setColor(color)
@@ -1042,7 +1134,7 @@ registerCommand(
       .setTimestamp();
 
     await interaction.channel.send({ embeds: [embed] });
-    await interaction.reply({ content: '✅ Embed envoyé.', ephemeral: true });
+    await interaction.reply({ content: `${ICONS.CHECK} Embed envoyé.`, ephemeral: true });
   }
 );
 
@@ -1057,16 +1149,16 @@ registerCommand(
     ),
   async (interaction) => {
     if (!isStaff(interaction)) {
-      return sendError(interaction, '❌ Staff requis.');
+      return sendError(interaction, 'Staff requis.');
     }
 
     const message = interaction.options.getString('message');
     const embed = createEmbed()
-      .setTitle('📢 Annonce')
+      .setTitle(`${ICONS.ANNOUNCE} Annonce`)
       .setDescription(message);
 
     await interaction.channel.send({ embeds: [embed] });
-    await interaction.reply({ content: '✅ Annonce publiée.', ephemeral: true });
+    await interaction.reply({ content: `${ICONS.CHECK} Annonce publiée.`, ephemeral: true });
   }
 );
 
@@ -1086,7 +1178,7 @@ registerCommand(
     ),
   async (interaction) => {
     if (!isStaff(interaction)) {
-      return sendError(interaction, '❌ Staff requis.');
+      return sendError(interaction, 'Staff requis.');
     }
 
     const duration = interaction.options.getString('duree');
@@ -1094,7 +1186,7 @@ registerCommand(
     const ms = parseDuration(duration);
 
     if (!ms) {
-      return sendError(interaction, ' Durée invalide. Exemples: `10m`, `1h`, `1d`');
+      return sendError(interaction, 'Durée invalide. Exemples: `10m`, `1h`, `1d`');
     }
 
     const giveawayId = Date.now().toString();
@@ -1104,18 +1196,17 @@ registerCommand(
       .addComponents(
         new ButtonBuilder()
           .setCustomId(`gw:${giveawayId}`)
-          .setLabel('🎉 Participer')
+          .setLabel(`${ICONS.GIFT} Participer`)
           .setStyle(ButtonStyle.Primary)
       );
 
-    const embed = createEmbed()
-      .setTitle('🎉 GIVEAWAY')
-      .setDescription(`**Prix:** ${prize}\n**Fin:** <t:${Math.floor(endTime / 1000)}:R>\n\nClique sur le bouton pour participer !`)
-      .setColor(CONFIG.COLOR_WARNING);
+    const embed = createEmbed({ color: CONFIG.COLORS.WARNING })
+      .setTitle(`${ICONS.GIVEAWAY} GIVEAWAY`)
+      .setDescription(`**Prix:** ${prize}\n**Fin:** <t:${Math.floor(endTime / 1000)}:R>\n\nClique sur le bouton pour participer !`);
 
     const message = await interaction.channel.send({ embeds: [embed], components: [button] });
     
-    giveaways.set(giveawayId, {
+    state.giveaways.set(giveawayId, {
       participants: new Set(),
       prize,
       channelId: interaction.channel.id,
@@ -1124,7 +1215,7 @@ registerCommand(
     });
 
     setTimeout(() => endGiveaway(giveawayId), ms);
-    await interaction.reply({ content: '✅ Giveaway lancé.', ephemeral: true });
+    await interaction.reply({ content: `${ICONS.CHECK} Giveaway lancé.`, ephemeral: true });
   }
 );
 
@@ -1133,10 +1224,10 @@ registerCommand(
 // ============================================================
 
 async function endGiveaway(giveawayId) {
-  const giveaway = giveaways.get(giveawayId);
+  const giveaway = state.giveaways.get(giveawayId);
   if (!giveaway) return;
   
-  giveaways.delete(giveawayId);
+  state.giveaways.delete(giveawayId);
 
   const channel = await client.channels.fetch(giveaway.channelId).catch(() => null);
   if (!channel) return;
@@ -1145,10 +1236,10 @@ async function endGiveaway(giveawayId) {
   const participants = [...giveaway.participants];
 
   if (participants.length === 0) {
-    await channel.send({ content: `🎉 Giveaway **${giveaway.prize}** terminé: aucun participant.` });
+    await channel.send({ content: `${ICONS.GIVEAWAY} Giveaway **${giveaway.prize}** terminé: aucun participant.` });
     if (message) {
       await message.edit({
-        embeds: [createEmbed().setTitle('🎉 GIVEAWAY TERMINÉ').setDescription(`**Prix:** ${giveaway.prize}\n**Résultat:** Aucun participant.`)],
+        embeds: [createEmbed().setTitle(`${ICONS.GIVEAWAY} GIVEAWAY TERMINÉ`).setDescription(`**Prix:** ${giveaway.prize}\n**Résultat:** Aucun participant.`)],
         components: []
       }).catch(() => {});
     }
@@ -1156,11 +1247,11 @@ async function endGiveaway(giveawayId) {
   }
 
   const winner = participants[Math.floor(Math.random() * participants.length)];
-  await channel.send({ content: `🎉 **Félicitations <@${winner}>** qui remporte **${giveaway.prize}** !` });
+  await channel.send({ content: `${ICONS.GIVEAWAY} **Félicitations <@${winner}>** qui remporte **${giveaway.prize}** !` });
   
   if (message) {
     await message.edit({
-      embeds: [createEmbed().setTitle('🎉 GIVEAWAY TERMINÉ').setDescription(`**Prix:** ${giveaway.prize}\n**Gagnant:** <@${winner}>`)],
+      embeds: [createEmbed().setTitle(`${ICONS.GIVEAWAY} GIVEAWAY TERMINÉ`).setDescription(`**Prix:** ${giveaway.prize}\n**Gagnant:** <@${winner}>`)],
       components: []
     }).catch(() => {});
   }
@@ -1179,34 +1270,34 @@ client.on('interactionCreate', async (interaction) => {
         let role = interaction.guild.roles.cache.find(r => r.name === roleName);
         
         if (!role) {
-          role = await interaction.guild.roles.create({ name: roleName, color: CONFIG.COLOR });
+          role = await interaction.guild.roles.create({ name: roleName, color: CONFIG.COLORS.PRIMARY });
         }
 
         if (interaction.member.roles.cache.has(role.id)) {
           await interaction.member.roles.remove(role);
-          await interaction.reply({ content: ` Rôle **${roleName}** retiré.`, ephemeral: true });
+          await interaction.reply({ content: `${ICONS.CROSS} Rôle **${roleName}** retiré.`, ephemeral: true });
         } else {
           await interaction.member.roles.add(role);
-          await interaction.reply({ content: `🔔 Rôle **${roleName}** ajouté.`, ephemeral: true });
+          await interaction.reply({ content: `${ICONS.BELL} Rôle **${roleName}** ajouté.`, ephemeral: true });
         }
       } else if (interaction.customId.startsWith('gw:')) {
         const giveawayId = interaction.customId.slice(3);
-        const giveaway = giveaways.get(giveawayId);
+        const giveaway = state.giveaways.get(giveawayId);
         
         if (!giveaway) {
-          return interaction.reply({ content: '⏰ Giveaway terminé.', ephemeral: true });
+          return interaction.reply({ content: `${ICONS.CROSS} Giveaway terminé.`, ephemeral: true });
         }
 
         if (giveaway.participants.has(interaction.user.id)) {
           giveaway.participants.delete(interaction.user.id);
-          await interaction.reply({ content: '❌ Participation annulée.', ephemeral: true });
+          await interaction.reply({ content: `${ICONS.CROSS} Participation annulée.`, ephemeral: true });
         } else {
           giveaway.participants.add(interaction.user.id);
-          await interaction.reply({ content: '🎉 Participation enregistrée !', ephemeral: true });
+          await interaction.reply({ content: `${ICONS.GIFT} Participation enregistrée !`, ephemeral: true });
         }
       }
     } catch (error) {
-      console.error('[INTERACTION] Erreur bouton:', error);
+      log('INTERACTION', `Erreur bouton: ${error.message}`, 'ERROR');
     }
     return;
   }
@@ -1214,15 +1305,18 @@ client.on('interactionCreate', async (interaction) => {
   // Gestion des commandes slash
   if (!interaction.isCommand()) return;
 
-  const command = commands.get(interaction.commandName);
+  const command = state.commands.get(interaction.commandName);
   if (!command) return;
 
   try {
     await command.handler(interaction);
   } catch (error) {
-    console.error(`[COMMANDE] Erreur /${interaction.commandName}:`, error);
+    log('COMMANDE', `Erreur /${interaction.commandName}: ${error.message}`, 'ERROR');
     if (!interaction.replied && !interaction.deferred) {
-      await interaction.reply({ content: '❌ Une erreur est survenue lors de l\'exécution de cette commande.', ephemeral: true }).catch(() => {});
+      await interaction.reply({ 
+        content: `${ICONS.CROSS} Une erreur est survenue lors de l'exécution de cette commande.`, 
+        ephemeral: true 
+      }).catch(() => {});
     }
   }
 });
@@ -1232,11 +1326,11 @@ client.on('interactionCreate', async (interaction) => {
 // ============================================================
 
 client.once('clientReady', async () => {
-  console.log('════════════════════════════════════════');
-  console.log('✅ Bot en ligne: ' + client.user.tag);
-  console.log('📊 Serveurs: ' + client.guilds.cache.size);
-  console.log(' Membres: ' + client.guilds.cache.reduce((acc, guild) => acc + guild.memberCount, 0));
-  console.log('════════════════════════════════════════');
+  log('SYSTEM', '════════════════════════════════════════', 'INFO');
+  log('SYSTEM', `Bot en ligne: ${client.user.tag}`, 'SUCCESS');
+  log('SYSTEM', `Serveurs: ${client.guilds.cache.size}`, 'INFO');
+  log('SYSTEM', `Membres: ${client.guilds.cache.reduce((acc, guild) => acc + guild.memberCount, 0)}`, 'INFO');
+  log('SYSTEM', '════════════════════════════════════════', 'INFO');
 
   // Mise à jour du statut
   client.user.setPresence({
@@ -1247,16 +1341,16 @@ client.once('clientReady', async () => {
   // Enregistrement des commandes
   try {
     const rest = new REST({ version: '10' }).setToken(CONFIG.BOT_TOKEN);
-    const commandsData = [...commands.values()].map(cmd => cmd.builder.toJSON());
+    const commandsData = [...state.commands.values()].map(cmd => cmd.builder.toJSON());
     
-    console.log(`📤 Enregistrement de ${commandsData.length} commandes...`);
+    log('SYSTEM', `Enregistrement de ${commandsData.length} commandes...`, 'INFO');
     await rest.put(
       Routes.applicationGuildCommands(client.user.id, CONFIG.GUILD_ID),
       { body: commandsData }
     );
-    console.log(`✅ ${commandsData.length} commandes enregistrées avec succès.`);
+    log('SYSTEM', `${commandsData.length} commandes enregistrées avec succès.`, 'SUCCESS');
   } catch (error) {
-    console.error(' Erreur lors de l\'enregistrement des commandes:', error.message);
+    log('SYSTEM', `Erreur lors de l'enregistrement des commandes: ${error.message}`, 'ERROR');
   }
 });
 
@@ -1266,10 +1360,10 @@ client.once('clientReady', async () => {
 
 if (CONFIG.BOT_TOKEN) {
   client.login(CONFIG.BOT_TOKEN).catch(error => {
-    console.error('❌ Erreur de connexion du bot:', error.message);
+    log('SYSTEM', `Erreur de connexion du bot: ${error.message}`, 'ERROR');
   });
 } else {
-  console.warn('⚠️ BOT_TOKEN manquant dans les variables d\'environnement.');
+  log('SYSTEM', 'BOT_TOKEN manquant dans les variables d\'environnement.', 'WARN');
 }
 
 // ============================================================
