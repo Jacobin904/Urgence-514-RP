@@ -96,10 +96,16 @@ function log(category, message, level = 'INFO') {
 // ============================================================
 // LOGS & AUTO-MODÉRATION
 // ============================================================
-client.on('messageDelete', async (msg) => {
-  if (msg.author?.bot || !msg.guild || msg.guild.id !== CONFIG.GUILD_ID) return;
-  log('MOD', `Message supprimé | ${msg.author.tag} | #${msg.channel?.name || '?'}`);
-});
+   client.on('messageDelete', async (message) => {
+     if (!message.author || message.author.bot || !message.guild || message.guild.id !== CONFIG.GUILD_ID) return;
+     log('MOD', `Message supprimé | ${message.author.tag} | #${message.channel?.name || '?'}`);
+   });
+
+   client.on('messageUpdate', async (oldMessage, newMessage) => {
+     if (!oldMessage.author || oldMessage.author.bot || !oldMessage.guild || oldMessage.guild.id !== CONFIG.GUILD_ID) return;
+     if (oldMessage.content === newMessage.content) return;
+     log('MOD', `Message modifié | ${oldMessage.author.tag} | #${oldMessage.channel?.name || '?'}`);
+   });
 
 client.on('guildMemberAdd', async (member) => {
   if (member.guild.id === CONFIG.GUILD_ID) log('MEMBRES', `Arrivée: ${member.user.tag} (Total: ${member.guild.memberCount})`);
