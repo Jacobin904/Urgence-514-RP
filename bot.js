@@ -2,7 +2,7 @@
  * ============================================================
  * URGENCE 514 RP - BOT DISCORD PROFESSIONNEL
  * ============================================================
- * Version: 3.1.0 (Final)
+ * Version: 4.0.0 (Final avec Join-to-Create)
  * Développé par: Jacobin904
  * ============================================================
  */
@@ -10,9 +10,19 @@
 'use strict';
 
 const {
-  Client, GatewayIntentBits, EmbedBuilder, PermissionFlagsBits,
-  SlashCommandBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder,
-  ActivityType, REST, Routes, Partials
+  Client,
+  GatewayIntentBits,
+  EmbedBuilder,
+  PermissionFlagsBits,
+  SlashCommandBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  ActionRowBuilder,
+  ActivityType,
+  REST,
+  Routes,
+  Partials,
+  ChannelType // Ajouté pour la création de salons vocaux
 } = require('discord.js');
 
 // ============================================================
@@ -26,6 +36,14 @@ const CONFIG = Object.freeze({
   COLORS: Object.freeze({ PRIMARY: 0x0B5BD7, SUCCESS: 0x3BA55C, DANGER: 0xED4245, WARNING: 0xFAA61A }),
   LOGO: 'https://cdn.discordapp.com/icons/1475659636819493089/8a80480870b623a2afc4d2d5cc14bfbf.webp?size=1024',
   AUTO_MOD: Object.freeze({ SPAM_WINDOW_MS: 5000, SPAM_THRESHOLD: 4, TIMEOUT_DURATION_MS: 60000 })
+});
+
+// ============================================================
+// CONFIGURATION JOIN-TO-CREATE (J2C)
+// ============================================================
+const J2C_CONFIG = Object.freeze({
+  TRIGGER_CHANNEL_ID: '1536401234922315906', // Salon déclencheur
+  EMOJIS: ['🏖️', '🌊', '☀️', '🌴', '🍉', '🏄‍♂️', '🚤', '🍹', '🏝️', '🐚']
 });
 
 // ============================================================
@@ -45,13 +63,23 @@ const ICONS = Object.freeze({
 // ============================================================
 const client = new Client({
   intents: [
-    GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent, GatewayIntentBits.GuildModeration, GatewayIntentBits.GuildPresences
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildModeration,
+    GatewayIntentBits.GuildPresences,
+    GatewayIntentBits.GuildVoiceStates // Nécessaire pour le J2C
   ],
   partials: [Partials.Message, Partials.Channel]
 });
 
-const state = { giveaways: new Map(), spamTracker: new Map(), commands: new Map() };
+const state = {
+  giveaways: new Map(),
+  spamTracker: new Map(),
+  commands: new Map(),
+  tempVoiceChannels: new Set() // Pour suivre les salons temporaires
+};
 
 // ============================================================
 // UTILITAIRES
@@ -72,11 +100,13 @@ function parseDuration(str) {
 
 function formatTimestamp(date) { return `<t:${Math.floor(date.getTime() / 1000)}:R>`; }
 function isSuperAdmin(userId) { return CONFIG.SUPER_ADMINS.includes(userId); }
+
 function isStaff(interaction) {
   return isSuperAdmin(interaction.user.id) || 
          interaction.member?.permissions?.has(PermissionFlagsBits.KickMembers) || 
          interaction.member?.roles?.cache?.has(CONFIG.REQUIRED_ROLE_ID);
 }
+
 function isMemberStaff(member) {
   return isSuperAdmin(member.id) || 
          member.permissions?.has(PermissionFlagsBits.ManageMessages) || 
@@ -96,19 +126,31 @@ function log(category, message, level = 'INFO') {
 // ============================================================
 // LOGS & AUTO-MODÉRATION
 // ============================================================
-   client.on('messageDelete', async (message) => {
-     if (!message.author || message.author.bot || !message.guild || message.guild.id !== CONFIG.GUILD_ID) return;
-     log('MOD', `Message supprimé | ${message.author.tag} | #${message.channel?.name || '?'}`);
-   });
+client.on('messageDelete', async (message) => {
+  if (!message.author || message.author.bot || !message.guild || message.guild.id !== CONFIG.GUILD_ID) return;
+  log('MOD', `Message supprimé | ${message.author.tag} | #${message.channel?.name || '?'}`);
+});
 
-   client.on('messageUpdate', async (oldMessage, newMessage) => {
-     if (!oldMessage.author || oldMessage.author.bot || !oldMessage.guild || oldMessage.guild.id !== CONFIG.GUILD_ID) return;
-     if (oldMessage.content === newMessage.content) return;
-     log('MOD', `Message modifié | ${oldMessage.author.tag} | #${oldMessage.channel?.name || '?'}`);
-   });
+client.on('messageUpdate', async (oldMessage, newMessage) => {
+  if (!oldMessage.author || oldMessage.author.bot || !oldMessage.guild || oldMessage.guild.id !== CONFIG.GUILD_ID) return;
+  if (oldMessage.content === newMessage.content) return;
+  log('MOD', `Message modifié | ${oldMessage.author.tag} | #${oldMessage.channel?.name || '?'}`);
+});
 
 client.on('guildMemberAdd', async (member) => {
   if (member.guild.id === CONFIG.GUILD_ID) log('MEMBRES', `Arrivée: ${member.user.tag} (Total: ${member.guild.memberCount})`);
+});
+
+client.on('guildMemberRemove', async (member) => {
+  if (member.guild.id === CONFIG.GUILD_ID) log('MEMBRES', `Départ: ${member.user.tag} (Total: ${member.guild.memberCount})`);
+});
+
+client.on('guildBanAdd', async (ban) => {
+  if (ban.guild.id === CONFIG.GUILD_ID) log('MOD', `Bannissement: ${ban.user.tag}`);
+});
+
+client.on('guildBanRemove', async (ban) => {
+  if (ban.guild.id === CONFIG.GUILD_ID) log('MOD', `Débannissement: ${ban.user.tag}`);
 });
 
 client.on('messageCreate', async (message) => {
@@ -135,10 +177,66 @@ client.on('messageCreate', async (message) => {
 });
 
 // ============================================================
-// COMMANDES
+// SYSTÈME DE SALONS VOCAUX TEMPORAIRES (JOIN TO CREATE)
 // ============================================================
-function registerCommand(builder, handler) { state.commands.set(builder.name, { builder, handler }); }
+client.on('voiceStateUpdate', async (oldState, newState) => {
+  const member = newState.member;
+  if (!member || member.user.bot) return;
 
+  const guild = newState.guild;
+
+  // 1. L'utilisateur REJOINT le salon déclencheur
+  if (newState.channelId === J2C_CONFIG.TRIGGER_CHANNEL_ID && oldState.channelId !== newState.channelId) {
+    try {
+      const triggerChannel = newState.channel;
+      const category = triggerChannel.parent; // Hérite de la catégorie pour les permissions
+      
+      const randomEmoji = J2C_CONFIG.EMOJIS[Math.floor(Math.random() * J2C_CONFIG.EMOJIS.length)];
+      const channelName = `[${randomEmoji}] Vocal ${member.user.username}`.substring(0, 100); // Limite Discord
+
+      const newChannel = await guild.channels.create({
+        name: channelName,
+        type: ChannelType.GuildVoice,
+        parent: category,
+        permissionOverwrites: triggerChannel.permissionOverwrites.cache
+      });
+
+      await member.voice.setChannel(newChannel);
+      state.tempVoiceChannels.add(newChannel.id);
+      log('J2C', `Salon créé : ${channelName} par ${member.user.tag}`, 'SUCCESS');
+    } catch (error) {
+      log('J2C', `Erreur création salon pour ${member.user.tag}: ${error.message}`, 'ERROR');
+    }
+  }
+
+  // 2. L'utilisateur QUITTE un salon (vérifier si c'était un salon temporaire)
+  if (oldState.channelId && oldState.channelId !== newState.channelId) {
+    if (state.tempVoiceChannels.has(oldState.channelId)) {
+      const oldChannel = oldState.channel;
+      // Si le salon existe encore et qu'il est vide
+      if (oldChannel && oldChannel.members.size === 0) {
+        try {
+          await oldChannel.delete();
+          state.tempVoiceChannels.delete(oldState.channelId);
+          log('J2C', `Salon supprimé (vide) : ID ${oldState.channelId}`, 'INFO');
+        } catch (error) {
+          log('J2C', `Erreur suppression salon ${oldState.channelId}: ${error.message}`, 'ERROR');
+        }
+      }
+    }
+  }
+});
+
+// ============================================================
+// ENREGISTREMENT DES COMMANDES
+// ============================================================
+function registerCommand(builder, handler) {
+  state.commands.set(builder.name, { builder, handler });
+}
+
+// ============================================================
+// COMMANDES PUBLIQUES
+// ============================================================
 registerCommand(new SlashCommandBuilder().setName('help').setDescription('Liste des commandes'), async (i) => {
   await i.reply({ embeds: [createEmbed().setTitle(`${ICONS.HELP} Aide`).addFields(
     { name: `${ICONS.INFO} Info`, value: '`/help` `/info` `/code` `/ping` `/serverstats`', inline: false },
@@ -248,7 +346,9 @@ registerCommand(new SlashCommandBuilder().setName('serverinfo').setDescription('
   )] });
 });
 
-// --- MODÉRATION ---
+// ============================================================
+// COMMANDES DE MODÉRATION
+// ============================================================
 registerCommand(new SlashCommandBuilder().setName('warn').setDescription('Avertit un utilisateur').addUserOption(o => o.setName('utilisateur').setDescription('Utilisateur').setRequired(true)).addStringOption(o => o.setName('raison').setDescription('Raison').setRequired(true)), async (i) => {
   if (!isStaff(i)) return sendError(i, 'Permission insuffisante.');
   const target = i.options.getUser('utilisateur'); const reason = i.options.getString('raison');
@@ -314,7 +414,9 @@ registerCommand(new SlashCommandBuilder().setName('slowmode').setDescription('Ac
   await i.reply({ embeds: [createEmbed().setTitle(`${ICONS.SLOWMODE} Slowmode`).setDescription(`Mode lent activé: **${i.options.getInteger('secondes')}s**.`)] });
 });
 
-// --- ADMIN ---
+// ============================================================
+// COMMANDES D'ADMINISTRATION
+// ============================================================
 registerCommand(new SlashCommandBuilder().setName('roles').setDescription('Panel des rôles de notification'), async (i) => {
   if (!isStaff(i)) return sendError(i, 'Staff requis.');
   const roles = [{ name: 'Spoiler', icon: ICONS.INFO }, { name: 'Nouveautés', icon: ICONS.SERVER }, { name: 'Évènements & Giveaways', icon: ICONS.GIFT }, { name: 'Live', icon: ICONS.LIVE }];
@@ -406,7 +508,7 @@ client.on('interactionCreate', async (i) => {
           await i.reply({ content: `${ICONS.GIFT} Participation enregistrée !`, ephemeral: true });
         }
       }
-    } catch (e) { log('INTERACTION', `Erreur bouton: ${e.message}`, 'ERROR'); }
+    } catch (error) { log('INTERACTION', `Erreur bouton: ${error.message}`, 'ERROR'); }
     return;
   }
   if (!i.isCommand()) return;
