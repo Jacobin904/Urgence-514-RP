@@ -2,7 +2,7 @@
  * ============================================================
  * URGENCE 514 RP - BOT DISCORD PROFESSIONNEL
  * ============================================================
- * Version: 6.0.0 (Système Scène Numérotée + Reset 24h)
+ * Version: 7.0.0 (Emojis d'été aléatoires + Scène Numérotée)
  * Développé par: Jacobin904
  * ============================================================
  */
@@ -43,7 +43,8 @@ const CONFIG = Object.freeze({
 // ============================================================
 const J2C_CONFIG = Object.freeze({
   TRIGGER_CHANNEL_ID: '1536401234922315906',
-  SCENE_EMOJI: '🎬' // Emoji professionnel pour les scènes
+  // Liste d'emojis d'été parmi lesquels le bot choisira au hasard
+  SUMMER_EMOJIS: ['🏖️', '🌊', '☀️', '🌴', '🍉', '🏄', '🚤', '🍹', '🏝️', '🐚', '🌺', '🕶️', '🏐', '🌅', '🍦', '⛱️']
 });
 
 // ============================================================
@@ -190,8 +191,11 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
         state.currentSceneNumber = 1;
       }
 
-      // Nom du salon : 🎬 Scène X
-      const channelName = `${J2C_CONFIG.SCENE_EMOJI} Scène ${sceneNum}`;
+      // Choisir un emoji d'été aléatoire à chaque création
+      const randomEmoji = J2C_CONFIG.SUMMER_EMOJIS[Math.floor(Math.random() * J2C_CONFIG.SUMMER_EMOJIS.length)];
+
+      // Nom du salon : Emoji Scène X
+      const channelName = `${randomEmoji} Scène ${sceneNum}`;
 
       const newChannel = await guild.channels.create({
         name: channelName,
