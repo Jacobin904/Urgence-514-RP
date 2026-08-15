@@ -2,7 +2,7 @@
  * ============================================================
  * URGENCE 514 RP - BOT DISCORD PROFESSIONNEL
  * ============================================================
- * Version: 7.0.0 (Emojis d'été aléatoires + Scène Numérotée)
+ * Version: 8.0.0 (Système Scène retiré, code épuré)
  * Développé par: Jacobin904
  * ============================================================
  */
@@ -21,8 +21,7 @@ const {
   ActivityType,
   REST,
   Routes,
-  Partials,
-  ChannelType
+  Partials
 } = require('discord.js');
 
 // ============================================================
@@ -39,15 +38,6 @@ const CONFIG = Object.freeze({
 });
 
 // ============================================================
-// CONFIGURATION JOIN-TO-CREATE (J2C)
-// ============================================================
-const J2C_CONFIG = Object.freeze({
-  TRIGGER_CHANNEL_ID: '1536401234922315906',
-  // Liste d'emojis d'été parmi lesquels le bot choisira au hasard
-  SUMMER_EMOJIS: ['🏖️', '🌊', '☀️', '🌴', '🍉', '🏄', '🚤', '🍹', '🏝️', '🐚', '🌺', '🕶️', '🏐', '🌅', '🍦', '⛱️']
-});
-
-// ============================================================
 // INITIALISATION
 // ============================================================
 const client = new Client({
@@ -57,8 +47,7 @@ const client = new Client({
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent,
     GatewayIntentBits.GuildModeration,
-    GatewayIntentBits.GuildPresences,
-    GatewayIntentBits.GuildVoiceStates
+    GatewayIntentBits.GuildPresences
   ],
   partials: [Partials.Message, Partials.Channel]
 });
@@ -66,9 +55,7 @@ const client = new Client({
 const state = {
   giveaways: new Map(),
   spamTracker: new Map(),
-  commands: new Map(),
-  tempVoiceChannels: new Set(),
-  currentSceneNumber: 1 // Compteur pour les scènes (1 à 99)
+  commands: new Map()
 };
 
 // ============================================================
@@ -162,71 +149,6 @@ client.on('messageCreate', async (message) => {
         log('AUTO-MOD', `${message.author.tag} mis en timeout (1 min)`, 'SUCCESS');
       }
     } catch (e) { log('AUTO-MOD', `Erreur sanction: ${e.message}`, 'ERROR'); }
-  }
-});
-
-// ============================================================
-// SYSTÈME DE SALONS VOCAUX TEMPORAIRES (JOIN TO CREATE)
-// ============================================================
-client.on('voiceStateUpdate', async (oldState, newState) => {
-  const member = newState.member;
-  if (!member || member.user.bot) return;
-
-  const guild = newState.guild;
-
-  // 1. L'utilisateur REJOINT le salon déclencheur
-  if (newState.channelId === J2C_CONFIG.TRIGGER_CHANNEL_ID && oldState.channelId !== newState.channelId) {
-    try {
-      const triggerChannel = newState.channel;
-      const category = triggerChannel.parent;
-      
-      // Récupérer le numéro actuel
-      const sceneNum = state.currentSceneNumber;
-      
-      // Incrémenter pour la prochaine fois
-      state.currentSceneNumber++;
-      
-      // Boucle : si on dépasse 99, on revient à 1
-      if (state.currentSceneNumber > 99) {
-        state.currentSceneNumber = 1;
-      }
-
-      // Choisir un emoji d'été aléatoire à chaque création
-      const randomEmoji = J2C_CONFIG.SUMMER_EMOJIS[Math.floor(Math.random() * J2C_CONFIG.SUMMER_EMOJIS.length)];
-
-      // Nom du salon : Emoji Scène X
-      const channelName = `${randomEmoji} Scène ${sceneNum}`;
-
-      const newChannel = await guild.channels.create({
-        name: channelName,
-        type: ChannelType.GuildVoice,
-        parent: category,
-        permissionOverwrites: triggerChannel.permissionOverwrites.cache
-      });
-
-      await member.voice.setChannel(newChannel);
-      state.tempVoiceChannels.add(newChannel.id);
-      log('J2C', `Salon créé : ${channelName} par ${member.user.tag} (Prochain: ${state.currentSceneNumber})`, 'SUCCESS');
-    } catch (error) {
-      log('J2C', `Erreur création salon pour ${member.user.tag}: ${error.message}`, 'ERROR');
-    }
-  }
-
-  // 2. L'utilisateur QUITTE un salon (vérifier si c'était un salon temporaire)
-  if (oldState.channelId && oldState.channelId !== newState.channelId) {
-    if (state.tempVoiceChannels.has(oldState.channelId)) {
-      const oldChannel = oldState.channel;
-      // Si le salon existe encore et qu'il est vide
-      if (oldChannel && oldChannel.members.size === 0) {
-        try {
-          await oldChannel.delete();
-          state.tempVoiceChannels.delete(oldState.channelId);
-          log('J2C', `Salon supprimé (vide) : ${oldChannel.name} (ID: ${oldState.channelId})`, 'INFO');
-        } catch (error) {
-          log('J2C', `Erreur suppression salon ${oldState.channelId}: ${error.message}`, 'ERROR');
-        }
-      }
-    }
   }
 });
 
@@ -529,12 +451,6 @@ client.once('clientReady', async () => {
   log('SYSTEM', `Bot en ligne: ${client.user.tag}`, 'SUCCESS');
   log('SYSTEM', `Serveurs: ${client.guilds.cache.size} | Membres: ${client.guilds.cache.reduce((a, g) => a + g.memberCount, 0)}`, 'INFO');
   log('SYSTEM', '========================================', 'INFO');
-  
-  // Mise en place du reset automatique toutes les 24 heures (86 400 000 millisecondes)
-  setInterval(() => {
-    state.currentSceneNumber = 1;
-    log('J2C', 'Compteur de scènes réinitialisé à 1 (Reset 24h)', 'INFO');
-  }, 24 * 60 * 60 * 1000);
 
   client.user.setPresence({ status: 'online', activities: [{ name: 'urgrp - ER:LC', type: ActivityType.Watching }] });
   try {
